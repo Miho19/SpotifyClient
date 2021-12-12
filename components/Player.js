@@ -74,7 +74,7 @@ export default function Player() {
   }, [volume]);
 
   return (
-    <div className="h-24 bg-gradient-to-b from-black to-gray-900 text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8">
+    <div className="h-24 bg-[#1a1a1a] text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8 ">
       <div className="flex items-center space-x-4">
         <img
           src={songInfo?.album.images?.[0].url}

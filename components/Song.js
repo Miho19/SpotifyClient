@@ -35,8 +35,10 @@ export default function Song({ order, track }) {
         </div>
       </div>
       <div className="flex items-center justify-between ml-auto md:ml-0">
-        <p className="hidden md:inline w-40">{track.track.album.name}</p>
-        <p className="">{msToMinutesAndSeconds(track.track.duration_ms)}</p>
+        <p className="hidden lg:inline w-40">{track.track.album.name}</p>
+        <p className="ml-auto">
+          {msToMinutesAndSeconds(track.track.duration_ms)}
+        </p>
       </div>
     </div>
   );

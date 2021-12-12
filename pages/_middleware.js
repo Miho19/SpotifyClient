@@ -15,7 +15,6 @@ export async function middleware(req) {
   }
 
   if (!token && pathname !== "/login") {
-    console.log("no token");
     return NextResponse.redirect("/login");
   }
 }

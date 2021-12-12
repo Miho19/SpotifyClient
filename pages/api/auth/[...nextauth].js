@@ -12,11 +12,10 @@ async function refreshAccessToken(token) {
     return {
       ...token,
       accessToken: refreshedToken,
-      accessTokenExpires: Date.now + refreshedToken.expires_in * 1000, // expires in 1 hour from now
+      accessTokenExpires: Date.now() + refreshedToken.expires_in * 1000, // expires in 1 hour from now
       refreshtoken: refreshedToken.refresh_token ?? token.refreshToken, // if no refreshtoken returned use old refresh token
     };
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
     return { ...token, error: "RefreshAccessTokenError" };
   }
 }
@@ -34,28 +33,33 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, account, user }) {
       // initial sign in
+
       if (account && user) {
         return {
           ...token,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
-          username: account.providerAccountId,
-          accessTokenExpires: account.expires_at * 1000, // convert seconds to ms
+          accessTokenExpires: account.expires_at, // convert seconds to ms
         };
       }
 
       // return previous token if valid
-      if (Date.now() < token.accessTokenExpires) {
+      if (Date.now() < token.accessTokenExpires * 1000) {
         return { ...token };
+      }
+
+      if (token.refreshAccessToken === undefined) {
+        console.log("undefind refresh token", token);
       }
 
       // expired token
       return await refreshAccessToken(token);
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
       session.user.username = token.username;
+      session.error = token.error;
       return session;
     },
   },

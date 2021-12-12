@@ -37,20 +37,21 @@ export default function Center() {
 
   return (
     <div className="flex-grow h-screen overflow-y-scroll scrollbar-hide">
-      <header className="absolute top-5 right-8">
+      <header className="absolute top-5 right-[21rem]">
         <div
           className="flex items-center bg-black bg-opacity-70 space-x-3 hover:bg-opacity-80 cursor-pointer rounded-full p-1 pr-2 text-white font-medium"
           onClick={() => signOut()}
         >
           <img
-            className="rounded-full w-7 h-7"
+            className="rounded-full w-7 h-7 ml-1 sm:ml-0"
             src={session?.user.image}
             alt=""
           />
-          <h2>{session?.user.name}</h2>
-          <ChevronDownIcon className="h-5 w-5" />
+          <h2 className="hidden lg:block ">{session?.user.name}</h2>
+          <ChevronDownIcon className="h-5 w-5 hidden lg:block" />
         </div>
       </header>
+
       <section
         className={`flex items-end space-x-7 bg-gradient-to-b to-black ${color} h-80 text-white p-8`}
       >
