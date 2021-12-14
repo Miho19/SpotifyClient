@@ -11,12 +11,6 @@ import { currentPlaylistId } from "../atoms/playlistAtom";
 export default function playlist() {
   const [playlistId, setCurrentPlaylistId] = useRecoilState(currentPlaylistId);
 
-  useEffect(() => {
-    if (playlistId === "") {
-      console.log(playlistId);
-    }
-  }, []);
-
   return (
     <div className="bg-black h-screen scrollbar-hide overflow-hidden text-white">
       <main className="flex h-full ">

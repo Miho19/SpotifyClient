@@ -4,14 +4,21 @@ import Link from "next/link";
 import { useRecoilState } from "recoil";
 import { currentPlaylistId } from "../atoms/playlistAtom";
 
+import { useRouter } from "next/router";
+
 export default function UserPlayLists() {
   const [allUserPlaylists, setallUserPlaylists] = useState([]);
 
   const spotifyApi = useSpotify();
 
   const [playlistID, setCurrentPlaylistId] = useRecoilState(currentPlaylistId);
+  const router = useRouter();
 
   useEffect(() => {
+    if (spotifyApi.getAccessToken() === undefined) {
+      router.push("/");
+    }
+
     if (spotifyApi.getAccessToken()) {
       spotifyApi.getUserPlaylists().then((data) => {
         setallUserPlaylists(data.body.items);
