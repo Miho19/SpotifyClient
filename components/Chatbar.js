@@ -1,37 +1,38 @@
 import { ChatIcon, HomeIcon, UserAddIcon } from "@heroicons/react/solid";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import useSpotify from "../hooks/useSpotify";
 import { useSession } from "next-auth/react";
-// admin chat  <div class="flex justify-center"> <span class="text-gray-500 text-xs pt-4" style="font-size: 8px;">Call started at 02:33 am</span> </div>
+import { SocketContext } from "../context/socket.context";
+import { Socket } from "socket.io-client";
+import Dayjs from "dayjs";
 
-const exampleMessages = [
-  {
-    message: "hello world!",
-    email: "joshua28at@hotmail.com",
-  },
-  {
-    message:
-      "hello world! this is the supoer logne terweirwtiwriewrjoiwejroiwejroi  jrwe jroiwe orjwo rjwo jrowijr oiwoa ;er ;ewnr owae ornhewoa rj ",
-    email: "joshua28at@hotmail.com",
-  },
+// admin chat
 
-  {
-    message:
-      "hello world! this is the supoer logne terweirwtiwriewrjoiwejroiwejroi  jrwe jroiwe orjwo rjwo jrowijr oiwoa ;er ;ewnr owae ornhewoa rj ",
-    email: "bigman",
-  },
-];
+const generateTime = (time) => {
+  const timeDayjs = Dayjs(time);
+  const now = Dayjs();
 
-const generateChat = ({ message, email }, session, index) => (
+  if (now.diff(timeDayjs, "month") > 12) {
+    return timeDayjs.format("DD:MM:YYYY");
+  }
+
+  if (now.diff(timeDayjs, "day") > 7) {
+    return timeDayjs.format("DD:MM");
+  }
+
+  return timeDayjs.format("HH:mm ddd");
+};
+
+const generateChat = ({ message, email, id, time }, session) => (
   <div
-    key={index}
-    className=" p-1 text-white group flex flex-col items-start"
+    key={id}
+    className=" p-1 text-white group flex flex-col items-start cursor-pointer"
     onClick={(e) => console.log()}
   >
     <span
       className={`${
         email === session?.user?.email ? `bg-[#1DB954]` : `bg-black`
-      }  h-auto text-white text-md font-normal rounded-md px-2 p-2`}
+      }  h-auto text-white text-md font-normal rounded-md max-w-full text-clip overflow-hidden p-2 `}
     >
       {message}
     </span>
@@ -44,15 +45,24 @@ const generateChat = ({ message, email }, session, index) => (
       <span className="hidden group-hover:inline text-white text-sm">
         {session?.user?.name}
       </span>
+      <span className="hidden group-hover:inline text-white text-sm ml-auto ">
+        {generateTime(time)}
+      </span>
     </div>
+  </div>
+);
+
+const generateAdminChat = ({ message, id, time }) => (
+  <div key={id} className="flex justify-center text-white text-sm">
+    <span>{message}</span>
   </div>
 );
 
 export default function Chatbar() {
   const { data: session, loading } = useSession();
   const [value, setValue] = useState("");
-  const [messages, setMessages] = useState([...exampleMessages]);
   const messageEndReference = useRef(null);
+  const { socket, EVENTS, messages, setMessages } = useContext(SocketContext);
 
   useEffect(() => {
     messageEndReference.current?.scrollIntoView({
@@ -69,7 +79,9 @@ export default function Chatbar() {
       </header>
       <div className="flex flex-col h-[65%] w-full bg-[#191414] mt-1 p-1 overflow-scroll scrollbar-hide">
         {messages.map((message, index) => {
-          return generateChat(message, session, index);
+          return message.email === "__ADMIN__"
+            ? generateAdminChat(message)
+            : generateChat(message, session);
         })}
         <div ref={messageEndReference} />
       </div>
@@ -83,10 +95,12 @@ export default function Chatbar() {
             if (e.key !== "Enter") return;
             if (value.length === 0) return;
 
-            setMessages([
-              ...messages,
-              { message: value, email: session?.user.email },
-            ]);
+            socket.emit(EVENTS.CLIENT.SEND_MESSAGE, {
+              message: value,
+              email: session.user.email,
+              roomID: socket.id,
+            });
+
             setValue("");
           }}
         />

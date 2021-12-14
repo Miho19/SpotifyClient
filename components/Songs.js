@@ -1,10 +1,10 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import { playlistSongsState } from "../atoms/playlistAtom";
+import { currentPlayListObject } from "../atoms/playlistAtom";
 import Song from "./Song";
 
 export default function Songs() {
-  const playlist = useRecoilValue(playlistSongsState);
+  const playlist = useRecoilValue(currentPlayListObject);
 
   return (
     <div className="flex flex-col px-8 space-y-1 pb-28 text-white">
