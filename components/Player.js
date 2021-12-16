@@ -1,68 +1,23 @@
 import { VolumeOffIcon, VolumeUpIcon } from "@heroicons/react/outline";
 import {
   RewindIcon,
-  SwitchHorizontalIcon,
   PauseIcon,
   PlayIcon,
   FastForwardIcon,
-  ReplyIcon,
 } from "@heroicons/react/solid";
 import { debounce } from "lodash";
-import { useSession } from "next-auth/react";
-import React, { useState, useEffect, useCallback } from "react";
-import { useRecoilState } from "recoil";
-import { currentTrackIdState, isPlayingState } from "../atoms/songAtom";
-import useSongInfo from "../hooks/useSongInfo";
-import useSpotify from "../hooks/useSpotify";
+
+import React, { useState, useEffect, useCallback, useContext } from "react";
+import { SpotifyWebSDKContext } from "../context/spotifyWebSDK.context";
 
 export default function Player() {
-  const spotifyApi = useSpotify();
-  const { data: session, loading } = useSession();
-
-  const [currentTrackId, setCurrentTrackId] =
-    useRecoilState(currentTrackIdState);
+  const { currentTrack, isPaused, player } = useContext(SpotifyWebSDKContext);
 
   const [volume, setVolume] = useState(50);
 
-  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState);
-
-  const songInfo = useSongInfo();
-
-  const fetchCurrentSong = async () => {
-    if (!songInfo) {
-      spotifyApi.getMyCurrentPlayingTrack().then((data) => {
-        setCurrentTrackId(data.body?.item.id);
-        console.log("now playing: ", data.body?.item.name);
-
-        spotifyApi
-          .getMyCurrentPlaybackState()
-          .then((data) => setIsPlaying(data.body?.is_playing));
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (spotifyApi.getAccessToken() && !currentTrackId) {
-      fetchCurrentSong();
-      setVolume(50);
-    }
-  }, [currentTrackId, spotifyApi, session]);
-
-  const handlePlayPause = () => {
-    spotifyApi.getMyCurrentPlaybackState().then((data) => {
-      if (data.body?.is_playing) {
-        spotifyApi.pause();
-        setIsPlaying(false);
-      } else {
-        spotifyApi.play();
-        setIsPlaying(true);
-      }
-    });
-  };
-
   const debouncedAdjustVolume = useCallback(
     debounce((volume) => {
-      spotifyApi.setVolume(volume).catch((err) => {});
+      player.setVolume(volume / 100);
     }, 500),
     [volume]
   );
@@ -73,29 +28,39 @@ export default function Player() {
     }
   }, [volume]);
 
+  const handlePause = () => {
+    if (player) {
+      player.togglePlay();
+    }
+  };
+
   return (
     <div className="h-24 bg-[#1a1a1a] text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8 ">
       <div className="flex items-center space-x-4">
         <img
-          src={songInfo?.album.images?.[0].url}
-          alt=""
+          src={currentTrack.album?.images[0].url}
+          alt={`album cover of ${currentTrack.album.name} by ${currentTrack.artists[0].name}`}
           className="hidden md:inline h-10 w-10"
         />
         <div>
-          <h3>{songInfo?.name}</h3>
-          <p>{songInfo?.artists?.[0]?.name}</p>
+          <h3>{currentTrack.name}</h3>
+          <p className="text-sm">{`${currentTrack.artists[0].name}`}</p>
         </div>
       </div>
-      <div className="flex justify-evenly items-center">
-        <SwitchHorizontalIcon className="button" />
-        <RewindIcon className="button" />
-        {isPlaying ? (
-          <PauseIcon className="button w-10 h-10" onClick={handlePlayPause} />
+      <div className="flex items-center justify-center space-x-5 lg:space-x-10">
+        <RewindIcon
+          className="button"
+          onClick={() => player && player.previousTrack()}
+        />
+        {!isPaused ? (
+          <PauseIcon className="button w-10 h-10" onClick={handlePause} />
         ) : (
-          <PlayIcon className="button w-10 h-10" onClick={handlePlayPause} />
+          <PlayIcon className="button w-10 h-10" onClick={handlePause} />
         )}
-        <FastForwardIcon className="button" />
-        <ReplyIcon className="button" />
+        <FastForwardIcon
+          className="button"
+          onClick={() => player && player.nextTrack()}
+        />
       </div>
       <div className="flex items-center space-x-3 md:space-x-4 justify-end pr-5">
         {volume === 0 ? (
