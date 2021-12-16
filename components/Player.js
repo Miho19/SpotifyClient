@@ -17,7 +17,7 @@ export default function Player() {
 
   const debouncedAdjustVolume = useCallback(
     debounce((volume) => {
-      player.setVolume(volume / 100);
+      player?.setVolume(volume / 100);
     }, 500),
     [volume]
   );
@@ -30,21 +30,21 @@ export default function Player() {
 
   const handlePause = () => {
     if (player) {
-      player.togglePlay();
+      player?.togglePlay();
     }
   };
 
   return (
-    <div className="h-24 bg-[#1a1a1a] text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8 ">
+    <div className=" sticky bottom-0 h-24 bg-[#1a1a1a] text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8 overflow-hidden">
       <div className="flex items-center space-x-4">
         <img
-          src={currentTrack.album?.images[0].url}
-          alt={`album cover of ${currentTrack.album.name} by ${currentTrack.artists[0].name}`}
+          src={currentTrack?.album?.images[0].url}
+          alt={`album cover of ${currentTrack?.album.name} by ${currentTrack?.artists[0].name}`}
           className="hidden md:inline h-10 w-10"
         />
         <div>
-          <h3>{currentTrack.name}</h3>
-          <p className="text-sm">{`${currentTrack.artists[0].name}`}</p>
+          <h3>{currentTrack?.name}</h3>
+          <p className="text-sm">{`${currentTrack?.artists[0].name}`}</p>
         </div>
       </div>
       <div className="flex items-center justify-center space-x-5 lg:space-x-10">

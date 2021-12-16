@@ -2,20 +2,17 @@ import { getSession } from "next-auth/react";
 import Head from "next/head";
 
 import Sidebar from "../components/Sidebar";
-import Player from "../components/Player";
+
 import Chatbar from "../components/Chatbar";
 
 export default function Home() {
   return (
-    <div className="bg-black h-screen scrollbar-hide overflow-hidden">
+    <div className="bg-[#0f0f0f] h-[calc(100vh-6rem)] overflow-hidden scrollbar-hide ">
       <main className="flex h-full ">
         <Sidebar />
         <div className="flex flex-grow w-full"></div>
         <Chatbar />
       </main>
-      <div className="sticky bottom-0">
-        <Player />
-      </div>
     </div>
   );
 }

@@ -12,14 +12,11 @@ export default function playlist() {
   const [playlistId, setCurrentPlaylistId] = useRecoilState(currentPlaylistId);
 
   return (
-    <div className="bg-black h-screen scrollbar-hide overflow-hidden text-white">
+    <div className="bg-[#0f0f0f] h-screen scrollbar-hide overflow-hidden text-white">
       <main className="flex h-full ">
         <Sidebar />
         <CenterPlayList />
       </main>
-      <div className="sticky bottom-0">
-        <Player />
-      </div>
     </div>
   );
 }

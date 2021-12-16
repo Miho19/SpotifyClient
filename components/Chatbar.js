@@ -6,8 +6,6 @@ import { SocketContext } from "../context/socket.context";
 import { Socket } from "socket.io-client";
 import Dayjs from "dayjs";
 
-// admin chat
-
 const generateTime = (time) => {
   const timeDayjs = Dayjs(time);
   const now = Dayjs();
@@ -20,7 +18,7 @@ const generateTime = (time) => {
     return timeDayjs.format("DD:MM");
   }
 
-  return timeDayjs.format("HH:mm ddd");
+  return timeDayjs.format("ddd HH:mm A ");
 };
 
 const generateChat = ({ message, email, id, time }, session) => (
@@ -53,7 +51,7 @@ const generateChat = ({ message, email, id, time }, session) => (
 );
 
 const generateAdminChat = ({ message, id, time }) => (
-  <div key={id} className="flex justify-center text-white text-sm">
+  <div key={id} className="flex justify-center text-gray-400 text-xs">
     <span>{message}</span>
   </div>
 );
@@ -62,7 +60,8 @@ export default function Chatbar() {
   const { data: session, loading } = useSession();
   const [value, setValue] = useState("");
   const messageEndReference = useRef(null);
-  const { socket, EVENTS, messages, setMessages } = useContext(SocketContext);
+  const { socket, EVENTS, messages, setMessages, room } =
+    useContext(SocketContext);
 
   useEffect(() => {
     messageEndReference.current?.scrollIntoView({
@@ -72,12 +71,15 @@ export default function Chatbar() {
   }, [messages]);
 
   return (
-    <div className="min-w-[20rem] max-w-[20rem] bg-[#0f0f0f] max-h-[calc(100vh-6rem)] flex flex-col justify-start items-start ">
+    <div className="min-w-[20rem] max-w-[20rem] max-h-[calc(100vh-6rem)] flex flex-col justify-start items-start bg-black ">
       <header className="flex w-full h-10 items-center justify-start pt-5 pb-5">
-        <h2 className="text-lg text-white ml-5 font-medium">Party Chat</h2>
+        <h2 className="text-lg text-white ml-5 font-medium">
+          {room.roomId ? `${room.roomName}` : `Party Chat`}
+        </h2>
         <UserAddIcon className="w-5 h-5 text-white/50 ml-auto mr-5 hover:text-white/60 hover:bg-white/20 hover:rounded-full " />
       </header>
-      <div className="flex flex-col h-[65%] w-full bg-[#191414] mt-1 p-1 overflow-scroll scrollbar-hide">
+
+      <div className="flex flex-col h-[65%] w-full bg-[#050404] mt-1 p-1 overflow-scroll scrollbar-hide">
         {messages.map((message, index) => {
           return message.email === "__ADMIN__"
             ? generateAdminChat(message)
@@ -85,12 +87,13 @@ export default function Chatbar() {
         })}
         <div ref={messageEndReference} />
       </div>
-      <div className="flex items-center h-[10%] w-full bg-[#0f0f0f] group">
+      <div className="flex items-center h-[10%] w-full group bg-black">
         <input
+          disabled={!room.roomId}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           className=" max-w-full rounded-full border text-lg focus:outline-none ml-4 mr-2 pl-4 pr-[3rem] mt-4 mb-4 py-2"
-          placeholder="Say Something..."
+          placeholder={!room.Id ? "Join or Create a Party" : "Say Something..."}
           onKeyDown={(e) => {
             if (e.key !== "Enter") return;
             if (value.length === 0) return;
@@ -114,7 +117,7 @@ export default function Chatbar() {
           </button>
         </span>
       </div>
-      <div className="flex h-[25%] overflow-scroll scrollbar-hide w-full bg-white"></div>
+      <div className="flex h-[25%] overflow-scroll scrollbar-hide w-full bg-black"></div>
     </div>
   );
 }

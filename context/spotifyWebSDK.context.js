@@ -28,7 +28,7 @@ export default function SpotifyWebSDKContextProvider({ children }) {
 
     window.onSpotifyWebPlaybackSDKReady = () => {
       const player = new window.Spotify.Player({
-        name: "SpotifyWebSDK",
+        name: "Spotify Party",
         getOAuthToken: (callback) => {
           callback(spotifyApi.getAccessToken());
         },
@@ -37,14 +37,14 @@ export default function SpotifyWebSDKContextProvider({ children }) {
       setPlayer(player);
 
       player.addListener("ready", ({ device_id }) => {
-        spotifyApi
-          .transferMyPlayback([device_id])
-          .then(() => {
-            timerBeforeAutoplay = setTimeout(() => {
-              player.resume();
-            }, 300);
-          })
-          .catch((e) => console.log(e));
+        // spotifyApi
+        //   .transferMyPlayback([device_id])
+        //   .then(() => {
+        //     timerBeforeAutoplay = setTimeout(() => {
+        //       //player.resume();
+        //     }, 300);
+        //   })
+        //   .catch((e) => console.log(e));
       });
 
       player.addListener("not_ready", ({ device_id }) => {
@@ -74,7 +74,7 @@ export default function SpotifyWebSDKContextProvider({ children }) {
     };
 
     return () => {
-      clearTimeout(timerBeforeAutoplay);
+      //clearTimeout(timerBeforeAutoplay);
     };
   }, []);
 

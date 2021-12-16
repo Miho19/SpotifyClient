@@ -1,22 +1,18 @@
-import React from "react";
-import { useRecoilState } from "recoil";
-import { currentTrackIdState, isPlayingState } from "../atoms/songAtom";
+import React, { useContext } from "react";
+import { SpotifyWebSDKContext } from "../context/spotifyWebSDK.context";
 import useSpotify from "../hooks/useSpotify";
 import msToMinutesAndSeconds from "../util/time";
 
 export default function Song({ order, track }) {
   const spotifyApi = useSpotify();
-
-  const [currentTrackId, setCurrentTrackId] =
-    useRecoilState(currentTrackIdState);
-
-  const [isPlaying, setIsPlayingState] = useRecoilState(isPlayingState);
+  const { player } = useContext(SpotifyWebSDKContext);
 
   const playSong = () => {
-    setCurrentTrackId(track.track.id);
-    setIsPlayingState(true);
-    spotifyApi.play({ uris: [track.track.uri] });
+    if (!spotifyApi || !spotifyApi.getAccessToken() || !player) return;
+
+    spotifyApi?.play({ uris: [track.track.uri] });
   };
+
   return (
     <div
       className="grid grid-cols-2 text-gray-500 py-4 px-5 hover:bg-gray-900 rounded-lg cursor-pointer"

@@ -8,14 +8,11 @@ import Chatbar from "../components/Chatbar";
 
 export default function search() {
   return (
-    <div className="bg-black h-screen scrollbar-hide overflow-hidden text-white">
+    <div className="bg-[#0f0f0f] h-screen scrollbar-hide overflow-hidden text-white">
       <main className="flex h-full ">
         <Sidebar />
         <h1>search</h1>
       </main>
-      <div className="sticky bottom-0">
-        <Player />
-      </div>
     </div>
   );
 }

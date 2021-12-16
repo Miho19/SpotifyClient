@@ -11,27 +11,24 @@ const EVENTS = {
     CREATE_ROOM: "CREATE_ROOM",
     JOIN_ROOM: "JOIN_ROOM",
     SEND_MESSAGE: "SEND_MESSAGE",
+    LEAVE_ROOM: "LEAVE_ROOM",
   },
   SERVER: {
-    UPDATE_ROOM: "UPDATE_ROOM",
+    CLIENT_JOINED_ROOM: "CLIENT_JOINED_ROOM",
+    CLIENT_LEFT_ROOM: "CLIENT_LEFT_ROOM",
     EMIT_MESSAGE: "EMIT_MESSAGE",
   },
 };
 
 export default function SocketContextProvider(props) {
   const [socket, setSocket] = useState(null);
-  const [room, setRoom] = useState({ roomid: "", roomName: "" });
+  const [room, setRoom] = useState({ roomId: "", roomName: "" });
   const [messages, setMessages] = useState([]);
-  const { data: session, loading } = useSession();
 
   useEffect(() => {
     if (typeof window.document !== "undefined") {
       const socketIO = io("http://localhost:4000");
       setSocket(socketIO);
-      setRoom({
-        roomid: String(socketIO.id),
-        roomName: `${session?.user.name}`,
-      });
     }
 
     return () => socket?.close();
@@ -40,6 +37,15 @@ export default function SocketContextProvider(props) {
   useEffect(() => {
     socket?.on(EVENTS.SERVER.EMIT_MESSAGE, ({ message, email, id, time }) => {
       setMessages((messages) => [...messages, { message, email, id, time }]);
+    });
+
+    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, ({ roomId, roomName }) => {
+      setRoom({ roomId: roomId, roomName: roomName });
+    });
+
+    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, () => {
+      setMessages([]);
+      setRoom({ roomId: "", roomName: "" });
     });
 
     return () => socket?.close();

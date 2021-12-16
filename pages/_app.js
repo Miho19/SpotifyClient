@@ -3,6 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import { RecoilRoot } from "recoil";
 import SocketContextProvider from "../context/socket.context";
 import SpotifyWebSDKContextProvider from "../context/spotifyWebSDK.context";
+import Player from "../components/Player";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
@@ -11,6 +12,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
         <SocketContextProvider>
           <RecoilRoot>
             <Component {...pageProps} />
+            <Player />
           </RecoilRoot>
         </SocketContextProvider>
       </SpotifyWebSDKContextProvider>

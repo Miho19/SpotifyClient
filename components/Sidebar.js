@@ -44,22 +44,17 @@ export default function Sidebar() {
         </Link>
 
         <hr className="border-t-[0.1px] border-gray-900" />
-        <button
-          className={`flex item-center space-x-2 hover:text-white ${
-            router.pathname === "/create" ? active : ""
-          }`}
-        >
-          <PlusCircleIcon className="h-5 w-5" />
-          <p>Create Party</p>
-        </button>
-        <button
-          className={`flex item-center space-x-2 hover:text-white ${
-            router.pathname === "/join" ? active : ""
-          }`}
-        >
-          <UserGroupIcon className="h-5 w-5" />
-          <p>Join Party</p>
-        </button>
+        <Link href="/party" passHref>
+          <div
+            className={` cursor-pointer flex item-center space-x-2 hover:text-white ${
+              router.pathname === "/party" ? active : ""
+            }`}
+          >
+            <UserGroupIcon className="h-5 w-5" />
+            <p>Party</p>
+          </div>
+        </Link>
+
         <hr className="border-t-[0.1px] border-gray-900" />
       </div>
       <UserPlayLists />
