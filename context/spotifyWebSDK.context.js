@@ -11,14 +11,13 @@ export default function SpotifyWebSDKContextProvider({ children }) {
   const [player, setPlayer] = useState(null);
   const [currentTrack, setTrack] = useState(null);
   const [webPlayerActive, setWebPlayerActive] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
+  const [deviceId, setDeviceId] = useState(null);
 
   useEffect(() => {
     if (typeof window.document === "undefined") return;
 
     if (spotifyApi.getAccessToken() === undefined) return;
-
-    let timerBeforeAutoplay = null;
 
     const script = window.document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
@@ -37,14 +36,8 @@ export default function SpotifyWebSDKContextProvider({ children }) {
       setPlayer(player);
 
       player.addListener("ready", ({ device_id }) => {
-        // spotifyApi
-        //   .transferMyPlayback([device_id])
-        //   .then(() => {
-        //     timerBeforeAutoplay = setTimeout(() => {
-        //       //player.resume();
-        //     }, 300);
-        //   })
-        //   .catch((e) => console.log(e));
+        //spotifyApi.transferMyPlayback([device_id]);
+        setDeviceId(device_id);
       });
 
       player.addListener("not_ready", ({ device_id }) => {
@@ -69,18 +62,25 @@ export default function SpotifyWebSDKContextProvider({ children }) {
       player.on("playback_error", ({ message }) => {
         console.error("Failed to perform playback", message);
       });
+      player.on("account_error", ({ message }) => {
+        console.error("Failed to validate Spotify account", message);
+      });
+      player.on("authentication_error", ({ message }) => {
+        console.error("Failed to authenticate", message);
+      });
+      player.on("initialization_error", ({ message }) => {
+        console.error("Failed to initialize", message);
+      });
 
       player.connect();
     };
 
-    return () => {
-      //clearTimeout(timerBeforeAutoplay);
-    };
+    return () => {};
   }, []);
 
   return (
     <SpotifyWebSDKContext.Provider
-      value={{ currentTrack, webPlayerActive, isPaused, player }}
+      value={{ currentTrack, webPlayerActive, isPaused, player, deviceId }}
     >
       {children}
     </SpotifyWebSDKContext.Provider>

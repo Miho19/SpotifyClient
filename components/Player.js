@@ -9,11 +9,18 @@ import { debounce } from "lodash";
 
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import { SpotifyWebSDKContext } from "../context/spotifyWebSDK.context";
+import useSpotify from "../hooks/useSpotify";
 
 export default function Player() {
-  const { currentTrack, isPaused, player } = useContext(SpotifyWebSDKContext);
+  const { currentTrack, isPaused, player, deviceId } =
+    useContext(SpotifyWebSDKContext);
+
+  const [otherDevicePlaybackTrack, setOtherDevicePlaybackTrack] =
+    useState(null);
 
   const [volume, setVolume] = useState(50);
+
+  const spotifyApi = useSpotify();
 
   const debouncedAdjustVolume = useCallback(
     debounce((volume) => {
@@ -28,23 +35,74 @@ export default function Player() {
     }
   }, [volume]);
 
-  const handlePause = () => {
-    if (player) {
-      player?.togglePlay();
+  const handlePause = async () => {
+    if (!player) return;
+    if (!spotifyApi) return;
+
+    const response = await player.getCurrentState();
+
+    if (!response) {
+      spotifyApi
+        .transferMyPlayback([deviceId])
+        .then(() => console.log("device changed"))
+        .catch((e) => console.log(e));
     }
+
+    player?.togglePlay();
   };
+
+  useEffect(() => {
+    const getTrack = async () => {
+      const response = await spotifyApi.getMyCurrentPlayingTrack();
+      if (!response) return;
+
+      if (response.body) {
+        setOtherDevicePlaybackTrack(response.body?.item);
+      }
+
+      const pastTrack = await spotifyApi.getMyRecentlyPlayedTracks({
+        limit: 1,
+      });
+
+      setOtherDevicePlaybackTrack(pastTrack.body.items[0].track);
+    };
+
+    if (currentTrack) {
+      return;
+    }
+
+    if (!spotifyApi || !spotifyApi.getAccessToken()) {
+      return;
+    }
+
+    if (typeof window.document === "undefined") return;
+
+    getTrack();
+
+    return () => {};
+  }, []);
 
   return (
     <div className=" sticky bottom-0 h-24 bg-[#1a1a1a] text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8 overflow-hidden">
       <div className="flex items-center space-x-4">
         <img
-          src={currentTrack?.album?.images[0].url}
+          src={
+            currentTrack
+              ? currentTrack?.album?.images[0].url
+              : otherDevicePlaybackTrack?.album.images[0].url
+          }
           alt={`album cover of ${currentTrack?.album.name} by ${currentTrack?.artists[0].name}`}
           className="hidden md:inline h-10 w-10"
         />
         <div>
-          <h3>{currentTrack?.name}</h3>
-          <p className="text-sm">{`${currentTrack?.artists[0].name}`}</p>
+          <h3>
+            {currentTrack ? currentTrack?.name : otherDevicePlaybackTrack?.name}
+          </h3>
+          <p className="text-sm">{`${
+            currentTrack
+              ? currentTrack?.artists[0].name
+              : otherDevicePlaybackTrack?.artists[0].name
+          }`}</p>
         </div>
       </div>
       <div className="flex items-center justify-center space-x-5 lg:space-x-10">
