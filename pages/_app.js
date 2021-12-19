@@ -6,13 +6,14 @@ import SpotifyWebSDKContextProvider from "../context/spotifyWebSDK.context";
 import Player from "../components/Player";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
+  
   return (
     <SessionProvider session={session}>
       <SpotifyWebSDKContextProvider>
         <SocketContextProvider>
           <RecoilRoot>
             <Component {...pageProps} />
-            <Player />
+            {session && <Player />}
           </RecoilRoot>
         </SocketContextProvider>
       </SpotifyWebSDKContextProvider>
