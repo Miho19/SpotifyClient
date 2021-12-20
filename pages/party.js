@@ -6,6 +6,8 @@ import Chatbar from "../components/Chatbar";
 import { SocketContext } from "../context/socket.context";
 import Party from "../components/Party";
 
+import { getSession } from "next-auth/react";
+
 export default function party() {
   const { socket, EVENTS } = useContext(SocketContext);
 
@@ -18,4 +20,10 @@ export default function party() {
       </main>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  return { props: { session } };
 }
