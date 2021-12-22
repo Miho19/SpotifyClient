@@ -72,7 +72,7 @@ export default function SpotifyWebSDKContextProvider({ children }) {
         console.error("Failed to initialize", message);
       });
 
-      player.connect();
+      // player.connect();
     };
 
     return () => {};

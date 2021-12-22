@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { SocketContext } from "../context/socket.context";
+
 import PartyForm from "./PartyForm";
 import PartyGroup from "./PartyGroup";
 import RoomList from "./RoomList";
@@ -7,8 +8,9 @@ import RoomList from "./RoomList";
 export default function Party() {
   const [partyNameValue, setPartyNameValue] = useState("");
 
-  const { socket, EVENTS, messages, setMessages, room } =
-    useContext(SocketContext);
+  const { socket, EVENTS } = useContext(SocketContext);
+
+  const { room } = useContext(SocketContext);
 
   const handleJoinSubmit = (e) => {
     if (e.key !== "Enter") return;
