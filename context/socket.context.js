@@ -1,8 +1,12 @@
 import { useSession } from "next-auth/react";
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { io } from "socket.io-client";
+import useMessages from "../hooks/useMessages";
+import useRoom from "../hooks/useRoom";
 
 export const SocketContext = createContext();
+
+export const MessagesContext = createContext();
 
 const EVENTS = {
   connection: "connection",
@@ -25,11 +29,14 @@ const EVENTS = {
   },
 };
 
-export default function SocketContextProvider(props) {
+export default function SocketContextProvider({ children }) {
   const [socket, setSocket] = useState(null);
-  const [room, setRoom] = useState({ roomID: "", roomName: "" });
-  const [messages, setMessages] = useState([]);
   const { data: session, loading } = useSession();
+  const { room, roomMembers, roomList, getRoomList } = useRoom({
+    socket,
+    EVENTS,
+  });
+  const messages = useMessages({ socket, EVENTS });
 
   useEffect(() => {
     if (typeof window.document !== "undefined") {
@@ -41,37 +48,32 @@ export default function SocketContextProvider(props) {
   }, []);
 
   useEffect(() => {
+    socket?.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
+    });
+
     socket?.on("connect", () => {
       socket.data = {
         user: {
-          name: session.user.name,
-          imgSource: session.user.image,
-          email: session.user.email,
+          name: session?.user.name,
+          imgSource: session?.user.image,
+          email: session?.user.email,
         },
       };
+
       socket.emit(EVENTS.CLIENT.SET_USER_PROFILE, { ...socket.data.user });
     });
 
-    socket?.on(EVENTS.SERVER.EMIT_MESSAGE, ({ message, email, id, time }) => {
-      setMessages((messages) => [...messages, { message, email, id, time }]);
-    });
-
-    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, ({ roomID, roomName }) => {
-      setRoom({ roomID: roomID, roomName: roomName });
-    });
-
-    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, () => {
-      setMessages([]);
-      setRoom({ roomID: "", roomName: "" });
-    });
-
-    return () => socket?.close();
+    return () => socket?.off("connect");
   }, [socket]);
 
   return (
     <SocketContext.Provider
-      value={{ socket, EVENTS, messages, room }}
-      {...props}
-    />
+      value={{ socket, EVENTS, room, roomMembers, roomList, getRoomList }}
+    >
+      <MessagesContext.Provider value={messages}>
+        {children}
+      </MessagesContext.Provider>
+    </SocketContext.Provider>
   );
 }

@@ -1,23 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { SocketContext } from "../context/socket.context";
+
 import RoomItem from "./RoomItem";
 
 export default function RoomList({ setPartyNameValue }) {
-  const { socket, EVENTS } = useContext(SocketContext);
-
-  const [partyRooms, setPartyRooms] = useState([]);
+  const { roomList, getRoomList } = useContext(SocketContext);
 
   useEffect(() => {
     if (typeof window.document !== "undefined") {
-      socket?.emit(EVENTS.CLIENT.GET_ROOM_LIST);
+      getRoomList();
     }
+  }, []);
 
-    socket?.on(EVENTS.SERVER.SEND_ROOM_LIST, ({ roomList }) => {
-      setPartyRooms(roomList);
-    });
-  }, [socket]);
-
-  const partyRoomsList = partyRooms.map((room) => (
+  const partyRoomsList = roomList.map((room) => (
     <RoomItem
       setPartyNameValue={setPartyNameValue}
       key={room.roomID}
