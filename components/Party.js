@@ -64,8 +64,7 @@ export default function Party() {
             </div>
           </div>
         </div>
-        <div className="hover:bg-red-700 row-span-full"></div>
-        <div className="hover:bg-red-700 row-span-full"></div>
+        <div className="hover:bg-red-700 row-span-full col-span-2"></div>
       </main>
     </div>
   );
