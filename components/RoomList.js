@@ -3,7 +3,7 @@ import { SocketContext } from "../context/socket.context";
 
 import RoomItem from "./RoomItem";
 
-export default function RoomList({ setPartyNameValue }) {
+export default function RoomList() {
   const { roomList, getRoomList } = useContext(SocketContext);
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function RoomList({ setPartyNameValue }) {
 
   const partyRoomsList = roomList.map((room) => (
     <RoomItem
-      setPartyNameValue={setPartyNameValue}
+      roomJoinLink={room.linkID}
       key={room.roomID}
       name={room.roomName}
       totalMembers={room.totalMembers}
