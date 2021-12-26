@@ -44,7 +44,7 @@ export default function PartyGroup() {
       <main className="w-full h-[calc(100%-2.5rem)] overflow-scroll scrollbar-hide space-y-1">
         {memberList}
       </main>
-      <footer className="w-full h-[2.5rem]">
+      <footer className="w-full min-h-[2rem] max-h-[2.5rem]">
         <PartyGroupUserControls />
       </footer>
     </div>
