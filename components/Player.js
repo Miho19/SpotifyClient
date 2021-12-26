@@ -54,10 +54,10 @@ export default function Player() {
   useEffect(() => {
     const getTrack = async () => {
       const response = await spotifyApi.getMyCurrentPlayingTrack();
-      if (!response) return;
 
       if (response.body) {
         setOtherDevicePlaybackTrack(response.body?.item);
+        return;
       }
 
       const pastTrack = await spotifyApi.getMyRecentlyPlayedTracks({
