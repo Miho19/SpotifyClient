@@ -1,22 +1,26 @@
 import React, { useEffect } from "react";
 
 import Sidebar from "../components/Sidebar";
-import Player from "../components/Player";
+
 import Chatbar from "../components/Chatbar";
 import CenterPlayList from "../components/CenterPlayList";
 
-import { useRecoilState } from "recoil";
-import { currentPlaylistId } from "../atoms/playlistAtom";
+import { getSession } from "next-auth/react";
 
 export default function playlist() {
-  const [playlistId, setCurrentPlaylistId] = useRecoilState(currentPlaylistId);
-
   return (
-    <div className="bg-[#0f0f0f] h-screen scrollbar-hide overflow-hidden text-white">
+    <div className="bg-[#0f0f0f] h-[calc(100vh-6rem)] scrollbar-hide overflow-hidden text-white">
       <main className="flex h-full ">
         <Sidebar />
         <CenterPlayList />
+        <Chatbar />
       </main>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  return { props: { session } };
 }

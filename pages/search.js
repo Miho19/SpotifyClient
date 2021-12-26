@@ -16,3 +16,9 @@ export default function search() {
     </div>
   );
 }
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  return { props: { session } };
+}

@@ -9,6 +9,7 @@ import {
 } from "../atoms/playlistAtom";
 import useSpotify from "../hooks/useSpotify";
 import Songs from "./Songs";
+import { useRouter } from "next/router";
 
 const colors = [
   "from-indigo-500",
@@ -31,11 +32,33 @@ export default function CenterPlayList() {
 
   const spotifyApi = useSpotify();
 
+  const router = useRouter();
+
   useEffect(() => {
     setColor(shuffle(colors).pop());
   }, [playlistId]);
 
   useEffect(() => {
+    if (playlistId) return;
+    if (!spotifyApi) return;
+
+    if (!spotifyApi.getAccessToken()) return;
+
+    spotifyApi
+      .getUserPlaylists()
+      .then((response) => {
+        if (!response.body) {
+          router.push("/");
+          return;
+        }
+        setCurrentPlaylistId(response.body.items[0].id);
+      })
+      .catch((e) => console.log(e));
+  }, []);
+
+  useEffect(() => {
+    if (!playlistId) return;
+
     if (spotifyApi.getAccessToken()) {
       spotifyApi
         .getPlaylist(playlistId)
