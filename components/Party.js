@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { SocketContext } from "../context/socket.context";
-import PartyPlaylist from "../PartyPlaylist";
+import PartyPlaylist from "./PartyPlaylist";
 
 import PartyGroup from "./PartyGroup";
 import RoomList from "./RoomList";

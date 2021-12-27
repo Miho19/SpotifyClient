@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { io } from "socket.io-client";
 import useMessages from "../hooks/useMessages";
+
 import useRoom from "../hooks/useRoom";
 
 export const SocketContext = createContext();
@@ -19,6 +20,7 @@ const EVENTS = {
     LEAVE_ROOM: "LEAVE_ROOM",
     GET_ROOM_MEMBERS: "GET_ROOM_MEMBERS",
     GET_ROOM_LIST: "GET_ROOM_LIST",
+    GET_ROOM_PLAYLISTID: "GET_ROOM_PLAYLISTID",
   },
   SERVER: {
     CLIENT_JOINED_ROOM: "CLIENT_JOINED_ROOM",
@@ -26,16 +28,18 @@ const EVENTS = {
     EMIT_MESSAGE: "EMIT_MESSAGE",
     SEND_ROOM_MEMBERS: "SEND_ROOM_MEMBERS",
     SEND_ROOM_LIST: "SEND_ROOM_LIST",
+    SEND_ROOM_PLAYLISTID: "SEND_ROOM_PLAYLISTID",
   },
 };
 
 export default function SocketContextProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const { data: session, loading } = useSession();
-  const { room, roomMembers, roomList, getRoomList } = useRoom({
-    socket,
-    EVENTS,
-  });
+  const { room, roomMembers, roomList, getRoomList, partyPlaylistObject } =
+    useRoom({
+      socket,
+      EVENTS,
+    });
   const messages = useMessages({ socket, EVENTS });
 
   useEffect(() => {
@@ -69,7 +73,15 @@ export default function SocketContextProvider({ children }) {
 
   return (
     <SocketContext.Provider
-      value={{ socket, EVENTS, room, roomMembers, roomList, getRoomList }}
+      value={{
+        socket,
+        EVENTS,
+        room,
+        roomMembers,
+        roomList,
+        getRoomList,
+        partyPlaylistObject,
+      }}
     >
       <MessagesContext.Provider value={messages}>
         {children}
