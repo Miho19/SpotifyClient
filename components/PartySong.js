@@ -16,10 +16,11 @@ export default function PartySong({
           <p className="text-md w-36 truncate">{name}</p>
           <p className="text-sm w-40 truncate">{artist}</p>
         </div>
-
+      </div>
+      <div className="flex items-center justify-between">
+        <p className="hidden xl:inline">{albumName}</p>
         <p className="ml-auto inline">{msToMinutesAndSeconds(duration_ms)}</p>
       </div>
-      <div className="ml-auto hidden lg:group-hover:inline ">controls</div>
     </div>
   );
 }

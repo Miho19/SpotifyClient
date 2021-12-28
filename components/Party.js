@@ -9,11 +9,9 @@ export default function Party() {
   const { room } = useContext(SocketContext);
 
   return (
-    <div className="flex-grow h-[calc(100vh-6rem)] overflow-y-scroll scrollbar-hide bg-[#242424] ">
-      <main className="p-8 grid grid-cols-1 grid-rows-6 lg:grid-cols-3 lg:grid-rows-6 h-full w-full gap-2">
-        <div className="bg-black h-full w-full col-span-1 row-span-5 lg:row-span-full lg:col-span-2 overflow-scroll scrollbar-hide">
-          <PartyPlaylist />
-        </div>
+    <div className="flex-grow h-[calc(100vh-6rem)] overflow-y-scroll scrollbar-hide bg-gradient-to-b from-[#242424] to-[#161616] ">
+      <main className="h-full w-full p-8 overflow-scroll scrollbar-hide ">
+        <PartyPlaylist />
       </main>
     </div>
   );
