@@ -4,13 +4,15 @@ import { SocketContext } from "../context/socket.context";
 import RoomItem from "./RoomItem";
 
 export default function RoomList() {
-  const { roomList, getRoomList } = useContext(SocketContext);
+  const { socket, roomList, getRoomList } = useContext(SocketContext);
 
   useEffect(() => {
-    if (typeof window.document !== "undefined") {
+    if (typeof window.document === "undefined") return;
+
+    if (!roomList.length) {
       getRoomList();
     }
-  }, []);
+  }, [socket, roomList]);
 
   const partyRoomsList = roomList.map((room) => (
     <RoomItem

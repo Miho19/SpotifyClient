@@ -4,6 +4,8 @@ import React, { useContext } from "react";
 import ChatMessageList from "./ChatMessageList";
 import ChatbarForm from "./ChatbarForm";
 import { SocketContext } from "../context/socket.context";
+import RoomList from "./RoomList";
+import PartyGroup from "./PartyGroup";
 
 export default function Chatbar() {
   const { room } = useContext(SocketContext);
@@ -20,7 +22,11 @@ export default function Chatbar() {
       <ChatMessageList />
       <ChatbarForm />
 
-      <div className="flex h-[25%] overflow-scroll scrollbar-hide w-full bg-black"></div>
+      <div className="flex h-[25%] overflow-scroll scrollbar-hide w-full bg-black">
+        <div className=" bg-black w-full">
+          {room.roomID !== "" ? <PartyGroup /> : <RoomList />}
+        </div>
+      </div>
     </div>
   );
 }

@@ -14,9 +14,6 @@ export default function Party() {
         <div className="bg-black h-full w-full col-span-1 row-span-5 lg:row-span-full lg:col-span-2 overflow-scroll scrollbar-hide">
           <PartyPlaylist />
         </div>
-        <div className=" bg-black w-full h-full col-span-1 row-span-1 lg:row-span-full lg:col-span-1 overflow-scroll scrollbar-hide">
-          {room.roomID !== "" ? <PartyGroup /> : <RoomList />}
-        </div>
       </main>
     </div>
   );

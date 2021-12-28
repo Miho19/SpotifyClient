@@ -61,8 +61,6 @@ export default function useRoom({ socket, EVENTS }) {
 
     if (!spotifyApi || !spotifyApi.getAccessToken()) return;
 
-    console.log("Getting playlist");
-
     socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, room);
   }, [socket, room]);
 
