@@ -9,19 +9,20 @@ export default function RoomList() {
   const [roomList, setRoomList] = useState([]);
 
   useEffect(() => {
-    socket?.emit(EVENTS.CLIENT.GET_ROOM_LIST);
-  }, []);
-
-  useEffect(() => {
     const getRoomList = ({ roomList }) => {
       setRoomList(roomList);
     };
+
     socket?.on(EVENTS.SERVER.SEND_ROOM_LIST, getRoomList);
 
     return () => {
       socket?.off(EVENTS.SERVER.SEND_ROOM_LIST, getRoomList);
     };
   }, [socket, roomList]);
+
+  useEffect(() => {
+    socket?.emit(EVENTS.CLIENT.GET_ROOM_LIST);
+  }, []);
 
   const partyRoomsList = roomList.map((room) => (
     <RoomItem
