@@ -5,7 +5,8 @@ import PartySong from "./PartySong";
 export default function PartySongQueue() {
   const { partyPlaylistObject } = useContext(SocketContext);
 
-  if (!partyPlaylistObject) return <div>Loading</div>;
+  if (!partyPlaylistObject)
+    return <div className="p-5 text-sm font-medium">Loading</div>;
 
   const songs = partyPlaylistObject.tracks.items.map((trackObject) => {
     console.log(trackObject);

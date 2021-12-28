@@ -57,12 +57,14 @@ export default function useRoom({ socket, EVENTS }) {
   }, [socket]);
 
   useEffect(() => {
-    if (room.roomID === "" || room.roomName === "") return;
+    if (!room || room.roomID === "" || room.roomName === "") {
+      setPartyPlaylistObject(null);
+    }
 
     if (!spotifyApi || !spotifyApi.getAccessToken()) return;
 
     socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, room);
-  }, [socket, room]);
+  }, [socket, room, partyPlaylistObject]);
 
   const getRoomList = () => {
     if (!socket) {
