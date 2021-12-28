@@ -36,7 +36,7 @@ export default function PartyGroup() {
   return (
     <div className="h-full w-full flex flex-col">
       <header className="flex w-full h-10 items-center justify-start pt-5 pb-5">
-        <h2 className=" text-white ml-5 font-medium text-xs sm:text-lg lg:text-sm lgg:text-lg">
+        <h2 className=" text-white ml-5 font-medium text-xs sm:text-lg lg:text-sm xl:text-lg">
           {`Members: ${memberList.length}`}
         </h2>
         <UserAddIcon className="w-5 h-5 text-white/50 ml-auto mr-5 hover:text-white/60 hover:bg-white/20 hover:rounded-full hidden xs:inline lg:hidden lgg:inline" />
