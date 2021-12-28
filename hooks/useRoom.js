@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 import useSpotify from "./useSpotify";
+import { ReplyIcon } from "@heroicons/react/solid";
 
 export default function useRoom({ socket, EVENTS }) {
   const [room, setRoom] = useState({ roomID: "", roomName: "" });
@@ -41,6 +42,7 @@ export default function useRoom({ socket, EVENTS }) {
           .getPlaylist(String(playlistID))
           .then((response) => {
             if (!response.body) return;
+
             setPartyPlaylistObject(response.body);
           })
           .catch((e) => console.log(e));
@@ -64,7 +66,7 @@ export default function useRoom({ socket, EVENTS }) {
     if (!spotifyApi || !spotifyApi.getAccessToken()) return;
 
     socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, room);
-  }, [socket, room, partyPlaylistObject]);
+  }, [room, partyPlaylistObject]);
 
   const getRoomList = () => {
     if (!socket) {

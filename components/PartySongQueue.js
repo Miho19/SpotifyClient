@@ -6,7 +6,9 @@ export default function PartySongQueue() {
   const { partyPlaylistObject } = useContext(SocketContext);
 
   if (!partyPlaylistObject)
-    return <div className="p-5 text-sm font-medium">Loading</div>;
+    return (
+      <div className="p-5 text-lg font-medium text-center">Join a Party</div>
+    );
 
   const songs = partyPlaylistObject.tracks.items.map((trackObject) => {
     return (
