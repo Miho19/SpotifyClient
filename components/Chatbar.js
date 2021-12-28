@@ -1,5 +1,5 @@
 import { UserAddIcon } from "@heroicons/react/solid";
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
 import ChatMessageList from "./ChatMessageList";
 import ChatbarForm from "./ChatbarForm";
@@ -8,7 +8,26 @@ import RoomList from "./RoomList";
 import PartyGroup from "./PartyGroup";
 
 export default function Chatbar() {
-  const { room } = useContext(SocketContext);
+  const { socket, EVENTS } = useContext(SocketContext);
+  const [room, setRoom] = useState({});
+
+  useEffect(() => {
+    const joinRoom = ({ roomID, roomName }) => {
+      setRoom({ roomID: roomID, roomName: roomName });
+    };
+
+    const leaveRoom = () => {
+      setRoom({});
+    };
+
+    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+
+    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
+    return () => {
+      socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+      socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
+    };
+  }, [socket, room]);
 
   return (
     <div className="min-w-[20rem] max-w-[20rem] max-h-[calc(100vh-6rem)] flex flex-col justify-start items-start bg-black ">
@@ -24,7 +43,7 @@ export default function Chatbar() {
 
       <div className="flex h-[25%] overflow-scroll scrollbar-hide w-full bg-black">
         <div className=" bg-black w-full">
-          {room.roomID !== "" ? <PartyGroup /> : <RoomList />}
+          {room.roomID ? <PartyGroup /> : <RoomList />}
         </div>
       </div>
     </div>

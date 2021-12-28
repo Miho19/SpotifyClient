@@ -1,13 +1,8 @@
 import { useSession } from "next-auth/react";
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import useMessages from "../hooks/useMessages";
-
-import useRoom from "../hooks/useRoom";
 
 export const SocketContext = createContext();
-
-export const MessagesContext = createContext();
 
 const EVENTS = {
   connection: "connection",
@@ -33,59 +28,39 @@ const EVENTS = {
 };
 
 export default function SocketContextProvider({ children }) {
-  const [socket, setSocket] = useState(null);
+  const socketReference = useRef();
   const { data: session, loading } = useSession();
-  const { room, roomMembers, roomList, getRoomList, partyPlaylistObject } =
-    useRoom({
-      socket,
-      EVENTS,
-    });
-  const messages = useMessages({ socket, EVENTS });
 
   useEffect(() => {
     if (typeof window.document !== "undefined") {
-      const socketIO = io("http://localhost:4000");
-      setSocket(socketIO);
-    }
-
-    return () => socket?.close();
-  }, []);
-
-  useEffect(() => {
-    socket?.on("connect_error", (err) => {
-      console.log(`connect_error due to ${err.message}`);
-    });
-
-    socket?.on("connect", () => {
-      socket.data = {
+      socketReference.current = io("http://localhost:4000");
+      socketReference.current.data = {
         user: {
           name: session?.user.name,
           imgSource: session?.user.image,
           email: session?.user.email,
         },
       };
+    }
+    return () => socketReference.current?.close();
+  }, []);
 
-      socket.emit(EVENTS.CLIENT.SET_USER_PROFILE, { ...socket.data.user });
+  useEffect(() => {
+    socketReference.current.on("connect", () => {
+      socketReference.current.emit(EVENTS.CLIENT.SET_USER_PROFILE, {
+        ...socketReference.current.data.user,
+      });
     });
-
-    return () => socket?.off("connect");
-  }, [socket]);
+  }, [socketReference.current]);
 
   return (
     <SocketContext.Provider
       value={{
-        socket,
+        socket: socketReference.current,
         EVENTS,
-        room,
-        roomMembers,
-        roomList,
-        getRoomList,
-        partyPlaylistObject,
       }}
     >
-      <MessagesContext.Provider value={messages}>
-        {children}
-      </MessagesContext.Provider>
+      {children}
     </SocketContext.Provider>
   );
 }

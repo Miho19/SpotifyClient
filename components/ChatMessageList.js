@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { MessagesContext } from "../context/socket.context";
+import { SocketContext } from "../context/socket.context";
+import useMessages from "../hooks/useMessages";
 
 export default function ChatMessageList() {
-  const messages = useContext(MessagesContext);
-
   const messageEndReference = useRef(null);
+
+  const { socket, EVENTS } = useContext(SocketContext);
+
+  const messages = useMessages({ socket, EVENTS });
+
   useEffect(() => {
     messageEndReference.current?.scrollIntoView({
       behavior: "smooth",

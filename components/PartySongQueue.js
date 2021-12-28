@@ -1,9 +1,58 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { SocketContext } from "../context/socket.context";
+import useSpotify from "../hooks/useSpotify";
 import PartySong from "./PartySong";
 
 export default function PartySongQueue() {
-  const { partyPlaylistObject } = useContext(SocketContext);
+  const { socket, EVENTS } = useContext(SocketContext);
+  const [partyPlaylistObject, setPartyPlaylistObject] = useState(null);
+  const [room, setRoom] = useState({});
+  const spotifyApi = useSpotify();
+
+  useEffect(() => {
+    const joinRoom = ({ roomID, roomName }) => {
+      setRoom({ roomID: roomID, roomName: roomName });
+    };
+
+    const leaveRoom = () => {
+      setPartyPlaylistObject(null);
+      setRoom({});
+    };
+
+    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+
+    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+      socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
+    };
+  }, [socket, room, partyPlaylistObject]);
+
+  useEffect(() => {
+    if (room) {
+      socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, room);
+    }
+  }, [room]);
+
+  useEffect(() => {
+    socket?.on(EVENTS.SERVER.SEND_ROOM_PLAYLISTID, ({ playlistID }) => {
+      if (spotifyApi && spotifyApi.getAccessToken()) {
+        spotifyApi
+          .getPlaylist(String(playlistID))
+          .then((response) => {
+            if (!response.body) return;
+
+            setPartyPlaylistObject(response.body);
+          })
+          .catch((e) => console.log(e));
+      }
+    });
+
+    return () => {
+      socket?.off(EVENTS.SERVER.SEND_ROOM_PLAYLISTID);
+    };
+  }, [socket]);
 
   if (!partyPlaylistObject)
     return (

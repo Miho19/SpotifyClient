@@ -1,34 +1,34 @@
 import React from "react";
 import Dayjs from "dayjs";
 
+const generateTime = (time) => {
+  const timeDayjs = Dayjs(time);
+  const now = Dayjs();
+
+  if (now.diff(timeDayjs, "year") > 0) {
+    return `Joined ${now.diff(timeDayjs, "year")} years ago`;
+  }
+
+  if (now.diff(timeDayjs, "month") > 0) {
+    return `joined ${now.diff(timeDayjs, "month")} months ago`;
+  }
+
+  if (now.diff(timeDayjs, "day") > 0) {
+    return `Joined ${now.diff(timeDayjs, "day")} days ago`;
+  }
+
+  if (now.diff(timeDayjs, "hour") > 0) {
+    return `Joined ${now.diff(timeDayjs, "hour")} hours ago`;
+  }
+
+  if (now.diff(timeDayjs, "minute") > 0) {
+    return `Joined ${now.diff(timeDayjs, "minutes")} minutes ago`;
+  }
+
+  return `Joined ${now.diff(timeDayjs, "second")} seconds ago`;
+};
+
 export default function PartyMember({ name, imgSource, time }) {
-  const generateTime = (time) => {
-    const timeDayjs = Dayjs(time);
-    const now = Dayjs();
-
-    if (now.diff(timeDayjs, "year") > 0) {
-      return `Joined ${now.diff(timeDayjs, "year")} years ago`;
-    }
-
-    if (now.diff(timeDayjs, "month") > 0) {
-      return `joined ${now.diff(timeDayjs, "month")} months ago`;
-    }
-
-    if (now.diff(timeDayjs, "day") > 0) {
-      return `Joined ${now.diff(timeDayjs, "day")} days ago`;
-    }
-
-    if (now.diff(timeDayjs, "hour") > 0) {
-      return `Joined ${now.diff(timeDayjs, "hour")} hours ago`;
-    }
-
-    if (now.diff(timeDayjs, "minute") > 0) {
-      return `Joined ${now.diff(timeDayjs, "minutes")} minutes ago`;
-    }
-
-    return `Joined ${now.diff(timeDayjs, "second")} seconds ago`;
-  };
-
   return (
     <div className="w-full h-10 flex space-x-2  bg-white/5 items-center group hover:bg-white/20">
       <img

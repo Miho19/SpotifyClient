@@ -1,9 +1,22 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { SocketContext } from "../context/socket.context";
 
 export default function ChatbarForm() {
   const [value, setValue] = useState("");
-  const { room } = useContext(SocketContext);
+
+  const { socket, EVENTS } = useContext(SocketContext);
+  const [room, setRoom] = useState({});
+
+  useEffect(() => {
+    const joinRoom = ({ roomID, roomName }) => {
+      setRoom({ roomID: roomID, roomName: roomName });
+    };
+    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+    };
+  }, [socket, room]);
 
   return (
     <div className="flex items-center h-[10%] w-full group bg-black">
