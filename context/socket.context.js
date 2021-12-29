@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import React, { createContext, useEffect, useRef } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
 export const SocketContext = createContext();
@@ -16,25 +16,26 @@ const EVENTS = {
     GET_ROOM_MEMBERS: "GET_ROOM_MEMBERS",
     GET_ROOM_LIST: "GET_ROOM_LIST",
     GET_ROOM_PLAYLISTID: "GET_ROOM_PLAYLISTID",
+    GET_CURRENT_ROOM: "GET_CURRENT_ROOM",
   },
   SERVER: {
     CLIENT_JOINED_ROOM: "CLIENT_JOINED_ROOM",
     CLIENT_LEFT_ROOM: "CLIENT_LEFT_ROOM",
     EMIT_MESSAGE: "EMIT_MESSAGE",
-    SEND_ROOM_MEMBERS: "SEND_ROOM_MEMBERS",
-    SEND_ROOM_LIST: "SEND_ROOM_LIST",
-    SEND_ROOM_PLAYLISTID: "SEND_ROOM_PLAYLISTID",
+    ROOM_MEMBERS_CHANGED: "ROOM_MEMBERS_CHANGED",
   },
 };
 
 export default function SocketContextProvider({ children }) {
-  const socketReference = useRef();
+  const [socket, setSocket] = useState(null);
   const { data: session, loading } = useSession();
 
   useEffect(() => {
     if (typeof window.document !== "undefined") {
-      socketReference.current = io("http://localhost:4000");
-      socketReference.current.data = {
+      const socketIO =  io("http://localhost:4000")
+      setSocket(socketIO);
+
+      socketIO?.data = {
         user: {
           name: session?.user.name,
           imgSource: session?.user.image,
@@ -42,21 +43,21 @@ export default function SocketContextProvider({ children }) {
         },
       };
     }
-    return () => socketReference.current?.close();
+    return () => socket?.close();
   }, []);
 
   useEffect(() => {
-    socketReference.current.on("connect", () => {
-      socketReference.current.emit(EVENTS.CLIENT.SET_USER_PROFILE, {
-        ...socketReference.current.data.user,
+    socket?.on("connect", () => {
+      socket.emit(EVENTS.CLIENT.SET_USER_PROFILE, {
+        ...socket.data.user,
       });
     });
-  }, [socketReference.current]);
+  }, [socket]);
 
   return (
     <SocketContext.Provider
       value={{
-        socket: socketReference.current,
+        socket,
         EVENTS,
       }}
     >

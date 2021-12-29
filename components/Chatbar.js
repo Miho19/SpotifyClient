@@ -21,13 +21,22 @@ export default function Chatbar() {
     };
 
     socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
-
     socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
+
     return () => {
       socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
       socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
     };
   }, [socket, room]);
+
+  useEffect(() => {
+    const initRoom = ({ roomID, roomName }) => {
+      if (!roomID || !roomName) setRoom({});
+      setRoom({ roomID: roomID, roomName: roomName });
+    };
+
+    socket?.emit(EVENTS.CLIENT.GET_CURRENT_ROOM, initRoom);
+  }, [socket]);
 
   return (
     <div className="min-w-[20rem] max-w-[20rem] max-h-[calc(100vh-6rem)] flex flex-col justify-start items-start bg-black ">

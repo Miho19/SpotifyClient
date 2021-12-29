@@ -9,20 +9,23 @@ export default function PartyGroup() {
   const { socket, EVENTS } = useContext(SocketContext);
   const [roomMembers, setRoomMembers] = useState([]);
 
-  const [room, setRoom] = useState({});
-
   useEffect(() => {
-    socket.emit(EVENTS.CLIENT.GET_ROOM_MEMBERS);
-  }, []);
-
-  useEffect(() => {
-    const getMembers = ({ roomMembers }) => {
+    const updateRoomMembers = ({ roomMembers }) => {
       setRoomMembers(roomMembers);
     };
-    socket?.on(EVENTS.SERVER.SEND_ROOM_MEMBERS, getMembers);
+
+    socket?.emit(EVENTS.CLIENT.GET_ROOM_MEMBERS, updateRoomMembers);
+  }, [socket]);
+
+  useEffect(() => {
+    const updateRoomMembers = ({ roomMembers }) => {
+      setRoomMembers(roomMembers);
+    };
+
+    socket?.on(EVENTS.SERVER.ROOM_MEMBERS_CHANGED, updateRoomMembers);
 
     return () => {
-      socket?.off(EVENTS.SERVER.SEND_ROOM_MEMBERS, getMembers);
+      socket.off(EVENTS.SERVER.ROOM_MEMBERS_CHANGED, updateRoomMembers);
     };
   }, [socket, roomMembers]);
 

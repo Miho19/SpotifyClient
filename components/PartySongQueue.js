@@ -12,11 +12,25 @@ export default function PartySongQueue() {
   useEffect(() => {
     const joinRoom = ({ roomID, roomName }) => {
       setRoom({ roomID: roomID, roomName: roomName });
+      socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, updatePlaylist);
     };
 
     const leaveRoom = () => {
       setPartyPlaylistObject(null);
       setRoom({});
+    };
+
+    const updatePlaylist = ({ playlistID }) => {
+      if (spotifyApi && spotifyApi.getAccessToken()) {
+        spotifyApi
+          .getPlaylist(String(playlistID))
+          .then((response) => {
+            if (!response.body) return;
+
+            setPartyPlaylistObject(response.body);
+          })
+          .catch((e) => console.log(e));
+      }
     };
 
     socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
@@ -30,13 +44,13 @@ export default function PartySongQueue() {
   }, [socket, room, partyPlaylistObject]);
 
   useEffect(() => {
-    if (room) {
-      socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, room);
-    }
-  }, [room]);
+    const initRoom = ({ roomID, roomName }) => {
+      if (!roomID || !roomName) setRoom({});
+      setRoom({ roomID: roomID, roomName: roomName });
+      socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, updatePlaylist);
+    };
 
-  useEffect(() => {
-    socket?.on(EVENTS.SERVER.SEND_ROOM_PLAYLISTID, ({ playlistID }) => {
+    const updatePlaylist = ({ playlistID }) => {
       if (spotifyApi && spotifyApi.getAccessToken()) {
         spotifyApi
           .getPlaylist(String(playlistID))
@@ -47,11 +61,9 @@ export default function PartySongQueue() {
           })
           .catch((e) => console.log(e));
       }
-    });
-
-    return () => {
-      socket?.off(EVENTS.SERVER.SEND_ROOM_PLAYLISTID);
     };
+
+    socket?.emit(EVENTS.CLIENT.GET_CURRENT_ROOM, initRoom);
   }, [socket]);
 
   if (!partyPlaylistObject)

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+
 import { SocketContext } from "../context/socket.context";
 
 import RoomItem from "./RoomItem";
@@ -9,20 +10,17 @@ export default function RoomList() {
   const [roomList, setRoomList] = useState([]);
 
   useEffect(() => {
-    const getRoomList = ({ roomList }) => {
+    const updateRoomList = ({ roomList }) => {
+      if (!roomList) {
+        setRoomList([]);
+      }
       setRoomList(roomList);
     };
 
-    socket?.on(EVENTS.SERVER.SEND_ROOM_LIST, getRoomList);
+    console.log(socket);
 
-    return () => {
-      socket?.off(EVENTS.SERVER.SEND_ROOM_LIST, getRoomList);
-    };
-  }, [socket, roomList]);
-
-  useEffect(() => {
-    socket?.emit(EVENTS.CLIENT.GET_ROOM_LIST);
-  }, []);
+    socket?.emit(EVENTS.CLIENT.GET_ROOM_LIST, updateRoomList);
+  }, [socket]);
 
   const partyRoomsList = roomList.map((room) => (
     <RoomItem

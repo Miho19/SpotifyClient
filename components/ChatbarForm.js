@@ -11,10 +11,17 @@ export default function ChatbarForm() {
     const joinRoom = ({ roomID, roomName }) => {
       setRoom({ roomID: roomID, roomName: roomName });
     };
+
+    const leaveRoom = () => {
+      setRoom({});
+    };
+
     socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
 
     return () => {
       socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+      socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
     };
   }, [socket, room]);
 
