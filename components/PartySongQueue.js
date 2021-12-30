@@ -6,6 +6,8 @@ import PartySong from "./PartySong";
 export default function PartySongQueue() {
   const { socket, EVENTS } = useContext(SocketContext);
   const [partyPlaylistObject, setPartyPlaylistObject] = useState(null);
+  const [partyPlaylistID, setPartyPlaylistID] = useState("");
+
   const [room, setRoom] = useState({});
   const spotifyApi = useSpotify();
 
@@ -27,6 +29,7 @@ export default function PartySongQueue() {
           .then((response) => {
             if (!response.body) return;
 
+            setPartyPlaylistID(playlistID);
             setPartyPlaylistObject(response.body);
           })
           .catch((e) => console.log(e));
@@ -56,7 +59,7 @@ export default function PartySongQueue() {
           .getPlaylist(String(playlistID))
           .then((response) => {
             if (!response.body) return;
-
+            setPartyPlaylistID(playlistID);
             setPartyPlaylistObject(response.body);
           })
           .catch((e) => console.log(e));
@@ -64,6 +67,28 @@ export default function PartySongQueue() {
     };
 
     socket?.emit(EVENTS.CLIENT.GET_CURRENT_ROOM, initRoom);
+  }, [socket]);
+
+  useEffect(() => {
+    const playlistChanged = () => {
+      if (!partyPlaylistID) return;
+      if (spotifyApi && spotifyApi.getAccessToken()) {
+        spotifyApi
+          .getPlaylist(String(partyPlaylistID))
+          .then((response) => {
+            if (!response.body) return;
+
+            setPartyPlaylistObject(response.body);
+          })
+          .catch((e) => console.log(e));
+      }
+    };
+
+    socket?.on(EVENTS.SERVER.ROOM_PLAYLIST_CHANGED, playlistChanged);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.ROOM_PLAYLIST_CHANGED, playlistChanged);
+    };
   }, [socket]);
 
   if (!partyPlaylistObject)

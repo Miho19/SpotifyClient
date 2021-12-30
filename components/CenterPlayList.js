@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from "@heroicons/react/outline";
 import { useSession, getSession, signOut } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { shuffle } from "lodash";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -10,6 +10,7 @@ import {
 import useSpotify from "../hooks/useSpotify";
 import Songs from "./Songs";
 import { useRouter } from "next/router";
+import { SocketContext } from "../context/socket.context";
 
 const colors = [
   "from-indigo-500",
@@ -23,6 +24,7 @@ const colors = [
 
 export default function CenterPlayList() {
   const { data: session, loading } = useSession();
+  const { socket, EVENTS } = useContext(SocketContext);
   const [color, setColor] = useState(null);
 
   const [playlistId, setCurrentPlaylistId] = useRecoilState(currentPlaylistId);
@@ -33,6 +35,8 @@ export default function CenterPlayList() {
   const spotifyApi = useSpotify();
 
   const router = useRouter();
+
+  const [partyPlaylistID, setPartyPlaylistID] = useState("");
 
   useEffect(() => {
     setColor(shuffle(colors).pop());
@@ -67,6 +71,30 @@ export default function CenterPlayList() {
     }
   }, [playlistId]);
 
+  useEffect(() => {
+    const updatePartyPlaylistID = ({ playlistID }) => {
+      setPartyPlaylistID(playlistID);
+    };
+
+    const clientJoinedRoom = () => {
+      socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, updatePartyPlaylistID);
+    };
+
+    const clientLeftRoom = () => {
+      setPartyPlaylistID("");
+    };
+
+    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, clientJoinedRoom);
+    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, clientLeftRoom);
+
+    socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, updatePartyPlaylistID);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, clientJoinedRoom);
+      socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, clientLeftRoom);
+    };
+  }, [socket]);
+
   return (
     <div className="flex-grow h-screen overflow-y-scroll scrollbar-hide">
       <header className="absolute top-5 right-[21rem]">
@@ -100,7 +128,7 @@ export default function CenterPlayList() {
         </div>
       </section>
       <div>
-        <Songs />
+        <Songs partyPlaylistID={partyPlaylistID} />
       </div>
     </div>
   );

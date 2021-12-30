@@ -1,22 +1,12 @@
 import React, { useContext } from "react";
-import { SpotifyWebSDKContext } from "../context/spotifyWebSDK.context";
-import useSpotify from "../hooks/useSpotify";
+
 import msToMinutesAndSeconds from "../util/time";
 
-export default function Song({ order, track }) {
-  const spotifyApi = useSpotify();
-  const { player } = useContext(SpotifyWebSDKContext);
-
-  const playSong = () => {
-    if (!spotifyApi || !spotifyApi.getAccessToken() || !player) return;
-
-    spotifyApi?.play({ uris: [track.track.uri] });
-  };
-
+export default function Song({ order, track, handleClick }) {
   return (
     <div
       className="grid grid-cols-2 text-gray-500 py-4 px-5 hover:bg-gray-900 rounded-lg cursor-pointer"
-      onClick={playSong}
+      onClick={() => handleClick(track)}
     >
       <div className="flex items-center space-x-4">
         <p>{order + 1}</p>

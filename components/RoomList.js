@@ -17,8 +17,6 @@ export default function RoomList() {
       setRoomList(roomList);
     };
 
-    console.log(socket);
-
     socket?.emit(EVENTS.CLIENT.GET_ROOM_LIST, updateRoomList);
   }, [socket]);
 
