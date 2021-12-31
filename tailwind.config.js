@@ -4,7 +4,12 @@ const {
 
 module.exports = {
   mode: "jit",
-  purge: ["./pages/**/*.js", "./components/**/*.js", "./public/**/*.html"],
+  purge: [
+    "./pages/**/*.js",
+    "./components/**/*.js",
+    "./public/**/*.html",
+    "./hooks/**/*.js",
+  ],
   darkMode: false, // or 'media' or 'class'
   theme: {
     colors: colors,

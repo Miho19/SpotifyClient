@@ -1,5 +1,6 @@
 import { useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import Dayjs from "dayjs";
 
 const generateTime = (time) => {
   const timeDayjs = Dayjs(time);
@@ -24,13 +25,12 @@ const generateChat = (
 ) => (
   <div
     key={messageID}
-    className=" p-1 text-white group flex flex-col items-start cursor-pointer"
-    onClick={(e) => console.log()}
+    className="p-1 text-white group flex flex-col items-start cursor-pointer"
   >
     <span
       className={`${
-        userID === senderID ? `bg-[#1DB954]` : `bg-black`
-      }  h-auto text-white text-md font-normal rounded-md max-w-full text-clip overflow-hidden p-2 `}
+        userID !== senderID ? `bg-[#1DB954]` : `bg-[#0e0b0b]`
+      } h-auto text-white text-lg font-normal rounded-md max-w-full text-clip overflow-hidden p-2 `}
     >
       {message}
     </span>
@@ -75,7 +75,6 @@ export default function useMessages({ socket, EVENTS }) {
                   session?.user.image,
                   session?.user.name
                 );
-
           setMessages((messages) => [...messages, newMessage]);
         }
       );
