@@ -85,7 +85,11 @@ export default function Player() {
     return () => {};
   }, []);
 
-  useEffect(() => {}, [socket]);
+  useEffect(() => {
+    const joinedRoom = () => {};
+
+    return () => {};
+  }, [socket]);
 
   return (
     <div className=" sticky bottom-0 h-24 bg-[#1a1a1a] text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8 overflow-hidden">

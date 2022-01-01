@@ -39,39 +39,44 @@ export default function SocketContextProvider({ children }) {
 
   useEffect(() => {
     if (typeof window.document !== "undefined") {
-      const socketIO =  io("http://localhost:4000")
+      const socketIO = io("http://localhost:4000");
       setSocket(socketIO);
-
-      socketIO?.data = {
-        user: {
-          name: session?.user.name,
-          imgSource: session?.user.image,
-          email: session?.user.email,
-        },
-      };
     }
     return () => socket?.close();
   }, []);
 
   useEffect(() => {
     socket?.on("connect", () => {
+      socket.data = {
+        user: {
+          name: session?.user.name,
+          imgSource: session?.user.image,
+          email: session?.user.email,
+        },
+      };
+
       socket.emit(EVENTS.CLIENT.SET_USER_PROFILE, {
         ...socket.data.user,
       });
-
     });
   }, [socket]);
 
-
   useEffect(() => {
+    const handleGetSong = async (callback) => {
+      if (!spotifyApi.getAccessToken()) return;
 
-    const handleGetSong = () => {
-      if(!spotifyApi.getAccessToken()) return;
-    
+      const { body: playbackState } =
+        await spotifyApi.getMyCurrentPlaybackState();
 
-      spotifyApi.getMyCurrentPlaybackState().then( (response) => {
-        console.log(response.body);
-      }).catch(e => console.log(e));
+      if (playbackState) {
+        callback({
+          uri: playbackState.item.uri,
+          progress: playbackState.progress_ms,
+          timestamp: playbackState.timestamp,
+        });
+      }
+
+      //if you the host with no playback
     };
 
     socket?.on(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
@@ -80,7 +85,6 @@ export default function SocketContextProvider({ children }) {
       socket?.off(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
     };
   }, [socket]);
-
 
   return (
     <SocketContext.Provider
