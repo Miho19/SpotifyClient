@@ -55,6 +55,18 @@ export default function Player() {
   };
 
   useEffect(() => {
+    const songChanged = ({ uri, progress }) => {
+      spotifyApi.play({ uris: [uri], position_ms: progress });
+    };
+
+    socket?.on(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
+    };
+  }, [socket]);
+
+  useEffect(() => {
     const getTrack = async () => {
       const response = await spotifyApi.getMyCurrentPlayingTrack();
 

@@ -76,7 +76,7 @@ export default function SocketContextProvider({ children }) {
         });
       }
 
-      //if you the host with no playback
+      //if you the host with no plyback
     };
 
     socket?.on(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
