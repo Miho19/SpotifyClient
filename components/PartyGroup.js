@@ -27,7 +27,7 @@ export default function PartyGroup() {
     return () => {
       socket.off(EVENTS.SERVER.ROOM_MEMBERS_CHANGED, updateRoomMembers);
     };
-  }, [socket, roomMembers]);
+  }, [socket]);
 
   const memberList = roomMembers.map((user) => (
     <PartyMember

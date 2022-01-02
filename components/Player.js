@@ -8,6 +8,7 @@ import {
 import { debounce } from "lodash";
 
 import React, { useState, useEffect, useCallback, useContext } from "react";
+import { SocketContext } from "../context/socket.context";
 import { SpotifyWebSDKContext } from "../context/spotifyWebSDK.context";
 import useSpotify from "../hooks/useSpotify";
 
@@ -17,6 +18,8 @@ export default function Player() {
 
   const [otherDevicePlaybackTrack, setOtherDevicePlaybackTrack] =
     useState(null);
+
+  const { socket, EVENTS } = useContext(SocketContext);
 
   const [volume, setVolume] = useState(50);
 
@@ -52,6 +55,18 @@ export default function Player() {
   };
 
   useEffect(() => {
+    const songChanged = ({ uri, progress }) => {
+      spotifyApi.play({ uris: [uri], position_ms: progress });
+    };
+
+    socket?.on(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
+    };
+  }, [socket]);
+
+  useEffect(() => {
     const getTrack = async () => {
       const response = await spotifyApi.getMyCurrentPlayingTrack();
 
@@ -81,6 +96,12 @@ export default function Player() {
 
     return () => {};
   }, []);
+
+  useEffect(() => {
+    const joinedRoom = () => {};
+
+    return () => {};
+  }, [socket]);
 
   return (
     <div className=" sticky bottom-0 h-24 bg-[#1a1a1a] text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8 overflow-hidden">
