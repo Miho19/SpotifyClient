@@ -28,14 +28,13 @@ const EVENTS = {
     ROOM_PLAYLIST_CHANGED: "ROOM_PLAYLIST_CHANGED",
     ROOM_PLAYLIST_SONG_CHANGED: "ROOM_PLAYLIST_SONG_CHANGED",
     HOST_GET_SONG: "HOST_GET_SONG",
+    HOST_INIT: "HOST_INIT",
   },
 };
 
 export default function SocketContextProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const { data: session, loading } = useSession();
-
-  const spotifyApi = useSpotify();
 
   useEffect(() => {
     if (typeof window.document !== "undefined") {
@@ -59,31 +58,6 @@ export default function SocketContextProvider({ children }) {
         ...socket.data.user,
       });
     });
-  }, [socket]);
-
-  useEffect(() => {
-    const handleGetSong = async (callback) => {
-      if (!spotifyApi.getAccessToken()) return;
-
-      const { body: playbackState } =
-        await spotifyApi.getMyCurrentPlaybackState();
-
-      if (playbackState) {
-        callback({
-          uri: playbackState.item.uri,
-          progress: playbackState.progress_ms,
-          timestamp: playbackState.timestamp,
-        });
-      }
-
-      //if you the host with no plyback
-    };
-
-    socket?.on(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
-
-    return () => {
-      socket?.off(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
-    };
   }, [socket]);
 
   return (

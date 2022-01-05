@@ -31,13 +31,18 @@ export default function SpotifyWebSDKContextProvider({ children }) {
         getOAuthToken: (callback) => {
           callback(spotifyApi.getAccessToken());
         },
-        volume: 0.5,
+        volume: 0.1,
       });
       setPlayer(player);
 
       player.addListener("ready", ({ device_id }) => {
-        //spotifyApi.transferMyPlayback([device_id]);
-        setDeviceId(device_id);
+        const transferPlayback = async () => {
+          const transferResponse = await spotifyApi.transferMyPlayback([
+            device_id,
+          ]);
+          setDeviceId(device_id);
+        };
+        transferPlayback();
       });
 
       player.addListener("not_ready", ({ device_id }) => {
@@ -72,7 +77,7 @@ export default function SpotifyWebSDKContextProvider({ children }) {
         console.error("Failed to initialize", message);
       });
 
-      // player.connect();
+      player.connect();
     };
 
     return () => {};

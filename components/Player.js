@@ -12,6 +12,8 @@ import { SocketContext } from "../context/socket.context";
 import { SpotifyWebSDKContext } from "../context/spotifyWebSDK.context";
 import useSpotify from "../hooks/useSpotify";
 
+import { useRouter } from "next/router";
+
 export default function Player() {
   const { currentTrack, isPaused, player, deviceId } =
     useContext(SpotifyWebSDKContext);
@@ -21,9 +23,12 @@ export default function Player() {
 
   const { socket, EVENTS } = useContext(SocketContext);
 
-  const [volume, setVolume] = useState(50);
+  const [volume, setVolume] = useState(10);
 
   const spotifyApi = useSpotify();
+
+  const [room, setRoom] = useState({});
+  const router = useRouter();
 
   const debouncedAdjustVolume = useCallback(
     debounce((volume) => {
@@ -42,6 +47,10 @@ export default function Player() {
     if (!player) return;
     if (!spotifyApi) return;
 
+    if (!room.roomID) {
+      return router.push("/party");
+    }
+
     const response = await player.getCurrentState();
 
     if (!response) {
@@ -55,8 +64,21 @@ export default function Player() {
   };
 
   useEffect(() => {
-    const songChanged = ({ uri, progress }) => {
-      spotifyApi.play({ uris: [uri], position_ms: progress });
+    const songChanged = async ({ uri, progress }) => {
+      try {
+        const playResponse = await spotifyApi.play({
+          uris: [uri],
+          position_ms: progress,
+        });
+
+        const getTrackresponse = await spotifyApi.getMyCurrentPlayingTrack();
+
+        if (getTrackresponse) {
+          setOtherDevicePlaybackTrack(getTrackresponse.body?.item);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     socket?.on(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
@@ -68,6 +90,14 @@ export default function Player() {
 
   useEffect(() => {
     const getTrack = async () => {
+      if (currentTrack) {
+        return;
+      }
+
+      if (!spotifyApi || !spotifyApi.getAccessToken()) {
+        return;
+      }
+
       const response = await spotifyApi.getMyCurrentPlayingTrack();
 
       if (response.body) {
@@ -82,14 +112,6 @@ export default function Player() {
       setOtherDevicePlaybackTrack(pastTrack.body.items[0].track);
     };
 
-    if (currentTrack) {
-      return;
-    }
-
-    if (!spotifyApi || !spotifyApi.getAccessToken()) {
-      return;
-    }
-
     if (typeof window.document === "undefined") return;
 
     getTrack();
@@ -98,10 +120,76 @@ export default function Player() {
   }, []);
 
   useEffect(() => {
-    const joinedRoom = () => {};
+    const initRoom = ({ roomID, roomName }) => {
+      if (!roomID || !roomName) setRoom({});
+      setRoom({ roomID: roomID, roomName: roomName });
+    };
 
-    return () => {};
+    socket?.emit(EVENTS.CLIENT.GET_CURRENT_ROOM, initRoom);
   }, [socket]);
+
+  useEffect(() => {
+    const joinRoom = ({ roomID, roomName }) => {
+      setRoom({ roomID: roomID, roomName: roomName });
+    };
+
+    const leaveRoom = async () => {
+      setRoom({});
+      const pauseResponse = await spotifyApi.pause();
+    };
+
+    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
+      socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
+    };
+  }, [socket, room]);
+
+  useEffect(() => {
+    const handleGetSong = async (callback) => {
+      if (!spotifyApi.getAccessToken()) return;
+      if (!player) return;
+
+      let { body: playbackState } =
+        await spotifyApi.getMyCurrentPlaybackState();
+
+      if (playbackState) {
+        callback({
+          uri: playbackState.item.uri,
+          progress: playbackState.progress_ms,
+          timestamp: playbackState.timestamp,
+        });
+      }
+
+      //if you the host with no plyback
+    };
+
+    socket?.on(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const handleHostInit = async () => {
+      if (!player) return;
+      if (!spotifyApi) return;
+
+      const playResponse = await spotifyApi.play({
+        context_uri: "spotify:playlist:1qzGPv5E2rf7KIeE9wN27Y",
+        offset: { position: 0 },
+      });
+    };
+
+    socket?.on(EVENTS.SERVER.HOST_INIT, handleHostInit);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.HOST_INIT, handleHostInit);
+    };
+  }, [socket, player]);
 
   return (
     <div className=" sticky bottom-0 h-24 bg-[#1a1a1a] text-white grid grid-cols-3 text-xs md:text-base px-2 md:px-8 overflow-hidden">
