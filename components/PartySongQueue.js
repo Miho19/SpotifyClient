@@ -7,6 +7,7 @@ export default function PartySongQueue() {
   const { socket, EVENTS } = useContext(SocketContext);
   const [partyPlaylistObject, setPartyPlaylistObject] = useState(null);
   const [partyPlaylistID, setPartyPlaylistID] = useState("");
+  const [partyPlaylistSnapShotID, setpartyPlaylistSnapShotID] = useState("");
 
   const [room, setRoom] = useState({});
   const spotifyApi = useSpotify();
@@ -22,7 +23,7 @@ export default function PartySongQueue() {
       setRoom({});
     };
 
-    const updatePlaylist = ({ playlistID }) => {
+    const updatePlaylist = ({ playlistID, snapshotID }) => {
       if (spotifyApi && spotifyApi.getAccessToken()) {
         spotifyApi
           .getPlaylist(String(playlistID))
@@ -30,6 +31,7 @@ export default function PartySongQueue() {
             if (!response.body) return;
 
             setPartyPlaylistID(playlistID);
+            setpartyPlaylistSnapShotID(snapshotID);
             setPartyPlaylistObject(response.body);
           })
           .catch((e) => console.log(e));
@@ -53,13 +55,14 @@ export default function PartySongQueue() {
       socket?.emit(EVENTS.CLIENT.GET_ROOM_PLAYLISTID, updatePlaylist);
     };
 
-    const updatePlaylist = ({ playlistID }) => {
+    const updatePlaylist = ({ playlistID, snapshotID }) => {
       if (spotifyApi && spotifyApi.getAccessToken()) {
         spotifyApi
           .getPlaylist(String(playlistID))
           .then((response) => {
             if (!response.body) return;
             setPartyPlaylistID(playlistID);
+            setpartyPlaylistSnapShotID(snapshotID);
             setPartyPlaylistObject(response.body);
           })
           .catch((e) => console.log(e));
@@ -70,17 +73,17 @@ export default function PartySongQueue() {
   }, [socket]);
 
   useEffect(() => {
-    const playlistChanged = () => {
+    const playlistChanged = async () => {
       if (!partyPlaylistID) return;
-      if (spotifyApi && spotifyApi.getAccessToken()) {
-        spotifyApi
-          .getPlaylist(String(partyPlaylistID))
-          .then((response) => {
-            if (!response.body) return;
+      if (!spotifyApi) return;
 
-            setPartyPlaylistObject(response.body);
-          })
-          .catch((e) => console.log(e));
+      try {
+        const getPlaylistResponse = await spotifyApi.getPlaylist(
+          String(partyPlaylistID)
+        );
+        setPartyPlaylistObject({ ...getPlaylistResponse.body });
+      } catch (error) {
+        console.log(error);
       }
     };
 
@@ -89,12 +92,28 @@ export default function PartySongQueue() {
     return () => {
       socket?.off(EVENTS.SERVER.ROOM_PLAYLIST_CHANGED, playlistChanged);
     };
-  }, [socket]);
+  }, [socket, partyPlaylistSnapShotID]);
 
   if (!partyPlaylistObject)
     return (
       <div className="p-5 text-lg font-medium text-center">Join a Party</div>
     );
+
+  const removeSong = async (songUri) => {
+    try {
+      const deleteResponse = await spotifyApi.removeTracksFromPlaylist(
+        partyPlaylistID,
+        [{ uri: songUri }],
+        { snapshot_id: partyPlaylistSnapShotID }
+      );
+
+      setpartyPlaylistSnapShotID(deleteResponse.body.snapshot_id);
+
+      socket?.emit(EVENTS.CLIENT.CHANGED_PARTYPLAYLIST);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const songs = partyPlaylistObject.tracks.items.map((trackObject) => {
     return (
@@ -105,6 +124,8 @@ export default function PartySongQueue() {
         albumImgSource={trackObject.track.album?.images[0].url}
         albumName={trackObject.track.album?.name}
         duration_ms={trackObject.track.duration_ms}
+        trackUri={trackObject.track.uri}
+        handleClick={removeSong}
       />
     );
   });
