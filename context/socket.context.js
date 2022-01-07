@@ -19,6 +19,7 @@ const EVENTS = {
     GET_ROOM_PLAYLISTID: "GET_ROOM_PLAYLISTID",
     GET_CURRENT_ROOM: "GET_CURRENT_ROOM",
     CHANGED_PARTYPLAYLIST: "CHANGED_PARTYPLAYLIST",
+    HOST_CHANGE_SONG: "HOST_CHANGE_SONG",
   },
   SERVER: {
     CLIENT_JOINED_ROOM: "CLIENT_JOINED_ROOM",
@@ -51,6 +52,7 @@ export default function SocketContextProvider({ children }) {
           name: session?.user.name,
           imgSource: session?.user.image,
           email: session?.user.email,
+          host: false,
         },
       };
 

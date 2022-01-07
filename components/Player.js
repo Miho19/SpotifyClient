@@ -73,6 +73,8 @@ export default function Player() {
 
         const getTrackresponse = await spotifyApi.getMyCurrentPlayingTrack();
 
+        console.log(getTrackresponse);
+
         if (getTrackresponse) {
           setOtherDevicePlaybackTrack(getTrackresponse.body?.item);
         }
@@ -104,7 +106,7 @@ export default function Player() {
         setOtherDevicePlaybackTrack(response.body?.item);
         return;
       }
-
+      1;
       const pastTrack = await spotifyApi.getMyRecentlyPlayedTracks({
         limit: 1,
       });
@@ -174,14 +176,24 @@ export default function Player() {
   }, [socket]);
 
   useEffect(() => {
-    const handleHostInit = async () => {
+    const handleHostInit = async ({ playlistID }, callback) => {
       if (!player) return;
       if (!spotifyApi) return;
 
       const playResponse = await spotifyApi.play({
-        context_uri: "spotify:playlist:1qzGPv5E2rf7KIeE9wN27Y",
+        context_uri: `spotify:playlist:${playlistID}`,
         offset: { position: 0 },
       });
+
+      const getPlaylistResponse = await spotifyApi.getPlaylist(playlistID);
+
+      const { snapshot_id } = getPlaylistResponse.body;
+
+      if (!snapshot_id) return;
+
+      socket.data.user.host = true;
+
+      callback({ playlistID, snapshotID: snapshot_id });
     };
 
     socket?.on(EVENTS.SERVER.HOST_INIT, handleHostInit);

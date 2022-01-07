@@ -48,7 +48,7 @@ export default function Chatbar() {
       </header>
 
       <ChatMessageList />
-      <ChatbarForm />
+      <ChatbarForm roomID={room.roomID} />
 
       <div className="flex h-[25%] overflow-scroll scrollbar-hide w-full bg-black">
         <div className=" bg-black w-full">
