@@ -1,38 +1,19 @@
 import React, { useContext, useState, useEffect } from "react";
 import { SocketContext } from "../context/socket.context";
 
-export default function ChatbarForm() {
+export default function ChatbarForm({ roomID }) {
   const [value, setValue] = useState("");
 
   const { socket, EVENTS } = useContext(SocketContext);
-  const [room, setRoom] = useState({});
-
-  useEffect(() => {
-    const joinRoom = ({ roomID, roomName }) => {
-      setRoom({ roomID: roomID, roomName: roomName });
-    };
-
-    const leaveRoom = () => {
-      setRoom({});
-    };
-
-    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
-    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
-
-    return () => {
-      socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
-      socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
-    };
-  }, [socket, room]);
 
   return (
     <div className="flex items-center h-[10%] w-full group bg-black">
       <input
-        disabled={!room.roomID}
+        disabled={!roomID}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         className=" max-w-full rounded-full border text-lg focus:outline-none ml-4 mr-2 pl-4 pr-[3rem] mt-4 mb-4 py-2"
-        placeholder={!room.roomID ? "Join a Party" : "Say Something..."}
+        placeholder={!roomID ? "Join a Party" : "Say Something..."}
         onKeyDown={(e) => {
           if (e.key !== "Enter") return;
           if (value.length === 0) return;

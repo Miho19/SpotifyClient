@@ -73,6 +73,8 @@ export default function Player() {
 
         const getTrackresponse = await spotifyApi.getMyCurrentPlayingTrack();
 
+        console.log(getTrackresponse);
+
         if (getTrackresponse) {
           setOtherDevicePlaybackTrack(getTrackresponse.body?.item);
         }
@@ -104,7 +106,7 @@ export default function Player() {
         setOtherDevicePlaybackTrack(response.body?.item);
         return;
       }
-
+      1;
       const pastTrack = await spotifyApi.getMyRecentlyPlayedTracks({
         limit: 1,
       });
@@ -188,6 +190,8 @@ export default function Player() {
       const { snapshot_id } = getPlaylistResponse.body;
 
       if (!snapshot_id) return;
+
+      socket.data.user.host = true;
 
       callback({ playlistID, snapshotID: snapshot_id });
     };

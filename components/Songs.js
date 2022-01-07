@@ -20,6 +20,8 @@ export default function Songs({ partyPlaylistID }) {
       const tracks = trackReponse.body.items;
 
       const isUnqiue = tracks.every((track) => track.track.id !== trackToAddID);
+      console.log(isUnqiue);
+
       if (!isUnqiue) return; // TODO add in dialog or something saying track must be unique
 
       const addTrackResponse = spotifyApi.addTracksToPlaylist(partyPlaylistID, [

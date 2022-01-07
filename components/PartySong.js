@@ -8,12 +8,13 @@ export default function PartySong({
   albumName,
   duration_ms,
   trackUri,
+  index,
   handleClick,
 }) {
   return (
     <div
       className="grid grid-cols-2 cursor-pointer px-4 py-1 hover:bg-white/25 w-full group"
-      onClick={() => handleClick(trackUri)}
+      onClick={() => handleClick(trackUri, index)}
     >
       <div className="flex items-center space-x-2">
         <img src={albumImgSource} alt={`${albumName}`} className="w-5 h-5" />
