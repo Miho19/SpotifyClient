@@ -12,7 +12,7 @@ export default function SpotifyWebSDKContextProvider({ children }) {
   const [currentTrack, setTrack] = useState(null);
   const [webPlayerActive, setWebPlayerActive] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
-  const [deviceId, setDeviceId] = useState(null);
+  const [deviceId, setDeviceId] = useState("");
 
   useEffect(() => {
     if (typeof window.document === "undefined") return;
@@ -33,16 +33,10 @@ export default function SpotifyWebSDKContextProvider({ children }) {
         },
         volume: 0.1,
       });
-      setPlayer(player);
 
       player.addListener("ready", ({ device_id }) => {
-        const transferPlayback = async () => {
-          const transferResponse = await spotifyApi.transferMyPlayback([
-            device_id,
-          ]);
-          setDeviceId(device_id);
-        };
-        transferPlayback();
+        setDeviceId(device_id);
+        setPlayer(player);
       });
 
       player.addListener("not_ready", ({ device_id }) => {

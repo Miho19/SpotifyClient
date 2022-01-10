@@ -108,11 +108,15 @@ export default function PartySongQueue() {
         { snapshot_id: partyPlaylistSnapShotID }
       );
 
+      if (!deleteResponse.body.snapshot_id) {
+        console.error("No snapshot ID!!!");
+      }
+
       setpartyPlaylistSnapShotID(deleteResponse.body.snapshot_id);
 
-      if (partyPlaylistObject.tracks.items.length < 1) return;
-
-      const skiptoNextResponse = await spotifyApi.skipToNext();
+      if (partyPlaylistObject.tracks.items.length > 1) {
+        const skiptoNextResponse = await spotifyApi.skipToNext();
+      }
 
       socket?.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       socket?.emit(EVENTS.CLIENT.CHANGED_PARTYPLAYLIST);
