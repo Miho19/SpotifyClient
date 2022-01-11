@@ -2,16 +2,10 @@ import React, { useState } from "react";
 
 import useSpotify from "./useSpotify";
 
-export default function usePlaylist() {
+export default function usePlaylist({ socket, EVENTS }) {
   const [partyPlaylistID, setPartyPlaylistID] = useState("");
 
   const spotifyApi = useSpotify();
-
-  useEffect(() => {
-    if (!spotifyApi.getAccessToken()) return;
-
-    return () => {};
-  }, []);
 
   return partyPlaylistID;
 }
