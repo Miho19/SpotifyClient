@@ -2,7 +2,7 @@ import { ChevronDownIcon } from "@heroicons/react/outline";
 import { useSession, getSession, signOut } from "next-auth/react";
 import React, { useState, useEffect, useContext } from "react";
 import { shuffle } from "lodash";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import {
   currentPlaylistId,
   currentPlayListObject,

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import SpotifyWebApi from "spotify-web-api-node";
+
 import useSpotify from "./useSpotify";
 
 export default function usePlayer({ socket, EVENTS }) {
-  const [isActive, setIsActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const spotifyApi = useSpotify();
 
   useEffect(() => {
@@ -65,5 +65,41 @@ export default function usePlayer({ socket, EVENTS }) {
     };
   }, [socket]);
 
-  return isActive;
+  const togglePlayback = () => {
+    socket?.emit(EVENTS.CLIENT.TOGGLE_PLAYBACK, { left: false });
+  };
+
+  useEffect(() => {
+    const handleToggle = async ({ left, uri, progress }) => {
+      try {
+        if (left) {
+          const pauseResponse = await spotifyApi.pause();
+          setIsPaused(true);
+        }
+
+        const getCurrentStateResponse =
+          await spotifyApi.getMyCurrentPlaybackState();
+
+        console.log(getCurrentStateResponse);
+        const { is_playing: isPlaying } = getCurrentStateResponse.body;
+        setIsPaused(!isPlaying);
+
+        isPlaying
+          ? await spotifyApi.pause()
+          : await spotifyApi.play({
+              uris: [uri],
+              position_ms: progress,
+            });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    socket?.on(EVENTS.SERVER.CLIENT_TOGGLED_PLAYBACK, handleToggle);
+    return () => {
+      socket?.off(EVENTS.SERVER.CLIENT_TOGGLED_PLAYBACK, handleToggle);
+    };
+  }, [socket]);
+
+  return { isPaused, togglePlayback };
 }

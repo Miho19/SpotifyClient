@@ -4,7 +4,7 @@ import useCurrentTrack from "../hooks/useCurrentTrack";
 
 export default function CurrentTrackDisplay() {
   const { socket, EVENTS } = useContext(SocketContext);
-  const [currentTrack, isPaused] = useCurrentTrack({ socket, EVENTS });
+  const currentTrack = useCurrentTrack({ socket, EVENTS });
 
   return (
     <div className="flex items-center space-x-4">
