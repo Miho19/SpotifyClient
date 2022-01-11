@@ -2,21 +2,18 @@ import "../styles/globals.css";
 import { SessionProvider } from "next-auth/react";
 import { RecoilRoot } from "recoil";
 import SocketContextProvider from "../context/socket.context";
-import SpotifyWebSDKContextProvider from "../context/spotifyWebSDK.context";
+
 import Player from "../components/Player";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
-  
   return (
     <SessionProvider session={session}>
-      <SpotifyWebSDKContextProvider>
-        <SocketContextProvider>
-          <RecoilRoot>
-            <Component {...pageProps} />
-            {session && <Player />}
-          </RecoilRoot>
-        </SocketContextProvider>
-      </SpotifyWebSDKContextProvider>
+      <SocketContextProvider>
+        <RecoilRoot>
+          <Component {...pageProps} />
+          {session && <Player />}
+        </RecoilRoot>
+      </SocketContextProvider>
     </SessionProvider>
   );
 }
