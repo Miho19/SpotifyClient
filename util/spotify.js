@@ -26,10 +26,7 @@ const state = "";
 const redirect =
   process.env.NODE_ENV === "development"
     ? ""
-    : `https://spotify-client-blue.vercel.app
-    /api/auth/callback/spotify`;
-
-console.log(`https://${process.env.VERCEL_URL}/api/auth/callback/spotify`);
+    : `https://spotify-client-blue.vercel.app/api/auth/callback/spotify`;
 
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
