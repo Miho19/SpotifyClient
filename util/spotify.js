@@ -26,7 +26,7 @@ const state = "";
 const redirect =
   process.env.NODE_ENV === "development"
     ? ""
-    : `${process.env.VERCEL_URL}/api/auth/callback/spotify`;
+    : `https://${process.env.VERCEL_URL}/api/auth/callback/spotify`;
 
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
@@ -35,5 +35,7 @@ const spotifyApi = new SpotifyWebApi({
 });
 
 export const LOGIN_URL = spotifyApi.createAuthorizeURL(scopes, state);
+
+console.log(LOGIN_URL);
 
 export default spotifyApi;
