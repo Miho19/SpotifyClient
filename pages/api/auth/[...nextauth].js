@@ -31,6 +31,10 @@ export default NextAuth({
   secret: process.env.JWT_SECRET,
   pages: { signIn: "/login" },
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      console.log("hello");
+      return Promise.resolve(url);
+    },
     async jwt({ token, account, user }) {
       if (account && user) {
         return {
