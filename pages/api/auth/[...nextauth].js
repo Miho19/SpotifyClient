@@ -32,12 +32,10 @@ export default NextAuth({
   pages: { signIn: "/login" },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      console.log("redirect: ", url);
-      console.log("redirect: ", baseUrl);
       return Promise.resolve(url);
     },
     async jwt({ token, account, user }) {
-      console.log("jwt ", account);
+      console.log(account);
       if (account && user) {
         return {
           ...token,
