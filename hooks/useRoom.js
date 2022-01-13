@@ -49,7 +49,7 @@ export default function useRoom({ socket, EVENTS }) {
     const playlistChanged = async () => {
       try {
         const getPlaylistResponse = await spotifyApi.getPlaylist(
-          String(partyPlaylistID)
+          String(roomPlaylistID)
         );
 
         setRoomPlaylistObject({ ...getPlaylistResponse.body });
