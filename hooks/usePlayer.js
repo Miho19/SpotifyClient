@@ -49,9 +49,16 @@ export default function usePlayer({ socket, EVENTS }) {
   useEffect(() => {
     const handleHostInit = async ({ playlistID }, callback) => {
       if (!isActive) {
-        signOut();
-        alert("Must have an active spotify device.");
-        return;
+        const getCurrentStateResponse =
+          await spotifyApi.getMyCurrentPlaybackState();
+
+        if (getCurrentStateResponse.body) {
+          setIsActive(true);
+        } else {
+          signOut();
+          alert("Must have an active spotify device.");
+          return;
+        }
       }
 
       const playResponse = await spotifyApi.play({
