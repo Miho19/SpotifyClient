@@ -45,7 +45,7 @@ export default function SocketContextProvider({ children }) {
 
   useEffect(() => {
     if (typeof window.document !== "undefined") {
-      const socketIO = io(URL, { autoConnect: false });
+      const socketIO = io(URL);
 
       setSocket(socketIO);
     }
@@ -69,6 +69,7 @@ export default function SocketContextProvider({ children }) {
     });
 
     socket?.on("connect_error", (error) => {
+      console.log("connection issues");
       socket.close();
     });
 
