@@ -38,9 +38,15 @@ export default function SocketContextProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const { data: session, loading } = useSession();
 
+  const URL =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:4000"
+      : "https://spotifyserver1.herokuapp.com/";
+
   useEffect(() => {
     if (typeof window.document !== "undefined") {
-      const socketIO = io("http://localhost:4000");
+      const socketIO = io(URL, { autoConnect: false });
+
       setSocket(socketIO);
     }
     return () => socket?.close();
@@ -61,6 +67,12 @@ export default function SocketContextProvider({ children }) {
         ...socket.data.user,
       });
     });
+
+    socket?.on("connect_error", (error) => {
+      socket.close();
+    });
+
+    return () => {};
   }, [socket]);
 
   return (

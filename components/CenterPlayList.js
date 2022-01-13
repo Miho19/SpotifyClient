@@ -57,7 +57,7 @@ export default function CenterPlayList() {
         }
         setCurrentPlaylistId(response.body.items[0].id);
       })
-      .catch((e) => console.log(e));
+      .catch((error) => console.error("get playlist:", error));
   }, []);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function CenterPlayList() {
       spotifyApi
         .getPlaylist(playlistId)
         .then((data) => setCurrentPlaylistObject(data.body))
-        .catch((err) => console.log(err));
+        .catch((error) => console.error("get playlist, id changed:", error));
     }
   }, [playlistId]);
 

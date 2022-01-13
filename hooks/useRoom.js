@@ -19,7 +19,7 @@ export default function useRoom({ socket, EVENTS }) {
       setRoomPlaylistID(playlistID);
       setRoomPlaylistSnapshotID(snapshotID);
     } catch (error) {
-      console.error(error);
+      console.error("update playlist: ", error);
     }
   };
 
@@ -54,7 +54,7 @@ export default function useRoom({ socket, EVENTS }) {
 
         setRoomPlaylistObject({ ...getPlaylistResponse.body });
       } catch (error) {
-        console.error(error);
+        console.error("playlist has changed: ", error);
       }
     };
 
@@ -88,7 +88,7 @@ export default function useRoom({ socket, EVENTS }) {
       socket?.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       socket?.emit(EVENTS.CLIENT.CHANGED_PARTYPLAYLIST);
     } catch (error) {
-      console.error(error);
+      console.error("remove song: ", error);
     }
   };
 

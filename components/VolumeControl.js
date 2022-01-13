@@ -6,7 +6,7 @@ import React, { useState, useEffect, useCallback } from "react";
 
 import useSpotify from "../hooks/useSpotify";
 
-export default function VolumeControl() {
+export default function VolumeControl({ playerActive }) {
   const [volume, setVolume] = useState(30);
   const spotifyApi = useSpotify();
 
@@ -21,6 +21,9 @@ export default function VolumeControl() {
   );
 
   useEffect(() => {
+    if (!spotifyApi || !spotifyApi.getAccessToken()) return;
+    if (!playerActive) return;
+
     if (volume >= 0 && volume <= 100) {
       debouncedAdjustVolume(volume);
     }

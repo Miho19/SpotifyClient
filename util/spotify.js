@@ -25,7 +25,7 @@ const state = "";
 
 const redirect =
   process.env.NODE_ENV === "development"
-    ? ""
+    ? "http://localhost:3000/api/auth/callback/spotify"
     : `https://spotify-client-blue.vercel.app/api/auth/callback/spotify`;
 
 const spotifyApi = new SpotifyWebApi({

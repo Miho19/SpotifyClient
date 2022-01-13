@@ -1,3 +1,4 @@
+import { signOut } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 
 import useSpotify from "./useSpotify";
@@ -5,6 +6,8 @@ import useSpotify from "./useSpotify";
 export default function usePlayer({ socket, EVENTS }) {
   const [isPaused, setIsPaused] = useState(false);
   const spotifyApi = useSpotify();
+
+  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     const songChanged = async ({ uri, progress }) => {
@@ -45,6 +48,12 @@ export default function usePlayer({ socket, EVENTS }) {
 
   useEffect(() => {
     const handleHostInit = async ({ playlistID }, callback) => {
+      if (!isActive) {
+        signOut();
+        alert("Must have an active spotify device.");
+        return;
+      }
+
       const playResponse = await spotifyApi.play({
         context_uri: `spotify:playlist:${playlistID}`,
         offset: { position: 0 },
@@ -80,7 +89,6 @@ export default function usePlayer({ socket, EVENTS }) {
         const getCurrentStateResponse =
           await spotifyApi.getMyCurrentPlaybackState();
 
-        console.log(getCurrentStateResponse);
         const { is_playing: isPlaying } = getCurrentStateResponse.body;
         setIsPaused(!isPlaying);
 
@@ -91,7 +99,7 @@ export default function usePlayer({ socket, EVENTS }) {
               position_ms: progress,
             });
       } catch (error) {
-        console.error(error);
+        console.error("handleToggle: ", error);
       }
     };
 
@@ -101,5 +109,15 @@ export default function usePlayer({ socket, EVENTS }) {
     };
   }, [socket]);
 
-  return { isPaused, togglePlayback };
+  useEffect(() => {
+    const getActive = async () => {
+      const getCurrentStateResponse =
+        await spotifyApi.getMyCurrentPlaybackState();
+      getCurrentStateResponse.body ? setIsActive(true) : setIsActive(false);
+    };
+
+    getActive();
+  }, []);
+
+  return { isPaused, togglePlayback, isActive };
 }

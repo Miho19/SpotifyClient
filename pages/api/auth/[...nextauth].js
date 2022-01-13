@@ -35,7 +35,6 @@ export default NextAuth({
       return Promise.resolve(url);
     },
     async jwt({ token, account, user }) {
-      console.log(account);
       if (account && user) {
         return {
           ...token,
