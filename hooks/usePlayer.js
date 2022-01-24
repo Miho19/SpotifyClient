@@ -5,9 +5,9 @@ import useSpotify from "./useSpotify";
 
 export default function usePlayer({ socket, EVENTS }) {
   const [isPaused, setIsPaused] = useState(false);
-  const spotifyApi = useSpotify();
-
   const [isActive, setIsActive] = useState(false);
+
+  const spotifyApi = useSpotify();
 
   useEffect(() => {
     const songChanged = async ({ uri, progress }) => {
@@ -48,30 +48,31 @@ export default function usePlayer({ socket, EVENTS }) {
 
   useEffect(() => {
     const handleHostInit = async ({ playlistID }, callback) => {
-      if (!isActive) {
-        const getCurrentStateResponse =
-          await spotifyApi.getMyCurrentPlaybackState();
+      const getCurrentStateResponse =
+        await spotifyApi.getMyCurrentPlaybackState();
 
-        if (getCurrentStateResponse.body) {
-          setIsActive(true);
-        } else {
-          signOut();
-          alert("Must have an active spotify device.");
-          return;
-        }
+      if (!getCurrentStateResponse.body) {
+        signOut();
+        alert("Must have an active spotify device.");
+        return;
       }
+
+      setIsActive(true);
+      setIsPaused(false);
 
       const playResponse = await spotifyApi.play({
         context_uri: `spotify:playlist:${playlistID}`,
         offset: { position: 0 },
+        position_ms: 0,
       });
 
-      socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
+      console.log(playResponse);
 
       const getPlaylistResponse = await spotifyApi.getPlaylist(playlistID);
       const { snapshot_id } = getPlaylistResponse.body;
 
       socket.data.user.host = true;
+      socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       callback({ playlistID, snapshotID: snapshot_id });
     };
 
@@ -91,6 +92,7 @@ export default function usePlayer({ socket, EVENTS }) {
         if (left) {
           const pauseResponse = await spotifyApi.pause();
           setIsPaused(true);
+          return;
         }
 
         const getCurrentStateResponse =
@@ -118,6 +120,7 @@ export default function usePlayer({ socket, EVENTS }) {
 
   useEffect(() => {
     const getActive = async () => {
+      if (!spotifyApi || !spotifyApi.getAccessToken()) return;
       const getCurrentStateResponse =
         await spotifyApi.getMyCurrentPlaybackState();
       getCurrentStateResponse.body ? setIsActive(true) : setIsActive(false);

@@ -1,13 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import { SocketContext } from "../context/socket.context";
-import useRoom from "../hooks/useRoom";
+import { RoomContext } from "../context/socket.context";
 
 import PartySong from "./PartySong";
 
 export default function PartySongQueue() {
-  const { socket, EVENTS } = useContext(SocketContext);
-
-  const { room, roomPlaylistObject, removeSong } = useRoom({ socket, EVENTS });
+  const { room, roomPlaylistObject, removeSong } = useContext(RoomContext);
 
   if (!roomPlaylistObject || !room.roomID)
     return (

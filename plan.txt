@@ -1,0 +1,2 @@
+Going to remove the ability to play alongside the host, instead the host is the sole player and other members within the party only have the ability to add songs, and vote to remove them.
+

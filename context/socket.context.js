@@ -1,9 +1,14 @@
 import { useSession } from "next-auth/react";
 import React, { createContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import useSpotify from "../hooks/useSpotify";
+import usePlayer from "../hooks/usePlayer";
+import useRoom from "../hooks/useRoom";
 
 export const SocketContext = createContext();
+
+export const RoomContext = createContext();
+
+export const PlayerContext = createContext();
 
 const EVENTS = {
   connection: "connection",
@@ -37,6 +42,16 @@ const EVENTS = {
 export default function SocketContextProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const { data: session, loading } = useSession();
+
+  const {
+    room,
+    roomPlaylistID,
+    roomPlaylistObject,
+    roomPlaylistSnapshotID,
+    removeSong,
+  } = useRoom({ socket, EVENTS });
+
+  const { isPaused, togglePlayback, isActive } = usePlayer({ socket, EVENTS });
 
   const URL =
     process.env.NODE_ENV === "development"
@@ -83,7 +98,19 @@ export default function SocketContextProvider({ children }) {
         EVENTS,
       }}
     >
-      {children}
+      <PlayerContext.Provider value={{ isPaused, togglePlayback, isActive }}>
+        <RoomContext.Provider
+          value={{
+            room,
+            roomPlaylistID,
+            roomPlaylistObject,
+            roomPlaylistSnapshotID,
+            removeSong,
+          }}
+        >
+          {children}
+        </RoomContext.Provider>
+      </PlayerContext.Provider>
     </SocketContext.Provider>
   );
 }

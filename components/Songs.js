@@ -23,9 +23,10 @@ export default function Songs({ partyPlaylistID }) {
 
       if (!isUnqiue) return; // TODO add in dialog or something saying track must be unique
 
-      const addTrackResponse = spotifyApi.addTracksToPlaylist(partyPlaylistID, [
-        track.track.uri,
-      ]);
+      const addTrackResponse = await spotifyApi.addTracksToPlaylist(
+        partyPlaylistID,
+        [track.track.uri]
+      );
 
       socket?.emit(EVENTS.CLIENT.CHANGED_PARTYPLAYLIST);
     } catch (error) {
