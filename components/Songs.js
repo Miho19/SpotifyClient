@@ -28,7 +28,7 @@ export default function Songs({ partyPlaylistID }) {
         [track.track.uri]
       );
 
-      socket?.emit(EVENTS.CLIENT.CHANGED_PARTYPLAYLIST);
+      socket?.emit(EVENTS.CLIENT.UPDATE_PLAYLIST);
     } catch (error) {
       console.error("add to partyplaylist: ", error);
     }

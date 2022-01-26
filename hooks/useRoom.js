@@ -29,7 +29,6 @@ export default function useRoom({ socket, EVENTS }) {
     const leaveRoom = async () => {
       setRoom({});
       setRoomPlaylistObject({});
-      socket.emit(EVENTS.CLIENT.TOGGLE_PLAYBACK, { left: true });
       socket.data.user.host = false;
     };
 
@@ -49,17 +48,17 @@ export default function useRoom({ socket, EVENTS }) {
         const getPlaylistResponse = await spotifyApi.getPlaylist(
           String(roomPlaylistID)
         );
-        console.log(getPlaylistResponse);
+
         setRoomPlaylistObject({ ...getPlaylistResponse.body });
       } catch (error) {
         console.error("playlist has changed: ", error);
       }
     };
 
-    socket?.on(EVENTS.SERVER.ROOM_PLAYLIST_CHANGED, playlistChanged);
+    socket?.on(EVENTS.SERVER.PLAYLIST_UPDATED, playlistChanged);
 
     return () => {
-      socket?.off(EVENTS.SERVER.ROOM_PLAYLIST_CHANGED, playlistChanged);
+      socket?.off(EVENTS.SERVER.PLAYLIST_UPDATED, playlistChanged);
     };
   }, [socket, roomPlaylistID]);
 
@@ -96,7 +95,7 @@ export default function useRoom({ socket, EVENTS }) {
       }
 
       socket?.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
-      socket?.emit(EVENTS.CLIENT.CHANGED_PARTYPLAYLIST);
+      socket?.emit(EVENTS.CLIENT.UPDATE_PLAYLIST);
     } catch (error) {
       console.error("remove song: ", error);
     }

@@ -38,10 +38,10 @@ export default function useCurrentTrack({ socket, EVENTS }) {
       }
     };
 
-    socket?.on(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
+    socket?.on(EVENTS.SERVER.CURRENT_SONG_CHANGED, songChanged);
 
     return () => {
-      socket?.off(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
+      socket?.off(EVENTS.SERVER.CURRENT_SONG_CHANGED, songChanged);
     };
   }, [socket]);
 

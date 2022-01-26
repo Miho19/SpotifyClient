@@ -10,21 +10,6 @@ export default function usePlayer({ socket, EVENTS }) {
   const spotifyApi = useSpotify();
 
   useEffect(() => {
-    const songChanged = async ({ uri, progress }) => {
-      const playResponse = await spotifyApi.play({
-        uris: [uri],
-        position_ms: progress,
-      });
-    };
-
-    socket?.on(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
-
-    return () => {
-      socket?.off(EVENTS.SERVER.ROOM_PLAYLIST_SONG_CHANGED, songChanged);
-    };
-  }, [socket]);
-
-  useEffect(() => {
     const handleGetSong = async (callback) => {
       if (!spotifyApi.getAccessToken()) return;
 
@@ -66,7 +51,7 @@ export default function usePlayer({ socket, EVENTS }) {
         position_ms: 0,
       });
 
-      console.log(playResponse);
+      console.log("play response:", playResponse);
 
       const getPlaylistResponse = await spotifyApi.getPlaylist(playlistID);
       const { snapshot_id } = getPlaylistResponse.body;
@@ -82,42 +67,6 @@ export default function usePlayer({ socket, EVENTS }) {
     };
   }, [socket]);
 
-  const togglePlayback = () => {
-    socket?.emit(EVENTS.CLIENT.TOGGLE_PLAYBACK, { left: false });
-  };
-
-  useEffect(() => {
-    const handleToggle = async ({ left, uri, progress }) => {
-      try {
-        if (left) {
-          const pauseResponse = await spotifyApi.pause();
-          setIsPaused(true);
-          return;
-        }
-
-        const getCurrentStateResponse =
-          await spotifyApi.getMyCurrentPlaybackState();
-
-        const { is_playing: isPlaying } = getCurrentStateResponse.body;
-        setIsPaused(!isPlaying);
-
-        isPlaying
-          ? await spotifyApi.pause()
-          : await spotifyApi.play({
-              uris: [uri],
-              position_ms: progress,
-            });
-      } catch (error) {
-        console.error("handleToggle: ", error);
-      }
-    };
-
-    socket?.on(EVENTS.SERVER.CLIENT_TOGGLED_PLAYBACK, handleToggle);
-    return () => {
-      socket?.off(EVENTS.SERVER.CLIENT_TOGGLED_PLAYBACK, handleToggle);
-    };
-  }, [socket]);
-
   useEffect(() => {
     const getActive = async () => {
       if (!spotifyApi || !spotifyApi.getAccessToken()) return;
@@ -129,5 +78,5 @@ export default function usePlayer({ socket, EVENTS }) {
     getActive();
   }, []);
 
-  return { isPaused, togglePlayback, isActive };
+  return { isPaused, isActive };
 }

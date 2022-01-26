@@ -7,7 +7,10 @@ import {
 
 import React from "react";
 
-export default function PlayerControls({ isPaused, togglePlayback }) {
+export default function PlayerControls({ isPaused }) {
+  const togglePlayback = () => {
+    console.log("playback toggled");
+  };
   return (
     <div className="flex items-center justify-center space-x-5 lg:space-x-10">
       <RewindIcon className="button opacity-20 hover:opacity-10" />
