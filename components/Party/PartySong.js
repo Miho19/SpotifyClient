@@ -1,5 +1,5 @@
 import React from "react";
-import msToMinutesAndSeconds from "../util/time";
+import msToMinutesAndSeconds from "../../util/time";
 
 export default function PartySong({
   name,

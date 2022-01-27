@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserAddIcon } from "@heroicons/react/solid";
-import { SocketContext } from "../context/socket.context";
+import { SocketContext } from "../../context/socket.context";
 import PartyMember from "./PartyMember";
 
 import PartyGroupUserControls from "./PartyGroupUserControls";

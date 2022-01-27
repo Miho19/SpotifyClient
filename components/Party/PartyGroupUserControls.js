@@ -1,6 +1,6 @@
 import { LogoutIcon } from "@heroicons/react/solid";
 import React, { useContext } from "react";
-import { SocketContext } from "../context/socket.context";
+import { SocketContext } from "../../context/socket.context";
 
 export default function PartyGroupUserControls() {
   const { socket, EVENTS } = useContext(SocketContext);

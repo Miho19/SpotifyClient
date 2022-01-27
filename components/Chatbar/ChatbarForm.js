@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { SocketContext } from "../context/socket.context";
+import { SocketContext } from "../../context/socket.context";
 
 export default function ChatbarForm({ roomID }) {
   const [value, setValue] = useState("");

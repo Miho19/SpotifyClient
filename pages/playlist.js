@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 
-import Sidebar from "../components/Sidebar";
-
-import Chatbar from "../components/Chatbar";
-import CenterPlayList from "../components/CenterPlayList";
+import Sidebar from "../components/Sidebar/Sidebar";
+import Chatbar from "../components/Chatbar/Chatbar";
+import CenterPlayList from "../components/Sidebar/CenterPlayList";
 
 import { getSession } from "next-auth/react";
 

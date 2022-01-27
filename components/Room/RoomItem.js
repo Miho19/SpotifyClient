@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { SocketContext } from "../context/socket.context";
+import { SocketContext } from "../../context/socket.context";
 
 export default function RoomItem({ name, totalMembers, roomJoinLink }) {
   const { socket, EVENTS } = useContext(SocketContext);

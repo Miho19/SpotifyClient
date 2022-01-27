@@ -4,7 +4,7 @@ import { debounce } from "lodash";
 
 import React, { useState, useEffect, useCallback } from "react";
 
-import useSpotify from "../hooks/useSpotify";
+import useSpotify from "../../hooks/useSpotify";
 
 export default function VolumeControl({ playerActive }) {
   const [volume, setVolume] = useState(30);

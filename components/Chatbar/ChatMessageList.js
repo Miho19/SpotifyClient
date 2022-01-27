@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { SocketContext } from "../context/socket.context";
-import useMessages from "../hooks/useMessages";
+import { SocketContext } from "../../context/socket.context";
+import useMessages from "../../hooks/useMessages";
 
 export default function ChatMessageList() {
   const messageEndReference = useRef(null);

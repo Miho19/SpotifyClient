@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { useRecoilValue } from "recoil";
-import { currentPlayListObject } from "../atoms/playlistAtom";
+import { currentPlayListObject } from "../../atoms/playlistAtom";
 import Song from "./Song";
-import useSpotify from "../hooks/useSpotify";
-import { SocketContext } from "../context/socket.context";
+import useSpotify from "../../hooks/useSpotify";
+import { SocketContext } from "../../context/socket.context";
 
 export default function Songs({ partyPlaylistID }) {
   const playlist = useRecoilValue(currentPlayListObject);

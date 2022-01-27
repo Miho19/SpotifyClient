@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { SocketContext } from "../context/socket.context";
-import useCurrentTrack from "../hooks/useCurrentTrack";
+import { SocketContext } from "../../context/socket.context";
+import useCurrentTrack from "../../hooks/useCurrentTrack";
 
 export default function CurrentTrackDisplay() {
   const { socket, EVENTS } = useContext(SocketContext);

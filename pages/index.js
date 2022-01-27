@@ -1,16 +1,15 @@
+import React from "react";
+import Sidebar from "../components/Sidebar/Sidebar";
+import Chatbar from "../components/Chatbar/Chatbar";
+import Party from "../components/Party/Party";
 import { getSession } from "next-auth/react";
-import Head from "next/head";
 
-import Sidebar from "../components/Sidebar";
-
-import Chatbar from "../components/Chatbar";
-
-export default function Home() {
+export default function party() {
   return (
-    <div className="bg-[#0f0f0f] h-[calc(100vh-6rem)] overflow-hidden scrollbar-hide ">
+    <div className="bg-[#0f0f0f] h-[calc(100vh-6rem)] scrollbar-hide overflow-hidden">
       <main className="flex h-full ">
         <Sidebar />
-        <div className="flex flex-grow w-full"></div>
+        <Party />
         <Chatbar />
       </main>
     </div>

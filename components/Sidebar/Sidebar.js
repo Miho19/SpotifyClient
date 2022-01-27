@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import { useRouter } from "next/router";
 
 import Link from "next/link";
 
-import {
-  HomeIcon,
-  SearchIcon,
-  PlusCircleIcon,
-  UserGroupIcon,
-} from "@heroicons/react/solid";
+import { HomeIcon } from "@heroicons/react/solid";
 
 import UserPlayLists from "./UserPlayLists";
 
@@ -29,29 +24,6 @@ export default function Sidebar() {
           >
             <HomeIcon className="h-5 w-5" />
             <p>Home</p>
-          </div>
-        </Link>
-
-        <Link href="/search" passHref>
-          <div
-            className={` cursor-pointer flex item-center space-x-2 hover:text-white ${
-              router.pathname === "/search" ? active : ""
-            }`}
-          >
-            <SearchIcon className="h-5 w-5" />
-            <p>Search</p>
-          </div>
-        </Link>
-
-        <hr className="border-t-[0.1px] border-gray-900" />
-        <Link href="/party" passHref>
-          <div
-            className={` cursor-pointer flex item-center space-x-2 hover:text-white ${
-              router.pathname === "/party" ? active : ""
-            }`}
-          >
-            <UserGroupIcon className="h-5 w-5" />
-            <p>Party</p>
           </div>
         </Link>
 

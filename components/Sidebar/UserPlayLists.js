@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import useSpotify from "../hooks/useSpotify";
+import useSpotify from "../../hooks/useSpotify";
 import Link from "next/link";
 import { useRecoilState } from "recoil";
-import { currentPlaylistId } from "../atoms/playlistAtom";
+import { currentPlaylistId } from "../../atoms/playlistAtom";
 
 import { useRouter } from "next/router";
 

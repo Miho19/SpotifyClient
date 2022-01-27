@@ -3,9 +3,9 @@ import React, { useContext, useState, useEffect } from "react";
 
 import ChatMessageList from "./ChatMessageList";
 import ChatbarForm from "./ChatbarForm";
-import { SocketContext } from "../context/socket.context";
-import RoomList from "./RoomList";
-import PartyGroup from "./PartyGroup";
+import { SocketContext } from "../../context/socket.context";
+import RoomList from "../Room/RoomList";
+import PartyGroup from "../Party/PartyGroup";
 
 export default function Chatbar() {
   const { socket, EVENTS } = useContext(SocketContext);

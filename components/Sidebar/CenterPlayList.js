@@ -6,11 +6,11 @@ import { useRecoilState } from "recoil";
 import {
   currentPlaylistId,
   currentPlayListObject,
-} from "../atoms/playlistAtom";
-import useSpotify from "../hooks/useSpotify";
+} from "../../atoms/playlistAtom";
+import useSpotify from "../../hooks/useSpotify";
 import Songs from "./Songs";
 import { useRouter } from "next/router";
-import { RoomContext } from "../context/socket.context";
+import { RoomContext } from "../../context/socket.context";
 
 const colors = [
   "from-indigo-500",

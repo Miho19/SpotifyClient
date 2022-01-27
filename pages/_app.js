@@ -3,7 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import { RecoilRoot } from "recoil";
 import SocketContextProvider from "../context/socket.context";
 
-import Player from "../components/Player";
+import Player from "../components/Player/Player";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (

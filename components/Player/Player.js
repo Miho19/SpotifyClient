@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { PlayerContext } from "../context/socket.context";
+import { PlayerContext } from "../../context/socket.context";
 
 import CurrentTrackDisplay from "./CurrentTrackDisplay";
 
