@@ -92,6 +92,8 @@ export default function useRoom({ socket, EVENTS }) {
 
       if (roomPlaylistObject.tracks.items.length > 1) {
         const skiptoNextResponse = await spotifyApi.skipToNext();
+      } else {
+        const pauseResponse = await spotifyApi.pause();
       }
 
       socket?.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
