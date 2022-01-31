@@ -35,7 +35,7 @@ export default function Party() {
           </h2>
           <hr />
         </header>
-        <div className="w-full h-full text-white">{songs}</div>
+        <div className="w-full h-full text-white space-y-4">{songs}</div>
       </main>
     </div>
   );
