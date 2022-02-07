@@ -13,7 +13,11 @@ export default function VolumeControl({ playerActive }) {
   const debouncedAdjustVolume = useCallback(
     debounce((volume) => {
       const volumeAdjust = async () => {
-        const volumeAdjustResponse = await spotifyApi.setVolume(volume);
+        try {
+          const volumeAdjustResponse = await spotifyApi.setVolume(volume);
+        } catch (error) {
+          console.log(error);
+        }
       };
       volumeAdjust();
     }, 500),

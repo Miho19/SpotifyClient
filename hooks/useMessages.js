@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import Dayjs from "dayjs";
+import UserIcon from "@heroicons/react/solid/UserIcon";
 
 const generateTime = (time) => {
   const timeDayjs = Dayjs(time);
@@ -18,10 +19,8 @@ const generateTime = (time) => {
 };
 
 const generateChat = (
-  { message, senderID, messageID, time },
-  userID,
-  imgSource,
-  userName
+  { message, senderID, senderName, senderImgSource, messageID, time },
+  userID
 ) => (
   <div
     key={messageID}
@@ -35,13 +34,17 @@ const generateChat = (
       {message}
     </span>
     <div className="flex w-full h-5 mt-1 items-center">
-      <img
-        src={imgSource}
-        alt="user profile picture"
-        className="w-5 h-5 rounded-full ml-1 mr-2"
-      />
+      {senderImgSource ? (
+        <img
+          src={senderImgSource}
+          alt="user profile picture"
+          className="w-5 h-5 rounded-full ml-1 mr-2"
+        />
+      ) : (
+        <UserIcon className="w-5 h-5 rounded-full ml-1 mr-2" />
+      )}
       <span className="hidden group-hover:inline text-white text-sm">
-        {userName}
+        {senderName}
       </span>
       <span className="hidden group-hover:inline text-white text-sm ml-auto ">
         {generateTime(time)}
@@ -62,26 +65,38 @@ export default function useMessages({ socket, EVENTS }) {
   const { data: session, loading } = useSession();
 
   useEffect(() => {
-    if (typeof window.document !== "undefined") {
-      socket?.on(
-        EVENTS.SERVER.EMIT_MESSAGE,
-        ({ message, senderID, messageID, time }) => {
-          const newMessage =
-            senderID === "__ADMIN__"
-              ? generateAdminChat({ message, messageID, time })
-              : generateChat(
-                  { message, senderID, messageID, time },
-                  socket.id,
-                  session?.user.image,
-                  session?.user.name
-                );
-          setMessages((messages) => [...messages, newMessage]);
-        }
-      );
-    }
+    const receiveMessage = ({
+      message,
+      senderID,
+      senderName,
+      senderImgSource,
+      messageID,
+      time,
+    }) => {
+      console.log(senderName);
+
+      const newMessage =
+        senderID === "__ADMIN__"
+          ? generateAdminChat({ message, messageID, time })
+          : generateChat(
+              {
+                message,
+                senderID,
+                senderName,
+                senderImgSource,
+                messageID,
+                time,
+              },
+              socket.id
+            );
+
+      setMessages((messages) => [...messages, newMessage]);
+    };
+
+    socket?.on(EVENTS.SERVER.EMIT_MESSAGE, receiveMessage);
 
     return () => {
-      socket?.off(EVENTS.SERVER.EMIT_MESSAGE);
+      socket?.off(EVENTS.SERVER.EMIT_MESSAGE, receiveMessage);
     };
   }, [socket]);
 

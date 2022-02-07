@@ -1,6 +1,8 @@
 import React from "react";
 import Dayjs from "dayjs";
 
+import UserIcon from "@heroicons/react/solid/UserIcon";
+
 const generateTime = (time) => {
   const timeDayjs = Dayjs(time);
   const now = Dayjs();
@@ -31,11 +33,15 @@ const generateTime = (time) => {
 export default function PartyMember({ name, imgSource, time }) {
   return (
     <div className="w-full h-10 flex space-x-2  bg-white/5 items-center group hover:bg-white/20">
-      <img
-        src={imgSource}
-        alt="picture of user"
-        className="w-8 h-8 rounded-full ml-4 lg:group-hover:hidden"
-      />
+      {imgSource ? (
+        <img
+          src={imgSource}
+          alt="picture of user"
+          className="w-8 h-8 rounded-full ml-4 lg:group-hover:hidden"
+        />
+      ) : (
+        <UserIcon className="w-8 h-8 rounded-full ml-4 lg:group-hover:hidden" />
+      )}
       <div className="flex flex-col">
         <h3 className="text-white font-medium hidden sm:inline group-hover:text-xs ">
           {name}

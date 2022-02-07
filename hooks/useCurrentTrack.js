@@ -21,7 +21,11 @@ export default function useCurrentTrack({ socket, EVENTS }) {
         limit: 1,
       });
 
-      setCurrentTrack(pastTrackResponse.body.items[0].track);
+      if (pastTrackResponse.body.items.length) {
+        setCurrentTrack(pastTrackResponse.body.items[0].track);
+        return;
+      }
+      setCurrentTrack(null);
     };
 
     if (!spotifyApi || !spotifyApi.getAccessToken()) return;

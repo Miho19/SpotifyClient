@@ -6,6 +6,8 @@ export default function CurrentTrackDisplay() {
   const { socket, EVENTS } = useContext(SocketContext);
   const currentTrack = useCurrentTrack({ socket, EVENTS });
 
+  if (!currentTrack) return <div className="flex items-center space-x-4"></div>;
+
   return (
     <div className="flex items-center space-x-4">
       <img

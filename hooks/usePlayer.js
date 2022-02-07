@@ -33,25 +33,34 @@ export default function usePlayer({ socket, EVENTS }) {
 
   useEffect(() => {
     const handleHostInit = async ({ playlistID }, callback) => {
-      const getCurrentStateResponse =
-        await spotifyApi.getMyCurrentPlaybackState();
+      try {
+        const getCurrentStateResponse =
+          await spotifyApi.getMyCurrentPlaybackState();
 
-      if (!getCurrentStateResponse.body) {
-        signOut();
-        alert("Must have an active spotify device.");
-        return;
+        if (!getCurrentStateResponse.body) {
+          signOut();
+          alert("Must have an active spotify device.");
+          return;
+        }
+
+        setIsActive(true);
+        setIsPaused(false);
+      } catch (error) {
+        console.error(error);
+        console.log("host init: get current song");
       }
 
-      setIsActive(true);
-      setIsPaused(false);
+      const getUserProfile = await spotifyApi.getMe();
+
+      if (getUserProfile.body.product !== "premium") {
+        return callback({}, "free");
+      }
 
       const playResponse = await spotifyApi.play({
         context_uri: `spotify:playlist:${playlistID}`,
         offset: { position: 0 },
         position_ms: 0,
       });
-
-      console.log("play response:", playResponse);
 
       const getPlaylistResponse = await spotifyApi.getPlaylist(playlistID);
       const { snapshot_id } = getPlaylistResponse.body;
