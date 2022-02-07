@@ -13,6 +13,7 @@ export const PlayerContext = createContext();
 const EVENTS = {
   connection: "connection",
   disconnect: "disconnect",
+  disconnecting: "disconnecting",
   CLIENT: {
     SET_USER_PROFILE: "SET_USER_PROFILE",
     JOIN_ROOM: "JOIN_ROOM",
