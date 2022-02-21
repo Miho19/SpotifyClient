@@ -6,6 +6,7 @@ import useSpotify from "./useSpotify";
 export default function usePlayer({ socket, EVENTS }) {
   const [isPaused, setIsPaused] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [isHost, setIsHost] = useState(false);
 
   const spotifyApi = useSpotify();
 
@@ -28,6 +29,18 @@ export default function usePlayer({ socket, EVENTS }) {
     socket?.on(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
     return () => {
       socket?.off(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const setHostStatus = ({ status }) => {
+      setIsHost(status);
+    };
+
+    socket?.on(EVENTS.SERVER.CLIENT_SET_HOST, setHostStatus);
+
+    return () => {
+      socket?.off(EVENTS.SERVER.CLIENT_SET_HOST, setHostStatus);
     };
   }, [socket]);
 
@@ -66,6 +79,7 @@ export default function usePlayer({ socket, EVENTS }) {
       const { snapshot_id } = getPlaylistResponse.body;
 
       socket.data.user.host = true;
+      setIsHost(true);
       socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       callback({ playlistID, snapshotID: snapshot_id });
     };
@@ -87,5 +101,5 @@ export default function usePlayer({ socket, EVENTS }) {
     getActive();
   }, []);
 
-  return { isPaused, isActive };
+  return { isPaused, isActive, isHost };
 }

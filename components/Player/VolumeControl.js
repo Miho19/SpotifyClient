@@ -2,13 +2,16 @@ import { VolumeOffIcon, VolumeUpIcon } from "@heroicons/react/outline";
 
 import { debounce } from "lodash";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
+import { PlayerContext } from "../../context/socket.context";
 
 import useSpotify from "../../hooks/useSpotify";
 
-export default function VolumeControl({ playerActive }) {
-  const [volume, setVolume] = useState(30);
+export default function VolumeControl() {
+  const [volume, setVolume] = useState(50);
   const spotifyApi = useSpotify();
+
+  const { isActive: playerActive } = useContext(PlayerContext);
 
   const debouncedAdjustVolume = useCallback(
     debounce((volume) => {

@@ -26,6 +26,7 @@ const EVENTS = {
     HOST_CHANGE_SONG: "HOST_CHANGE_SONG",
   },
   SERVER: {
+    CLIENT_SET_HOST: "CLIENT_SET_HOST",
     CLIENT_JOINED_ROOM: "CLIENT_JOINED_ROOM",
     CLIENT_LEFT_ROOM: "CLIENT_LEFT_ROOM",
     EMIT_MESSAGE: "EMIT_MESSAGE",
@@ -49,7 +50,7 @@ export default function SocketContextProvider({ children }) {
     removeSong,
   } = useRoom({ socket, EVENTS });
 
-  const { isPaused, togglePlayback, isActive } = usePlayer({ socket, EVENTS });
+  const { isPaused, isActive, isHost } = usePlayer({ socket, EVENTS });
 
   const URL =
     process.env.NODE_ENV === "development"
@@ -96,7 +97,7 @@ export default function SocketContextProvider({ children }) {
         EVENTS,
       }}
     >
-      <PlayerContext.Provider value={{ isPaused, togglePlayback, isActive }}>
+      <PlayerContext.Provider value={{ isPaused, isActive, isHost }}>
         <RoomContext.Provider
           value={{
             room,
