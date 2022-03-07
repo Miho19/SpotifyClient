@@ -1,49 +1,78 @@
-import React from "react";
+import React, { useState } from "react";
 import msToMinutesAndSeconds from "../../util/time";
-import { PlayIcon } from "@heroicons/react/outline";
+import { PlayIcon, XIcon } from "@heroicons/react/solid";
 import { ThumbDownIcon, ThumbUpIcon } from "@heroicons/react/solid";
+import clsx from "clsx";
 
 export default function PartySong({
-  name,
+  songName,
   artist,
   albumImgSource,
   albumName,
   duration_ms,
   trackUri,
   index,
-  handleClick,
+  voteNumber,
+  removeSong,
+  voteSong,
+  isChatOpen,
+  clicked,
+  setClicked,
 }) {
   return (
     <div
-      className="grid grid-cols-2 cursor-pointer px-4 py-1 hover:bg-white/25 w-full group"
-      onClick={() => handleClick(trackUri, index)}
+      className={clsx(
+        "grid grid-cols-2 grid-rows-1 gap-1 w-full h-16  group cursor-pointer",
+        clicked && "bg-white/30",
+        !clicked && "hover:bg-white/20"
+      )}
+      onClick={() => {
+        setClicked(index);
+      }}
     >
-      <div className="flex items-center space-x-2">
-        {index !== 0 ? (
-          <p className="mr-3">{index + 1}</p>
+      <div
+        className={clsx(
+          "col-span-1  flex items-center h-full w-full space-x-2"
+        )}
+      >
+        {index === 0 ? (
+          <div className="">
+            {clicked ? (
+              <XIcon
+                className="w-5 h-5 text-white"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeSong(trackUri, index);
+                }}
+              />
+            ) : (
+              <PlayIcon className="w-5 h-5 text-green-500 animate-bounce" />
+            )}
+          </div>
         ) : (
-          <PlayIcon className="w-6 h-6 text-green-500 animate-bounce" />
+          <div className="w-5 h-5 ml-1">{index + 1}</div>
         )}
         <img src={albumImgSource} alt={`${albumName}`} className="w-10 h-10" />
-        <div className="">
-          <p
-            className={`text-md w-36 truncate ${
-              index === 0 && `text-green-500 font-medium`
-            }`}
+        <div>
+          <div
+            className={clsx(
+              "text-sm text-white truncate",
+              index === 0 && "text-green-400"
+            )}
           >
-            {name}
-          </p>
-          <p className="text-sm w-40 truncate">{artist}</p>
-        </div>
-        <div className="flex items-center justify-between">
-          <p className="hidden 2xl:inline w-64">{albumName}</p>
-          <p className="ml-auto inline">{msToMinutesAndSeconds(duration_ms)}</p>
+            {songName}
+          </div>
+          <div className="text-gray-400 text-sm">{artist}</div>
         </div>
       </div>
-      <div className="ml-auto flex items-center space-x-2">
-        <ThumbUpIcon className="button text-green-300" />
-        <p>1</p>
-        <ThumbDownIcon className="button text-red-500" />
+      <div
+        className={clsx(
+          "col-span-1  w-full h-full flex flex-col justify-center"
+        )}
+      >
+        <div className={clsx("ml-auto xs:ml-0")}>
+          {msToMinutesAndSeconds(duration_ms)}
+        </div>
       </div>
     </div>
   );

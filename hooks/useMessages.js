@@ -24,12 +24,12 @@ const generateChat = (
 ) => (
   <div
     key={messageID}
-    className="p-1 text-white group flex flex-col items-start cursor-pointer"
+    className=" text-white group flex flex-col items-start cursor-pointer w-full"
   >
     <span
       className={`${
         userID !== senderID ? `bg-[#1DB954]` : `bg-[#0e0b0b]`
-      } h-auto text-white text-lg font-normal rounded-md max-w-full text-clip overflow-hidden p-2 `}
+      } h-auto text-white text-lg font-normal rounded-md max-w-full p-1 break-all`}
     >
       {message}
     </span>

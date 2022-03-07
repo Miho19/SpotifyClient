@@ -1,60 +1,54 @@
-import { UserAddIcon } from "@heroicons/react/solid";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChatIcon,
+} from "@heroicons/react/solid";
 import React, { useContext, useState, useEffect } from "react";
 
 import ChatMessageList from "./ChatMessageList";
 import ChatbarForm from "./ChatbarForm";
-import { SocketContext } from "../../context/socket.context";
+import { RoomContext, SocketContext } from "../../context/socket.context";
 import RoomList from "../Room/RoomList";
 import PartyGroup from "../Party/PartyGroup";
+import { DrawerContext } from "../../context/drawers.context";
 
 export default function Chatbar() {
-  const { socket, EVENTS } = useContext(SocketContext);
-  const [room, setRoom] = useState({});
+  const { room } = useContext(RoomContext);
+  const { isChatOpen, isSidebarOpen, setDrawerStatus } =
+    useContext(DrawerContext);
 
-  useEffect(() => {
-    const joinRoom = ({ roomID, roomName }) => {
-      setRoom({ roomID: roomID, roomName: roomName });
-    };
+  if (isChatOpen)
+    return (
+      <div className=" max-w-[calc(100vw-1rem)] min-w-[calc(100vw-1rem)] md:min-w-[18rem] md:max-w-[18rem] max-h-[calc(100vh-6rem)] flex flex-col justify-start items-start bg-black ">
+        <header className="flex w-full h-10 items-center justify-start pt-5 pb-5">
+          <h2 className="text-lg text-white ml-5 font-medium">
+            {room.roomID ? `${room.roomName}` : `Party Chat`}
+          </h2>
+          <ArrowRightIcon
+            className="w-5 h-5 text-white/50 ml-auto mr-5 hover:text-white/60 hover:bg-white/20 hover:rounded-full "
+            onClick={() => setDrawerStatus("CLOSE", "CHATBAR")}
+          />
+        </header>
 
-    const leaveRoom = () => {
-      setRoom({});
-    };
+        <ChatMessageList />
+        <ChatbarForm roomID={room.roomID} />
 
-    socket?.on(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
-    socket?.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
-
-    return () => {
-      socket?.off(EVENTS.SERVER.CLIENT_JOINED_ROOM, joinRoom);
-      socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
-    };
-  }, [socket, room]);
-
-  useEffect(() => {
-    const initRoom = ({ roomID, roomName }) => {
-      if (!roomID || !roomName) setRoom({});
-      setRoom({ roomID: roomID, roomName: roomName });
-    };
-
-    socket?.emit(EVENTS.CLIENT.GET_CURRENT_ROOM, initRoom);
-  }, [socket]);
-
-  return (
-    <div className="min-w-[20rem] max-w-[20rem] max-h-[calc(100vh-6rem)] flex flex-col justify-start items-start bg-black ">
-      <header className="flex w-full h-10 items-center justify-start pt-5 pb-5">
-        <h2 className="text-lg text-white ml-5 font-medium">
-          {room.roomID ? `${room.roomName}` : `Party Chat`}
-        </h2>
-        <UserAddIcon className="w-5 h-5 text-white/50 ml-auto mr-5 hover:text-white/60 hover:bg-white/20 hover:rounded-full " />
-      </header>
-
-      <ChatMessageList />
-      <ChatbarForm roomID={room.roomID} />
-
-      <div className="flex h-[25%] overflow-scroll scrollbar-hide w-full bg-black">
-        <div className=" bg-black w-full">
-          {room.roomID ? <PartyGroup /> : <RoomList />}
+        <div className="flex h-[25%] overflow-scroll scrollbar-hide w-full bg-black">
+          <div className=" bg-black w-full">
+            {room.roomID ? <PartyGroup /> : <RoomList />}
+          </div>
         </div>
       </div>
+    );
+
+  return (
+    <div
+      className="max-h-[calc(100vh-6rem)] bg-gradient-to-b from-black to-[#292929] w-[1rem] group flex items-center justify-center cursor-pointer hover:bg-black/80"
+      onClick={() => {
+        setDrawerStatus("OPEN", "CHATBAR");
+      }}
+    >
+      <ChatIcon className="w-5 h-5 text-white/60 group-hover:text-white/100 group-hover:bg-white/20 group-hover:rounded-full " />
     </div>
   );
 }

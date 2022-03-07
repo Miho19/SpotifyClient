@@ -1,6 +1,8 @@
-const {
-  colors: { teal, orange, pink, ...colors },
-} = require("tailwindcss/defaultTheme");
+// const {
+//   colors: { ...colors },
+// } = require("tailwindcss/defaultTheme");
+
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   mode: "jit",
@@ -14,12 +16,14 @@ module.exports = {
   theme: {
     colors: colors,
     screens: {
+      xxs: "280px",
       xs: "580px",
       sm: "640px",
       // => @media (min-width: 640px) { ... }
 
       md: "768px",
       // => @media (min-width: 768px) { ... }
+      mdd: "890px",
 
       lg: "1024px",
       // => @media (min-width: 1024px) { ... }

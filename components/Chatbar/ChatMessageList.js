@@ -17,7 +17,7 @@ export default function ChatMessageList() {
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[65%] w-full bg-[#050404] mt-1 p-1 overflow-scroll scrollbar-hide">
+    <div className="flex flex-col h-[65%] w-full bg-[#050404] mt-1 p-1 overflow-scroll scrollbar-hide space-y-2">
       {messages}
       <div ref={messageEndReference} />
     </div>

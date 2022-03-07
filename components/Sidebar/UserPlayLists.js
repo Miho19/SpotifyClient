@@ -27,7 +27,7 @@ export default function UserPlayLists() {
   }, []);
 
   return (
-    <div className="text-gray-500 text-xs lg:text-sm space-y-4 pt-4 overflow-auto scrollbar-hide">
+    <div className="text-gray-500 text-md font-medium space-y-3 pt-4 overflow-auto scrollbar-hide">
       {allUserPlaylists.map((playlist) => (
         <Link href="/playlist" passHref key={playlist.id}>
           <p

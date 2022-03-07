@@ -43,7 +43,7 @@ export default function PartyMember({ name, imgSource, time }) {
         <UserIcon className="w-8 h-8 rounded-full ml-4 lg:group-hover:hidden" />
       )}
       <div className="flex flex-col">
-        <h3 className="text-white font-medium hidden sm:inline group-hover:text-xs ">
+        <h3 className="text-white font-medium inline group-hover:text-xs ">
           {name}
         </h3>
         <h3 className="text-white font-medium text-xs hidden group-hover:inline">

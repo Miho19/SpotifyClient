@@ -35,7 +35,7 @@ export default function Songs({ partyPlaylistID }) {
   };
 
   return (
-    <div className="flex flex-col px-8 space-y-1 pb-28 text-white">
+    <div className="flex flex-col w-full h-full space-y-5 px-1">
       {playlist?.tracks.items.map((track, i) => (
         <Song
           key={track.track.id}

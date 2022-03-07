@@ -11,17 +11,25 @@ import useSpotify from "../../hooks/useSpotify";
 import Songs from "./Songs";
 import { useRouter } from "next/router";
 import { RoomContext } from "../../context/socket.context";
+import clsx from "clsx";
+import StickyHeader from "./StickyHeader";
+
+/**
+ * https://stackoverflow.com/questions/16302483/event-to-detect-when-positionsticky-is-triggered
+ */
+/**  */
 
 const colors = [
-  "from-indigo-500",
-  "from-blue-500",
-  "from-green-500",
-  "from-red-500",
-  "from-yellow-500",
-  "from-pink-500",
-  "from-purple-500",
+  "from-indigo-800",
+  "from-purple-700",
+  "from-red-900",
+  "from-gray-600",
+  "from-orange-600",
+  "from-amber-400",
+  "from-lime-800",
+  "from-sky-500",
+  "from-rose-700",
 ];
-
 export default function CenterPlayList() {
   const { data: session, loading } = useSession();
   const { roomPlaylistID } = useContext(RoomContext);
@@ -69,41 +77,37 @@ export default function CenterPlayList() {
     }
   }, [playlistId]);
 
-  return (
-    <div className="flex-grow h-screen overflow-y-scroll scrollbar-hide">
-      <header className="absolute top-5 right-[21rem]">
-        <div
-          className="flex items-center bg-black bg-opacity-70 space-x-3 hover:bg-opacity-80 cursor-pointer rounded-full p-1 pr-2 text-white font-medium"
-          onClick={() => signOut()}
-        >
-          <img
-            className="rounded-full w-7 h-7 ml-1 sm:ml-0"
-            src={session?.user.image}
-            alt=""
-          />
-          <h2 className="hidden lg:block ">{session?.user.name}</h2>
-          <ChevronDownIcon className="h-5 w-5 hidden lg:block" />
-        </div>
-      </header>
+  const user = {
+    name: session?.user.name,
+    imgSource: session.user.image,
+  };
 
-      <section
-        className={`flex items-end space-x-7 bg-gradient-to-b to-black ${color} h-80 text-white p-8`}
-      >
-        <img
-          src={playlistObject?.images?.[0].url}
-          alt="playlist image"
-          className="h-44 w-44 shadow-2xl"
-        />
-        <div>
-          <p className="uppercase font-bold">playlist</p>
-          <h1 className="text-2xl md:text-3xl xl:text-5xl font-bold">
-            {playlistObject?.name}
-          </h1>
-        </div>
-      </section>
-      <div>
+  return (
+    <div className="h-screen overflow-y-scroll scrollbar-hide overflow-hidden w-full">
+      <StickyHeader
+        playlistName={playlistObject?.name}
+        imgSource={playlistObject?.images[0].url}
+        color={color}
+        user={user}
+      />
+      <div className="">
         <Songs partyPlaylistID={roomPlaylistID} />
       </div>
     </div>
   );
+}
+
+{
+  /* <div
+className="flex items-center bg-black bg-opacity-70 space-x-3 hover:bg-opacity-80 cursor-pointer rounded-full p-1 pr-2 text-white font-medium"
+onClick={() => signOut()}
+>
+<img
+  className="rounded-full w-7 h-7 ml-1 sm:ml-0"
+  src={session?.user.image}
+  alt=""
+/>
+<h2 className="hidden lg:block ">{session?.user.name}</h2>
+<ChevronDownIcon className="h-5 w-5 hidden lg:block" />
+</div> */
 }

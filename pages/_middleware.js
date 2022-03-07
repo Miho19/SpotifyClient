@@ -21,6 +21,10 @@ export async function middleware(req) {
   }
 
   if (!token && pathname !== "/login") {
-    return NextResponse.redirect("/login");
+    const redirect =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/login"
+        : `https://spotify-client-blue.vercel.app/login`;
+    return NextResponse.redirect(redirect);
   }
 }
