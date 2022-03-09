@@ -5,6 +5,7 @@ export const DrawerContext = createContext();
 export default function DrawersContextProvider({ children }) {
   const [isChatOpen, setChatOpen] = useState(false);
   const [isSidebarOpen, setSibebarOpen] = useState(false);
+  const breakpoint = 768;
 
   const setDrawerStatus = (operation, target) => {
     const operations = {
@@ -16,8 +17,6 @@ export default function DrawersContextProvider({ children }) {
       SIDEBAR: { value: isSidebarOpen, set: setSibebarOpen },
       CHATBAR: { value: isChatOpen, set: setChatOpen },
     };
-
-    const breakpoint = 768;
 
     const operationTest = operations[operation];
 
@@ -42,13 +41,29 @@ export default function DrawersContextProvider({ children }) {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      const tailwindMedium = 768;
-      if (width < tailwindMedium) {
+
+      if (width < breakpoint) {
         setChatOpen(false);
-        setSibebarOpen(false);
+
         return;
       }
       setChatOpen(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+
+      if (width < breakpoint) {
+        setSibebarOpen(false);
+        return;
+      }
+
       setSibebarOpen(true);
     };
     window.addEventListener("resize", handleResize);
@@ -56,6 +71,22 @@ export default function DrawersContextProvider({ children }) {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (window.innerWidth > breakpoint) {
+      setChatOpen(true);
+    }
+  }, [isChatOpen]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (window.innerWidth > breakpoint) {
+      setSibebarOpen(true);
+    }
+  }, [isSidebarOpen]);
 
   return (
     <DrawerContext.Provider
