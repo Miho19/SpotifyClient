@@ -69,11 +69,11 @@ export default function usePlayer({ socket, EVENTS }) {
         return callback({}, "free");
       }
 
-      const playResponse = await spotifyApi.play({
-        context_uri: `spotify:playlist:${playlistID}`,
-        offset: { position: 0 },
-        position_ms: 0,
-      });
+      // const playResponse = await spotifyApi.play({
+      //   context_uri: `spotify:playlist:${playlistID}`,
+      //   offset: { position: 0 },
+      //   position_ms: 0,
+      // });
 
       const getPlaylistResponse = await spotifyApi.getPlaylist(playlistID);
       const { snapshot_id } = getPlaylistResponse.body;
