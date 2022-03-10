@@ -78,7 +78,7 @@ export default function DrawersContextProvider({ children }) {
     if (window.innerWidth > breakpoint) {
       setChatOpen(true);
     }
-  }, [isChatOpen]);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -86,7 +86,7 @@ export default function DrawersContextProvider({ children }) {
     if (window.innerWidth > breakpoint) {
       setSibebarOpen(true);
     }
-  }, [isSidebarOpen]);
+  }, []);
 
   return (
     <DrawerContext.Provider

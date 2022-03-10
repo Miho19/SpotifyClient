@@ -1,6 +1,5 @@
 import React from "react";
-import { HomeIcon } from "@heroicons/react/solid/";
-
+import UserDisplay from "../Common/UserDisplay";
 export default function ScrollingHeader({ color, imgSource, playlistName }) {
   return (
     <header
@@ -12,7 +11,10 @@ export default function ScrollingHeader({ color, imgSource, playlistName }) {
         alt={`${playlistName} playlist cover`}
       />
 
-      <div className="text-sm font-medium text-white">{playlistName}</div>
+      <div className="text-sm font-medium text-white w-full whitespace-nowrap overflow-hidden">
+        {playlistName}
+      </div>
+      <UserDisplay />
     </header>
   );
 }

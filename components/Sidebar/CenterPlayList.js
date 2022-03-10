@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from "@heroicons/react/outline";
 import { useSession, getSession, signOut } from "next-auth/react";
 import React, { useState, useEffect, useContext } from "react";
 import { shuffle } from "lodash";
@@ -11,7 +10,7 @@ import useSpotify from "../../hooks/useSpotify";
 import Songs from "./Songs";
 import { useRouter } from "next/router";
 import { RoomContext } from "../../context/socket.context";
-import clsx from "clsx";
+
 import StickyHeader from "./StickyHeader";
 
 /**
@@ -95,19 +94,4 @@ export default function CenterPlayList() {
       </div>
     </div>
   );
-}
-
-{
-  /* <div
-className="flex items-center bg-black bg-opacity-70 space-x-3 hover:bg-opacity-80 cursor-pointer rounded-full p-1 pr-2 text-white font-medium"
-onClick={() => signOut()}
->
-<img
-  className="rounded-full w-7 h-7 ml-1 sm:ml-0"
-  src={session?.user.image}
-  alt=""
-/>
-<h2 className="hidden lg:block ">{session?.user.name}</h2>
-<ChevronDownIcon className="h-5 w-5 hidden lg:block" />
-</div> */
 }

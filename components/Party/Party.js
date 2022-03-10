@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { RoomContext } from "../../context/socket.context";
+import UserDisplay from "../Common/UserDisplay";
 
 import PartySong from "./PartySong";
 
@@ -9,9 +10,6 @@ export default function Party({ isChatOpen }) {
   const [isClicked, setIsClicked] = useState({ index: -1 });
 
   const clickSong = (index) => {
-    console.log(index);
-    console.log(isClicked.index);
-
     isClicked.index === index
       ? setIsClicked({ index: -1 })
       : setIsClicked({ index: index });
@@ -49,6 +47,7 @@ export default function Party({ isChatOpen }) {
   return (
     <div className="h-[calc(100vh-6rem)] overflow-y-scroll scrollbar-hide bg-gradient-to-b from-[#242424] to-[#161616] w-full">
       <main className="h-full w-full pt-2 px-3 md:p-8 overflow-scroll scrollbar-hide">
+        <UserDisplay />
         <header className="w-full h-10">
           <h2 className=" text-white font-medium text-lg">
             {text !== "" ? text : "Now playing"}

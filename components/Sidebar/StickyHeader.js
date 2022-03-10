@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, { useState, useRef, useEffect } from "react";
+import UserDisplay from "../Common/UserDisplay";
 
 import PlaylistTop from "./PlaylistTop";
 import ScrollingHeader from "./ScrollingHeader";
