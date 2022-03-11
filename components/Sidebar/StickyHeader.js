@@ -13,8 +13,6 @@ export default function StickyHeader({ color, imgSource, playlistName }) {
     const ref = headerReference.current;
 
     const observerCallback = ([entries]) => {
-      console.log(entries.boundingClientRect.y < 0);
-
       setSticky(entries.boundingClientRect.y < 0);
     };
 
@@ -28,8 +26,6 @@ export default function StickyHeader({ color, imgSource, playlistName }) {
       observer.unobserve(ref);
     };
   }, [isSticky]);
-
-  console.log(color);
 
   return (
     <section ref={headerReference} className={`sticky top-[-1px]`}>

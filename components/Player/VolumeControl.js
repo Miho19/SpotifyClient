@@ -37,7 +37,7 @@ export default function VolumeControl() {
   }, [volume]);
 
   return (
-    <div className="flex items-center space-x-1 md:space-x-4 justify-end pr-5">
+    <div className="flex items-center justify-center space-x-1">
       {volume === 0 ? (
         <VolumeOffIcon className="button" onClick={() => setVolume(50)} />
       ) : (
@@ -49,7 +49,7 @@ export default function VolumeControl() {
         value={volume}
         min={0}
         max={100}
-        className="w-14 md:w-28"
+        className="w-10 xxs:w-14 xs:w-20"
         onChange={(e) => setVolume(Number(e.target.value))}
       />
     </div>

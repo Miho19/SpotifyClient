@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 
 import msToMinutesAndSeconds from "../../util/time";
 
-export default function Song({ order, track, handleClick }) {
+import SongContextMenu from "./SongContextMenu";
+
+export default function Song({ order, track, handleClick, handleContextMenu }) {
   return (
     <div
       className="grid grid-cols-2  hover:bg-white/20 rounded-lg cursor-pointer py-2 px-3"
       onClick={() => handleClick(track)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        handleContextMenu({ track: track, x: e.pageX, y: e.pageY });
+      }}
     >
       <div className="flex items-center space-x-4">
         <p className="text-gray-400">{order + 1}</p>

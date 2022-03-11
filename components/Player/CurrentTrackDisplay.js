@@ -1,49 +1,49 @@
 import clsx from "clsx";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { debounce } from "lodash";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { SocketContext } from "../../context/socket.context";
 import useCurrentTrack from "../../hooks/useCurrentTrack";
+import ScrollingDisplay from "./ScrollingDisplay";
+import StaticDisplay from "./StaticDisplay";
 
 export default function CurrentTrackDisplay() {
   const { socket, EVENTS } = useContext(SocketContext);
   const currentTrack = useCurrentTrack({ socket, EVENTS });
-
-  const [songNameOverflow, setSongNameOverflow] = useState(false);
-
-  const songNameReference = useRef();
+  const [windowWidth, setWindowWidth] = useState(0);
+  const smBreakpoint = 640;
 
   useEffect(() => {
-    const determineScroll = (reference) => {
-      if (!reference) return;
-      setSongNameOverflow(reference.offsetWidth < reference.scrollWidth);
-    };
+    const deboucedWidthAdjustment = debounce(() => {
+      setWindowWidth(window.innerWidth);
+    }, 150);
 
-    determineScroll(songNameReference.current);
-  }, [songNameOverflow, currentTrack]);
+    window.addEventListener("resize", deboucedWidthAdjustment);
+
+    return () => {
+      window.removeEventListener("resize", deboucedWidthAdjustment);
+    };
+  }, [windowWidth]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setWindowWidth(window.innerWidth);
+  }, [windowWidth]);
 
   if (!currentTrack) return <div className="flex items-center space-x-4"></div>;
 
-  return (
-    <div className="flex items-center space-x-1">
-      <img
-        src={currentTrack?.album?.images[0].url}
-        alt={`album cover of ${currentTrack?.album?.name} by ${currentTrack?.artists[0].name}`}
-        className="hidden md:inline h-10 w-10"
-      />
-      <div className="w-[6.5rem] xxs:w-[9rem] xs:w-[15rem] sm:w-[17rem] overflow-hidden">
-        <div
-          className={clsx(
-            "text-xs font-medium text-clip whitespace-nowrap w-full",
-            songNameOverflow && "scroller"
-          )}
-          ref={songNameReference}
-        >
-          {currentTrack?.name}
-        </div>
+  if (windowWidth >= smBreakpoint)
+    return <StaticDisplay currentTrack={currentTrack} />;
 
-        <p className="text-xs w-28 text-clip overflow-hidden whitespace-nowrap">
-          {currentTrack?.artists[0].name}
-        </p>
-      </div>
-    </div>
-  );
+  return <ScrollingDisplay currentTrack={currentTrack} />;
 }
+
+/**
+ * https://stackoverflow.com/questions/45847392/pure-css-continuous-horizontal-text-scroll-without-break
+ *
+ */

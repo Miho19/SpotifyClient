@@ -43,7 +43,7 @@ export default function Chatbar() {
 
   return (
     <div
-      className="max-h-[calc(100vh-6rem)] bg-gradient-to-b from-black to-[#292929] w-[1rem] group flex items-center justify-center cursor-pointer hover:bg-black/80"
+      className="max-h-[calc(100vh-6rem)] bg-black/20 w-[1rem] group flex items-center justify-center cursor-pointer hover:bg-black/80"
       onClick={() => {
         setDrawerStatus("OPEN", "CHATBAR");
       }}

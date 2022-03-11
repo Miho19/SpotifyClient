@@ -25,3 +25,16 @@ socket
         -> request host to initilise
 
     
+
+
+
+1) add in guest login 
+2) context menu for songs within centerplaylist
+3) host using websdk
+4) logout button 
+5) contextmenu for user profile bubble
+6) testing library added
+7) scaling for bigger sizes now
+8) scrolling text within player component for song name and artist
+
+
