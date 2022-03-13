@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { currentPlayListObject } from "../../atoms/playlistAtom";
 import Song from "./Song";
@@ -16,6 +16,8 @@ export default function Songs({ partyPlaylistID }) {
     y: 0,
     track: null,
   });
+
+  const SongContextMenuRefernce = useRef();
 
   const handleContextMenu = ({ track, x, y }) => {
     setShowMenu({ show: true, x, y, track });
@@ -46,6 +48,21 @@ export default function Songs({ partyPlaylistID }) {
     }
   };
 
+  useEffect(() => {
+    const handleClick = (event) => {
+      if (!SongContextMenuRefernce.current) return;
+
+      event.target.offsetParent !== SongContextMenuRefernce.current &&
+        setShowMenu({ ...showMenu, show: false });
+    };
+
+    window.addEventListener("click", handleClick);
+
+    return () => {
+      window.removeEventListener("click", handleClick);
+    };
+  }, [showMenu]);
+
   return (
     <div className="flex flex-col w-full h-full space-y-5 px-1">
       {playlist?.tracks.items.map((track, i) => (
@@ -58,7 +75,13 @@ export default function Songs({ partyPlaylistID }) {
         />
       ))}
       {showMenu.show && (
-        <SongContextMenu x={showMenu.x} y={showMenu.y} track={showMenu.track} />
+        <SongContextMenu
+          x={showMenu.x}
+          y={showMenu.y}
+          track={showMenu.track}
+          addToPartyPlaylist={addToPartyPlaylist}
+          reference={SongContextMenuRefernce}
+        />
       )}
     </div>
   );
