@@ -2,8 +2,6 @@ import React, { useState } from "react";
 
 import msToMinutesAndSeconds from "../../util/time";
 
-import SongContextMenu from "./SongContextMenu";
-
 export default function Song({ order, track, handleClick, handleContextMenu }) {
   return (
     <div

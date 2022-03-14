@@ -23,7 +23,7 @@ export default function SongContextMenu({
       ref={reference}
     >
       <ul className="flex flex-col space-y-1 w-full text-left px-1 py-1">
-        <li className={button} onClick={addToPartyPlaylist}>
+        <li className={button} onClick={() => addToPartyPlaylist(track)}>
           Add to queue
         </li>
       </ul>

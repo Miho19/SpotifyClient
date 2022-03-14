@@ -7,7 +7,7 @@ import DrawersContextProvider from "../context/drawers.context";
 
 export default function party() {
   return (
-    <div className="bg-[#0f0f0f] h-[calc(100vh-6rem)] scrollbar-hide overflow-hidden">
+    <div className="bg-[#161616] h-[calc(100vh-6rem)] w-full scrollbar-hide overflow-hidden">
       <main className="flex h-full w-full">
         <DrawersContextProvider>
           <Sidebar />
