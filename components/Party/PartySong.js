@@ -76,7 +76,7 @@ export default function PartySong({
       >
         <div
           className={clsx(
-            "ml-auto",
+            "ml-auto mr-4 lg:ml-16",
             !displayMS && "hidden",
             displayMS && "block"
           )}

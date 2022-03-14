@@ -58,9 +58,8 @@ export default function SocketContextProvider({ children }) {
       : "https://spotifyserver1.herokuapp.com/";
 
   useEffect(() => {
-    if (typeof window.document !== "undefined") {
+    if (typeof window.document !== "undefined" && session?.user) {
       const socketIO = io(URL);
-
       setSocket(socketIO);
     }
     return () => socket?.close();

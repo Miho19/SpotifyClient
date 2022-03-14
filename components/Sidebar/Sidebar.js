@@ -8,6 +8,7 @@ import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
 import UserPlayLists from "./UserPlayLists";
 import { DrawerContext } from "../../context/drawers.context";
+import { signOut } from "next-auth/react";
 
 const active = "text-white font-bold";
 
@@ -27,7 +28,12 @@ export default function Sidebar() {
                 setDrawerStatus("CLOSE", "SIDEBAR");
               }}
             />
-            <LogoutIcon className="w-5 h-5 text-red-600 cursor-pointer button" />
+            <LogoutIcon
+              className="w-5 h-5 text-red-600 cursor-pointer button"
+              onClick={() => {
+                signOut();
+              }}
+            />
           </div>
           <hr className="border-t-[0.1px] border-gray-900" />
 
