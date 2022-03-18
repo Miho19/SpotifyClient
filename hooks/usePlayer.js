@@ -1,4 +1,4 @@
-import { signOut } from "next-auth/react";
+import { SessionProvider, signOut, useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 
 import useSpotify from "./useSpotify";
@@ -9,6 +9,7 @@ export default function usePlayer({ socket, EVENTS }) {
   const [isHost, setIsHost] = useState(false);
 
   const spotifyApi = useSpotify();
+  const { data: session, loading } = useSession();
 
   useEffect(() => {
     const handleGetSong = async (callback) => {
@@ -47,6 +48,8 @@ export default function usePlayer({ socket, EVENTS }) {
   useEffect(() => {
     const handleHostInit = async ({ playlistID }, callback) => {
       try {
+        if (session.user.type === "guest") return callback({}, "free");
+
         const getCurrentStateResponse =
           await spotifyApi.getMyCurrentPlaybackState();
 
@@ -93,12 +96,15 @@ export default function usePlayer({ socket, EVENTS }) {
   useEffect(() => {
     const getActive = async () => {
       if (!spotifyApi || !spotifyApi.getAccessToken()) return;
+
       const getCurrentStateResponse =
         await spotifyApi.getMyCurrentPlaybackState();
       getCurrentStateResponse.body ? setIsActive(true) : setIsActive(false);
     };
 
-    getActive();
+    if (!session) return;
+
+    session.user.type !== "guest" && getActive();
   }, []);
 
   return { isPaused, isActive, isHost };

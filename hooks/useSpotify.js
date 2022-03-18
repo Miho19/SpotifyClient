@@ -11,6 +11,8 @@ export default function useSpotify() {
   const { data: session, loading } = useSession();
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     if (session) {
       if (session.error === "RefreshAccessTokenError") {
         signOut();

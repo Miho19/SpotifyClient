@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 
 import useSpotify from "./useSpotify";
@@ -5,10 +6,21 @@ import useSpotify from "./useSpotify";
 export default function useCurrentTrack({ socket, EVENTS }) {
   const [currentTrack, setCurrentTrack] = useState(null);
 
+  const { data: session, loading } = useSession();
+
   const spotifyApi = useSpotify();
 
   useEffect(() => {
     const getRecentTrack = async () => {
+      if (session.user.type === "guest") {
+        const trackResponse = await spotifyApi.getTrack(
+          "5C8Vwr9o1WtsoDVPFqPCob"
+        );
+
+        setCurrentTrack(trackResponse.body);
+        return;
+      }
+
       const getCurrentTrackResponse =
         await spotifyApi.getMyCurrentPlayingTrack();
 

@@ -5,6 +5,7 @@ import { useRecoilState } from "recoil";
 import { currentPlaylistId } from "../../atoms/playlistAtom";
 
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 export default function UserPlayLists() {
   const [allUserPlaylists, setallUserPlaylists] = useState([]);
@@ -14,16 +15,28 @@ export default function UserPlayLists() {
   const [playlistID, setCurrentPlaylistId] = useRecoilState(currentPlaylistId);
   const router = useRouter();
 
+  const { data: session, loading } = useSession();
+
   useEffect(() => {
-    if (spotifyApi.getAccessToken() === undefined) {
-      router.push("/");
+    const guestPlaylists = async () => {
+      const spotifyResponse = await spotifyApi.getUserPlaylists("spotify", {
+        limit: 10,
+      });
+
+      setallUserPlaylists(spotifyResponse.body.items);
+    };
+
+    const getPlaylists = async () => {
+      const playlistResponse = await spotifyApi.getUserPlaylists();
+
+      setallUserPlaylists(playlistResponse.body.items);
+    };
+
+    if (!spotifyApi.getAccessToken()) {
+      return router.push("/");
     }
 
-    if (spotifyApi.getAccessToken()) {
-      spotifyApi.getUserPlaylists().then((data) => {
-        setallUserPlaylists(data.body.items);
-      });
-    }
+    session.user.type === "guest" ? guestPlaylists() : getPlaylists();
   }, []);
 
   return (

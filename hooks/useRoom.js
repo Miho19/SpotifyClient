@@ -49,6 +49,8 @@ export default function useRoom({ socket, EVENTS }) {
           String(roomPlaylistID)
         );
 
+        console.log(roomPlaylistObject);
+        console.log(getPlaylistResponse.body);
         setRoomPlaylistObject({ ...getPlaylistResponse.body });
       } catch (error) {
         console.error("playlist has changed: ", error);

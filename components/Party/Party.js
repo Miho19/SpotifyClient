@@ -71,7 +71,7 @@ export default function Party() {
 
   return (
     <div className="h-[calc(100vh-6rem)] overflow-y-scroll scrollbar-hide w-full">
-      <main className="h-full w-full pt-2 overflow-scroll scrollbar-hide">
+      <main className="h-full w-full pt-2 overflow-scroll scrollbar-hide space-y-3 lg:px-3">
         <UserDisplay />
         {!roomPlaylistObject || !room.roomID ? (
           <Home />

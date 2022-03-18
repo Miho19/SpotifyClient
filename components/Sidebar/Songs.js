@@ -5,6 +5,7 @@ import Song from "./Song";
 import useSpotify from "../../hooks/useSpotify";
 import { SocketContext } from "../../context/socket.context";
 import SongContextMenu from "./SongContextMenu";
+import { useSession } from "next-auth/react";
 
 export default function Songs({ partyPlaylistID }) {
   const playlist = useRecoilValue(currentPlayListObject);
@@ -16,6 +17,7 @@ export default function Songs({ partyPlaylistID }) {
     y: 0,
     track: null,
   });
+  const { data: session, loading } = useSession();
 
   const SongContextMenuRefernce = useRef();
 
@@ -37,12 +39,17 @@ export default function Songs({ partyPlaylistID }) {
 
       if (!isUnqiue) return; // TODO add in dialog or something saying track must be unique
 
-      const addTrackResponse = await spotifyApi.addTracksToPlaylist(
-        partyPlaylistID,
-        [track.track.uri]
-      );
+      session.user.type === "guest"
+        ? await socket?.emit(EVENTS.CLIENT.ADD_SONG_TO_CURRENT_ROOM, {
+            track,
+            partyPlaylistID,
+          })
+        : await spotifyApi.addTracksToPlaylist(partyPlaylistID, [
+            track.track.uri,
+          ]);
 
-      socket?.emit(EVENTS.CLIENT.UPDATE_PLAYLIST);
+      session.user.type !== "guest" &&
+        socket?.emit(EVENTS.CLIENT.UPDATE_PLAYLIST);
     } catch (error) {
       console.error("add to partyplaylist: ", error);
     }

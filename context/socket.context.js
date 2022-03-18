@@ -24,6 +24,7 @@ const EVENTS = {
     GET_CURRENT_ROOM: "GET_CURRENT_ROOM",
     UPDATE_PLAYLIST: "CHANGED_PARTYPLAYLIST",
     HOST_CHANGE_SONG: "HOST_CHANGE_SONG",
+    ADD_SONG_TO_CURRENT_ROOM: "ADD_SONG_TO_CURRENT_ROOM",
   },
   SERVER: {
     CLIENT_SET_HOST: "CLIENT_SET_HOST",
@@ -59,6 +60,7 @@ export default function SocketContextProvider({ children }) {
 
   useEffect(() => {
     if (typeof window.document !== "undefined" && session?.user) {
+      console.log(session?.user);
       const socketIO = io(URL);
       setSocket(socketIO);
     }

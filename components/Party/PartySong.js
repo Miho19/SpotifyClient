@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import msToMinutesAndSeconds from "../../util/time";
 import { PlayIcon, XIcon } from "@heroicons/react/solid";
-import { ThumbDownIcon, ThumbUpIcon } from "@heroicons/react/solid";
+
 import clsx from "clsx";
-import { DrawerContext } from "../../context/drawers.context";
-import { debounce } from "lodash";
+import { SocketContext } from "../../context/socket.context";
 
 export default function PartySong({
   songName,
@@ -21,6 +20,8 @@ export default function PartySong({
   setClicked,
   displayMS,
 }) {
+  const { socket, EVENTS } = useContext(SocketContext);
+
   return (
     <li
       className={clsx(
@@ -35,7 +36,7 @@ export default function PartySong({
       <div className="col-span-1 flex items-center h-full w-full space-x-2">
         {index === 0 ? (
           <div className="w-5 h-5">
-            {clicked ? (
+            {clicked && socket.data.user.host ? (
               <XIcon
                 className="button text-white"
                 onClick={(e) => {

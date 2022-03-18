@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
+import CredentialsProvider from "next-auth/providers/credentials";
 import spotifyApi, { LOGIN_URL } from "../../../util/spotify";
+import axios from "axios";
 
 async function refreshAccessToken(token) {
   try {
@@ -22,6 +24,24 @@ async function refreshAccessToken(token) {
 
 export default NextAuth({
   providers: [
+    CredentialsProvider({
+      id: "guest",
+      name: "Guest Login",
+      async authorize(credentials, req) {
+        const guestResponse = await axios.get(
+          "http://localhost:4000/api/v1/spotify/guest"
+        );
+
+        if (!guestResponse.data.success) return null;
+
+        const user = { ...guestResponse.data.data[0], name: credentials.name };
+
+        return user;
+      },
+      credentials: {
+        name: { label: "Full name", type: "text", placeholder: "John Smith" },
+      },
+    }),
     SpotifyProvider({
       clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
       clientSecret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
@@ -35,6 +55,15 @@ export default NextAuth({
       return Promise.resolve(url);
     },
     async jwt({ token, account, user }) {
+      if (user && user.type === "guest") {
+        return {
+          ...token,
+          accessToken: user.access_token,
+          expires_at: user.expires_at,
+          type: "guest",
+        };
+      }
+
       if (account && user) {
         return {
           ...token,
@@ -45,14 +74,15 @@ export default NextAuth({
       }
 
       // return previous token if valid
-      if (Date.now() < token.accessTokenExpires * 1000) {
+      if (Date.now() < token.expires_at * 1000) {
         return { ...token };
       }
 
       // expired token
       return await refreshAccessToken(token);
     },
-    async session({ session, token }) {
+    async session({ session, user, token }) {
+      session.user.type = token.type;
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
       session.error = token.error;
@@ -60,8 +90,3 @@ export default NextAuth({
     },
   },
 });
-
-/**
- *
- * google --> refresh token rotation
- */
