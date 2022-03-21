@@ -32,6 +32,7 @@ export default NextAuth({
           process.env.NODE_ENV === "production"
             ? `https://spotifyserver1.herokuapp.com/api/v1/spotify/guest`
             : "http://localhost:4000/api/v1/spotify/guest";
+
         const guestResponse = await axios.get(serverUrl);
 
         if (!guestResponse.data.success) return null;
