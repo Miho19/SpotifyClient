@@ -40,10 +40,16 @@ export default function Songs({ partyPlaylistID }) {
       if (!isUnqiue) return; // TODO add in dialog or something saying track must be unique
 
       session.user.type === "guest"
-        ? await socket?.emit(EVENTS.CLIENT.ADD_SONG_TO_CURRENT_ROOM, {
-            track,
-            partyPlaylistID,
-          })
+        ? socket?.emit(
+            EVENTS.CLIENT.ADD_SONG_TO_CURRENT_ROOM,
+            {
+              track,
+              partyPlaylistID,
+            },
+            () => {
+              socket?.emit(EVENTS.CLIENT.UPDATE_PLAYLIST);
+            }
+          )
         : await spotifyApi.addTracksToPlaylist(partyPlaylistID, [
             track.track.uri,
           ]);

@@ -49,8 +49,6 @@ export default function useRoom({ socket, EVENTS }) {
           String(roomPlaylistID)
         );
 
-        console.log(roomPlaylistObject);
-        console.log(getPlaylistResponse.body);
         setRoomPlaylistObject({ ...getPlaylistResponse.body });
       } catch (error) {
         console.error("playlist has changed: ", error);
@@ -62,7 +60,7 @@ export default function useRoom({ socket, EVENTS }) {
     return () => {
       socket?.off(EVENTS.SERVER.PLAYLIST_UPDATED, playlistChanged);
     };
-  }, [socket, roomPlaylistID]);
+  }, [socket, roomPlaylistID, roomPlaylistObject]);
 
   const removeSong = async (songUri, index) => {
     try {
