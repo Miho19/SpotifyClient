@@ -73,8 +73,6 @@ export default function useMessages({ socket, EVENTS }) {
       messageID,
       time,
     }) => {
-      console.log(senderName);
-
       const newMessage =
         senderID === "__ADMIN__"
           ? generateAdminChat({ message, messageID, time })

@@ -37,7 +37,7 @@ export default function VolumeControl() {
   }, [volume]);
 
   return (
-    <div className="flex items-center justify-center space-x-1">
+    <div className="flex items-center justify-center space-x-1 sm:justify-end w-full">
       {volume === 0 ? (
         <VolumeOffIcon className="button" onClick={() => setVolume(50)} />
       ) : (

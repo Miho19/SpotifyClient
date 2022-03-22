@@ -35,7 +35,14 @@ export default function CurrentTrackDisplay() {
     setWindowWidth(window.innerWidth);
   }, [windowWidth]);
 
-  if (!currentTrack) return <div className="flex items-center space-x-4"></div>;
+  if (!currentTrack)
+    return (
+      <div className="flex items-center space-x-4 w-full justify-center xs:justify-start xs:px-4">
+        <div className="w-14 h-14 rounded-full border-2 border-gray-500 flex items-center justify-center">
+          <div className="w-5 h-5 rounded-full border-2 border-gray-500"></div>
+        </div>
+      </div>
+    );
 
   if (windowWidth >= smBreakpoint)
     return <StaticDisplay currentTrack={currentTrack} />;

@@ -13,12 +13,7 @@ export default function useCurrentTrack({ socket, EVENTS }) {
   useEffect(() => {
     const getRecentTrack = async () => {
       if (session.user.type === "guest") {
-        const trackResponse = await spotifyApi.getTrack(
-          "5C8Vwr9o1WtsoDVPFqPCob"
-        );
-
-        setCurrentTrack(trackResponse.body);
-        return;
+        return setCurrentTrack(null);
       }
 
       const getCurrentTrackResponse =

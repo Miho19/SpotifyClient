@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import React, { createContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import useMessages from "../hooks/useMessages";
 import usePlayer from "../hooks/usePlayer";
 import useRoom from "../hooks/useRoom";
 
@@ -51,6 +52,8 @@ export default function SocketContextProvider({ children }) {
     removeSong,
   } = useRoom({ socket, EVENTS });
 
+  const messages = useMessages({ socket, EVENTS });
+
   const { isPaused, isActive, isHost } = usePlayer({ socket, EVENTS });
 
   const URL =
@@ -60,7 +63,6 @@ export default function SocketContextProvider({ children }) {
 
   useEffect(() => {
     if (typeof window.document !== "undefined" && session?.user) {
-      console.log(session?.user);
       const socketIO = io(URL);
       setSocket(socketIO);
     }
@@ -106,6 +108,7 @@ export default function SocketContextProvider({ children }) {
             roomPlaylistObject,
             roomPlaylistSnapshotID,
             removeSong,
+            messages,
           }}
         >
           {children}

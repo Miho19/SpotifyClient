@@ -11,10 +11,14 @@ async function refreshAccessToken(token) {
 
     const { body: refreshedToken } = await spotifyApi.refreshAccessToken();
 
+    const time = new Date();
+
+    time.setHours(time.getHours + refreshedToken.expires_in / 3600);
+
     return {
       ...token,
       accessToken: refreshedToken.access_token,
-      expires_at: Date.now() / 1000 + refreshedToken.expires_in, // expires in 1 hour from now
+      expires_at: time, // expires in 1 hour from now
       refreshToken: refreshedToken.refresh_token ?? token.refreshToken, // if no refreshtoken returned use old refresh token
     };
   } catch (e) {
@@ -72,13 +76,20 @@ export default NextAuth({
           ...token,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
-          expires_at: account.expires_at, // convert seconds to ms
+          expires_at: account.expires_at * 1000,
         };
       }
 
       // return previous token if valid
-      if (Date.now() < token.expires_at * 1000) {
+      if (Date.now() < token.expires_at) {
+        console.log(
+          `no refresh needed now: ${Date.now()} expires_at: ${token.expires_at}`
+        );
         return { ...token };
+      }
+
+      if (token.type && token.type === "user") {
+        console.log("user token trying to refresh");
       }
 
       // expired token
