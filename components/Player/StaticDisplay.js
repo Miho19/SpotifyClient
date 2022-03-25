@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, { useState, useEffect, useRef } from "react";
+import { debounce } from "lodash";
 
 export default function StaticDisplay({ currentTrack }) {
   const [songOverflow, setSongOverflow] = useState(false);
@@ -8,15 +9,16 @@ export default function StaticDisplay({ currentTrack }) {
 
   useEffect(() => {
     const reference = songNameReference.current;
-    reference && setSongOverflow(reference.offsetWidth < reference.scrollWidth);
+
+    reference && setSongOverflow(reference.scrollWidth > reference.clientWidth);
   }, [songOverflow]);
 
   return (
-    <div className="w-full h-full flex p-2 items-center space-x-3">
+    <div className="w-full h-full flex p-2 items-center space-x-3 border border-white">
       <img src={currentTrack?.album?.images[0].url} className="w-14 h-14" />
-      <div className="space-y-1 w-full overflow-hidden">
+      <div className="space-y-1 overflow-hidden">
         <div
-          className=" overflow-hidden whitespace-nowrap text-clip"
+          className="overflow-hidden whitespace-nowrap border border-white"
           ref={songNameReference}
         >
           <span

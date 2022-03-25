@@ -7,7 +7,7 @@ import { SocketContext } from "../../context/socket.context";
 import SongContextMenu from "./SongContextMenu";
 import { useSession } from "next-auth/react";
 
-export default function Songs({ partyPlaylistID }) {
+export default function Songs({ partyPlaylistID, adjustNameDisplay }) {
   const playlist = useRecoilValue(currentPlayListObject);
   const spotifyApi = useSpotify();
   const { socket, EVENTS } = useContext(SocketContext);
@@ -84,6 +84,7 @@ export default function Songs({ partyPlaylistID }) {
           order={i}
           handleClick={addToPartyPlaylist}
           handleContextMenu={handleContextMenu}
+          adjustNameDisplay={adjustNameDisplay}
         />
       ))}
       {showMenu.show && (

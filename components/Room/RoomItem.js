@@ -6,7 +6,7 @@ export default function RoomItem({ name, totalMembers, roomJoinLink }) {
 
   return (
     <div
-      className="w-full h-10 bg-white/5  hover:bg-white/25 cursor-pointer text-xs sm:text-sm group grid grid-row-2 grid-flow-col"
+      className=" bg-[rgb(7,7,7)] hover:bg-white/25 cursor-pointer text-xs sm:text-sm group grid grid-row-2 grid-flow-col h-10 w-full transition-all"
       onClick={() => {
         socket.emit(EVENTS.CLIENT.JOIN_ROOM, { joinLink: roomJoinLink });
       }}

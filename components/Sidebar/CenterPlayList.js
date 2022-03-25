@@ -1,6 +1,6 @@
 import { useSession, getSession, signOut } from "next-auth/react";
 import React, { useState, useEffect, useContext } from "react";
-import { shuffle } from "lodash";
+import { debounce, shuffle } from "lodash";
 import { useRecoilState } from "recoil";
 import {
   currentPlaylistId,
@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { RoomContext } from "../../context/socket.context";
 
 import StickyHeader from "./StickyHeader";
+import { DrawerContext } from "../../context/drawers.context";
 
 /**
  * https://stackoverflow.com/questions/16302483/event-to-detect-when-positionsticky-is-triggered
@@ -39,6 +40,9 @@ export default function CenterPlayList() {
     currentPlayListObject
   );
 
+  const { isChatOpen, isSidebarOpen } = useContext(DrawerContext);
+  const [adjustNameDisplay, setAdjustNameDisplay] = useState(false);
+
   const spotifyApi = useSpotify();
 
   const router = useRouter();
@@ -49,9 +53,7 @@ export default function CenterPlayList() {
 
   useEffect(() => {
     if (playlistId) return;
-    if (!spotifyApi) return;
-
-    if (!spotifyApi.getAccessToken()) return;
+    if (spotifyApi && !spotifyApi.getAccessToken()) return;
 
     spotifyApi
       .getUserPlaylists()
@@ -76,13 +78,37 @@ export default function CenterPlayList() {
     }
   }, [playlistId]);
 
+  const xlBreakPoint = 1280;
+
+  useEffect(() => {
+    const windowResized = debounce(() => {
+      const width = window.innerWidth;
+
+      setAdjustNameDisplay(isChatOpen && isSidebarOpen && width < xlBreakPoint);
+    }, 150);
+
+    window.addEventListener("resize", windowResized);
+
+    return () => {
+      window.removeEventListener("resize", windowResized);
+    };
+  }, [adjustNameDisplay, isSidebarOpen, isChatOpen]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const width = window.innerWidth;
+
+    setAdjustNameDisplay(isChatOpen && isSidebarOpen && width < xlBreakPoint);
+  }, [adjustNameDisplay, isSidebarOpen, isChatOpen]);
+
   const user = {
     name: session?.user.name,
     imgSource: session.user.image,
   };
 
   return (
-    <div className="h-screen overflow-y-scroll scrollbar-hide overflow-hidden w-full">
+    <div className="h-[calc(100vh-6.5rem)] overflow-y-scroll scrollbar-hide overflow-hidden w-full">
       <StickyHeader
         playlistName={playlistObject?.name}
         imgSource={playlistObject?.images[0].url}
@@ -90,7 +116,10 @@ export default function CenterPlayList() {
         user={user}
       />
       <div className="">
-        <Songs partyPlaylistID={roomPlaylistID} />
+        <Songs
+          partyPlaylistID={roomPlaylistID}
+          adjustNameDisplay={adjustNameDisplay}
+        />
       </div>
     </div>
   );

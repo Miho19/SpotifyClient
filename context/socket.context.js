@@ -4,12 +4,15 @@ import { io } from "socket.io-client";
 import useMessages from "../hooks/useMessages";
 import usePlayer from "../hooks/usePlayer";
 import useRoom from "../hooks/useRoom";
+import useSpotifyWedSDK from "../hooks/useSpotifyWedSDK";
 
 export const SocketContext = createContext();
 
 export const RoomContext = createContext();
 
 export const PlayerContext = createContext();
+
+export const SpotifySDKContext = createContext();
 
 const EVENTS = {
   connection: "connection",
@@ -37,6 +40,7 @@ const EVENTS = {
     CURRENT_SONG_CHANGED: "ROOM_PLAYLIST_SONG_CHANGED",
     HOST_GET_SONG: "HOST_GET_SONG",
     HOST_INIT: "HOST_INIT",
+    HOST_START_PLAYER: "HOST_START_PLAYER",
   },
 };
 
@@ -55,6 +59,8 @@ export default function SocketContextProvider({ children }) {
   const messages = useMessages({ socket, EVENTS });
 
   const { isPaused, isActive, isHost } = usePlayer({ socket, EVENTS });
+
+  const { playerObject, deviceID } = useSpotifyWedSDK({ socket, EVENTS });
 
   const URL =
     process.env.NODE_ENV === "development"
@@ -111,7 +117,9 @@ export default function SocketContextProvider({ children }) {
             messages,
           }}
         >
-          {children}
+          <SpotifySDKContext.Provider value={{ playerObject, deviceID }}>
+            {children}
+          </SpotifySDKContext.Provider>
         </RoomContext.Provider>
       </PlayerContext.Provider>
     </SocketContext.Provider>

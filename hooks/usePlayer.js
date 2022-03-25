@@ -55,7 +55,7 @@ export default function usePlayer({ socket, EVENTS }) {
 
         if (!getCurrentStateResponse.body) {
           signOut();
-          alert("Must have an active spotify device.");
+          alert("Must have an active spotify device."); // create a display
           return;
         }
 
@@ -83,7 +83,6 @@ export default function usePlayer({ socket, EVENTS }) {
 
       socket.data.user.host = true;
       setIsHost(true);
-      socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       callback({ playlistID, snapshotID: snapshot_id });
     };
 

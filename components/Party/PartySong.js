@@ -56,7 +56,9 @@ export default function PartySong({
           alt={`${albumName}`}
           className="hidden xxs:block w-5 h-5 xs:w-10 xs:h-10"
         />
-        <div className="w-36 flex flex-col justify-center xxs:w-60 xs:w-72">
+        <div
+          className={clsx("w-36 flex flex-col justify-center xxs:w-60 xs:w-72")}
+        >
           <div
             className={clsx(
               "text-sm text-white truncate text-left w-full",
