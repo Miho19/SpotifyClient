@@ -16,17 +16,31 @@ export default function PlayerControls() {
   };
 
   return (
-    <div className="flex items-center justify-center lg:space-x-10 w-full">
-      {isHost && <RewindIcon className="button opacity-20 hover:opacity-10" />}
+    <article
+      className="flex items-center justify-center lg:space-x-10 w-full"
+      aria-label="playback controls"
+    >
+      {isHost && (
+        <button aria-label="previous song">
+          <RewindIcon className="button opacity-20 hover:opacity-10" />
+        </button>
+      )}
+
       {!isPaused ? (
-        <PauseIcon className="button w-10 h-10" onClick={togglePlayback} />
+        <button aria-label="pause playback" onClick={togglePlayback}>
+          <PauseIcon className="button w-10 h-10" />
+        </button>
       ) : (
-        <PlayIcon className="button w-10 h-10" onClick={togglePlayback} />
+        <button aria-label="resume playback" onClick={togglePlayback}>
+          <PlayIcon className="button w-10 h-10" />
+        </button>
       )}
 
       {isHost && (
-        <FastForwardIcon className="button opacity-20 hover:opacity-10" />
+        <button aria-label="next song">
+          <FastForwardIcon className="button opacity-20 hover:opacity-10" />
+        </button>
       )}
-    </div>
+    </article>
   );
 }

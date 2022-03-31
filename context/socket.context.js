@@ -6,14 +6,6 @@ import usePlayer from "../hooks/usePlayer";
 import useRoom from "../hooks/useRoom";
 import useSpotifyWedSDK from "../hooks/useSpotifyWedSDK";
 
-export const SocketContext = createContext();
-
-export const RoomContext = createContext();
-
-export const PlayerContext = createContext();
-
-export const SpotifySDKContext = createContext();
-
 const EVENTS = {
   connection: "connection",
   disconnect: "disconnect",
@@ -43,6 +35,27 @@ const EVENTS = {
     HOST_START_PLAYER: "HOST_START_PLAYER",
   },
 };
+
+export const SocketContext = createContext({ socket: null, EVENTS });
+
+export const RoomContext = createContext({
+  room: { roomID: "", roomName: "" },
+  roomPlaylistID: "",
+  roomPlaylistObject: {},
+  roomPlaylistSnapshotID: "",
+  removeSong: () => {},
+});
+
+export const PlayerContext = createContext({
+  isPaused: false,
+  isActive: false,
+  isHost: false,
+});
+
+export const SpotifySDKContext = createContext({
+  playerObject: false,
+  deviceID: "",
+});
 
 export default function SocketContextProvider({ children }) {
   const [socket, setSocket] = useState(null);

@@ -1,14 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { currentPlayListObject } from "../../atoms/playlistAtom";
 import Song from "./Song";
 import useSpotify from "../../hooks/useSpotify";
 import { SocketContext } from "../../context/socket.context";
 import SongContextMenu from "./SongContextMenu";
 import { useSession } from "next-auth/react";
+import { UserPlaylistContext } from "../../context/userplaylist.context";
 
 export default function Songs({ partyPlaylistID, adjustNameDisplay }) {
-  const playlist = useRecoilValue(currentPlayListObject);
   const spotifyApi = useSpotify();
   const { socket, EVENTS } = useContext(SocketContext);
   const [showMenu, setShowMenu] = useState({
@@ -20,6 +18,8 @@ export default function Songs({ partyPlaylistID, adjustNameDisplay }) {
   const { data: session, loading } = useSession();
 
   const SongContextMenuRefernce = useRef();
+
+  const { currentPlaylistObject } = useContext(UserPlaylistContext);
 
   const handleContextMenu = ({ track, x, y }) => {
     setShowMenu({ show: true, x, y, track });
@@ -77,7 +77,7 @@ export default function Songs({ partyPlaylistID, adjustNameDisplay }) {
 
   return (
     <div className="flex flex-col w-full h-full space-y-5 px-1">
-      {playlist?.tracks.items.map((track, i) => (
+      {currentPlaylistObject?.tracks?.items?.map((track, i) => (
         <Song
           key={track.track.id}
           track={track}

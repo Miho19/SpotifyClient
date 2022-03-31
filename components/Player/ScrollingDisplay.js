@@ -2,7 +2,10 @@ import React from "react";
 
 export default function ScrollingDisplay({ currentTrack }) {
   return (
-    <div className="flex flex-col items-center space-x-1 w-full  space-y-2 pt-4 px-1">
+    <article
+      className="flex flex-col items-center space-x-1 w-full  space-y-2 pt-4 px-1"
+      aria-label="current track playing"
+    >
       <img
         src={currentTrack?.album?.images[0].url}
         alt={`album cover of ${currentTrack?.album?.name} by ${currentTrack?.artists[0].name}`}
@@ -22,6 +25,6 @@ export default function ScrollingDisplay({ currentTrack }) {
           </span>
         </span>
       </div>
-    </div>
+    </article>
   );
 }

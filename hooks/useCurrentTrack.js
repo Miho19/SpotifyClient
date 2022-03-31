@@ -12,27 +12,30 @@ export default function useCurrentTrack({ socket, EVENTS }) {
 
   useEffect(() => {
     const getRecentTrack = async () => {
-      if (session.user.type === "guest") {
-        return setCurrentTrack(null);
+      try {
+        if (session.user.type === "guest") {
+          return setCurrentTrack(null);
+        }
+
+        const getCurrentTrackResponse =
+          await spotifyApi.getMyCurrentPlayingTrack();
+
+        if (getCurrentTrackResponse?.body?.item) {
+          return setCurrentTrack(getCurrentTrackResponse.body.item);
+        }
+
+        const pastTrackResponse = await spotifyApi.getMyRecentlyPlayedTracks({
+          limit: 1,
+        });
+
+        if (pastTrackResponse.body.items.length) {
+          return setCurrentTrack(pastTrackResponse.body.items[0].track);
+        }
+
+        setCurrentTrack(null);
+      } catch (error) {
+        console.error("get Recent Tracks: ", error);
       }
-
-      const getCurrentTrackResponse =
-        await spotifyApi.getMyCurrentPlayingTrack();
-
-      if (getCurrentTrackResponse?.body?.item) {
-        setCurrentTrack(getCurrentTrackResponse.body.item);
-        return;
-      }
-
-      const pastTrackResponse = await spotifyApi.getMyRecentlyPlayedTracks({
-        limit: 1,
-      });
-
-      if (pastTrackResponse.body.items.length) {
-        setCurrentTrack(pastTrackResponse.body.items[0].track);
-        return;
-      }
-      setCurrentTrack(null);
     };
 
     if (!spotifyApi || !spotifyApi.getAccessToken()) return;

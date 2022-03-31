@@ -1,11 +1,7 @@
 import { useSession, getSession, signOut } from "next-auth/react";
 import React, { useState, useEffect, useContext } from "react";
 import { debounce, shuffle } from "lodash";
-import { useRecoilState } from "recoil";
-import {
-  currentPlaylistId,
-  currentPlayListObject,
-} from "../../atoms/playlistAtom";
+
 import useSpotify from "../../hooks/useSpotify";
 import Songs from "./Songs";
 import { useRouter } from "next/router";
@@ -13,6 +9,7 @@ import { RoomContext } from "../../context/socket.context";
 
 import StickyHeader from "./StickyHeader";
 import { DrawerContext } from "../../context/drawers.context";
+import { UserPlaylistContext } from "../../context/userplaylist.context";
 
 /**
  * https://stackoverflow.com/questions/16302483/event-to-detect-when-positionsticky-is-triggered
@@ -35,50 +32,19 @@ export default function CenterPlayList() {
   const { roomPlaylistID } = useContext(RoomContext);
   const [color, setColor] = useState(null);
 
-  const [playlistId, setCurrentPlaylistId] = useRecoilState(currentPlaylistId);
-  const [playlistObject, setCurrentPlaylistObject] = useRecoilState(
-    currentPlayListObject
-  );
-
   const { isChatOpen, isSidebarOpen } = useContext(DrawerContext);
   const [adjustNameDisplay, setAdjustNameDisplay] = useState(false);
 
-  const spotifyApi = useSpotify();
+  const xlBreakPoint = 1280;
 
-  const router = useRouter();
+  const { currentPlaylistId, currentPlaylistObject } =
+    useContext(UserPlaylistContext);
+
+  const spotifyApi = useSpotify();
 
   useEffect(() => {
     setColor(shuffle(colors).pop());
-  }, [playlistId]);
-
-  useEffect(() => {
-    if (playlistId) return;
-    if (spotifyApi && !spotifyApi.getAccessToken()) return;
-
-    spotifyApi
-      .getUserPlaylists()
-      .then((response) => {
-        if (!response.body) {
-          router.push("/");
-          return;
-        }
-        setCurrentPlaylistId(response.body.items[0].id);
-      })
-      .catch((error) => console.error("get playlist:", error));
-  }, []);
-
-  useEffect(() => {
-    if (!playlistId) return;
-
-    if (spotifyApi.getAccessToken()) {
-      spotifyApi
-        .getPlaylist(playlistId)
-        .then((data) => setCurrentPlaylistObject(data.body))
-        .catch((error) => console.error("get playlist, id changed:", error));
-    }
-  }, [playlistId]);
-
-  const xlBreakPoint = 1280;
+  }, [currentPlaylistId]);
 
   useEffect(() => {
     const windowResized = debounce(() => {
@@ -110,8 +76,12 @@ export default function CenterPlayList() {
   return (
     <div className="h-[calc(100vh-6.5rem)] overflow-y-scroll scrollbar-hide overflow-hidden w-full">
       <StickyHeader
-        playlistName={playlistObject?.name}
-        imgSource={playlistObject?.images[0].url}
+        playlistName={currentPlaylistObject?.name}
+        imgSource={
+          currentPlaylistObject?.images?.length
+            ? currentPlaylistObject?.images[0].url
+            : null
+        }
         color={color}
         user={user}
       />

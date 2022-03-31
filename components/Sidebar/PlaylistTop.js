@@ -1,3 +1,4 @@
+import { MusicNoteIcon } from "@heroicons/react/solid";
 import React from "react";
 import UserDisplay from "../Common/UserDisplay";
 export default function PlaylistTop({ color, imgSource, playlistName }) {
@@ -5,11 +6,15 @@ export default function PlaylistTop({ color, imgSource, playlistName }) {
     <header
       className={`space-x-1 bg-gradient-to-b ${color} to-[#0f0f0f] text-white p-8 flex space-x-2 w-full h-full`}
     >
-      <img
-        src={imgSource}
-        alt="playlist image"
-        className="h-10 w-10 shadow-2xl"
-      />
+      {imgSource ? (
+        <img
+          src={imgSource}
+          alt="playlist image"
+          className="h-10 w-10 shadow-2xl"
+        />
+      ) : (
+        <MusicNoteIcon className="h-10 w-10 shadow-2xl text-white/80" />
+      )}
 
       <div className="flex flex-col">
         <p className="uppercase font-bold text-[0.5rem]">playlist</p>

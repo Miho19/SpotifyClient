@@ -6,7 +6,6 @@ import axios from "axios";
 
 async function refreshAccessToken(token) {
   try {
-    console.log("getting refresh token");
     spotifyApi.setAccessToken(token.accessToken);
     spotifyApi.setRefreshToken(token.refreshToken);
 

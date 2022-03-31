@@ -1,6 +1,9 @@
 import React, { createContext, useState, useEffect } from "react";
 
-export const DrawerContext = createContext();
+export const DrawerContext = createContext({
+  isChatOpen: false,
+  isSidebarOpen: false,
+});
 
 export default function DrawersContextProvider({ children }) {
   const [isChatOpen, setChatOpen] = useState(false);

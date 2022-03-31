@@ -62,8 +62,6 @@ const generateAdminChat = ({ message, messageID, time }) => (
 export default function useMessages({ socket, EVENTS }) {
   const [messages, setMessages] = useState([]);
 
-  const { data: session, loading } = useSession();
-
   useEffect(() => {
     const receiveMessage = ({
       message,

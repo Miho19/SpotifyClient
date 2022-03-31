@@ -19,7 +19,7 @@ export default function VolumeControl() {
         try {
           const volumeAdjustResponse = await spotifyApi.setVolume(volume);
         } catch (error) {
-          console.log(error);
+          console.error("volume adjustment error: ", error);
         }
       };
       volumeAdjust();
@@ -32,26 +32,38 @@ export default function VolumeControl() {
     if (!playerActive) return;
 
     if (volume >= 0 && volume <= 100) {
-      debouncedAdjustVolume(volume);
+      return debouncedAdjustVolume(volume);
     }
   }, [volume]);
 
   return (
-    <div className="flex items-center justify-center space-x-1 sm:justify-end w-full">
-      {volume === 0 ? (
-        <VolumeOffIcon className="button" onClick={() => setVolume(50)} />
-      ) : (
-        <VolumeUpIcon className="button" onClick={() => setVolume(0)} />
-      )}
+    <form
+      className="flex space-x-1 sm:justify-end w-full h-full items-center justify-center"
+      aria-label="control playback volume"
+      onSubmit={(e) => e.preventDefault()}
+    >
+      <label htmlFor="playback volume" className="block pt-1">
+        {volume === 0 ? (
+          <button aria-label="unmute playback">
+            <VolumeOffIcon className="button" onClick={() => setVolume(50)} />
+          </button>
+        ) : (
+          <button aria-label="mute playback">
+            <VolumeUpIcon className="button" onClick={() => setVolume(0)} />
+          </button>
+        )}
+      </label>
 
       <input
+        aria-label="playback volume"
         type="range"
         value={volume}
         min={0}
         max={100}
+        id="playback volume"
         className="w-10 xxs:w-14 xs:w-20"
         onChange={(e) => setVolume(Number(e.target.value))}
       />
-    </div>
+    </form>
   );
 }

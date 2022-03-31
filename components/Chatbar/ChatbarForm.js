@@ -7,8 +7,12 @@ export default function ChatbarForm({ roomID }) {
   const maxValueLength = 255;
 
   return (
-    <div className="flex items-center h-[10%] w-full group bg-black">
+    <form
+      className="flex items-center h-[10%] w-full group bg-black"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <input
+        aria-label="message input"
         disabled={!roomID}
         value={value}
         onChange={(e) => {
@@ -39,6 +43,6 @@ export default function ChatbarForm({ roomID }) {
           X
         </button>
       </span>
-    </div>
+    </form>
   );
 }

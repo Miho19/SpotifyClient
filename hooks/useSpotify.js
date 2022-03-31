@@ -15,10 +15,14 @@ export default function useSpotify() {
 
     if (session) {
       if (session.error === "RefreshAccessTokenError") {
-        signOut();
+        return signOut();
       }
 
-      spotifyApi.setAccessToken(session.user.accessToken);
+      if (session.user) {
+        return spotifyApi.setAccessToken(session.user.accessToken);
+      }
+
+      signOut();
     }
   }, [session]);
 

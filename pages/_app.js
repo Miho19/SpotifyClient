@@ -1,18 +1,19 @@
 import "../styles/globals.css";
 import { SessionProvider } from "next-auth/react";
-import { RecoilRoot } from "recoil";
+
 import SocketContextProvider from "../context/socket.context";
 
 import Player from "../components/Player/Player";
+import UserPlaylistContextProvider from "../context/userplaylist.context";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session}>
       <SocketContextProvider>
-        <RecoilRoot>
+        <UserPlaylistContextProvider>
           <Component {...pageProps} />
           {session && <Player />}
-        </RecoilRoot>
+        </UserPlaylistContextProvider>
       </SocketContextProvider>
     </SessionProvider>
   );

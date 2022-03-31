@@ -37,11 +37,14 @@ export default function CurrentTrackDisplay() {
 
   if (!currentTrack)
     return (
-      <div className="flex items-center space-x-4 w-full justify-center xs:justify-start xs:px-4">
+      <article
+        className="flex items-center space-x-4 w-full justify-center xs:justify-start xs:px-4"
+        aria-label="display no track history"
+      >
         <div className="w-14 h-14 rounded-full border-2 border-gray-500 flex items-center justify-center">
           <div className="w-5 h-5 rounded-full border-2 border-gray-500"></div>
         </div>
-      </div>
+      </article>
     );
 
   if (windowWidth >= smBreakpoint)

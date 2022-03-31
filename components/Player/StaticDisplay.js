@@ -14,11 +14,14 @@ export default function StaticDisplay({ currentTrack }) {
   }, [songOverflow]);
 
   return (
-    <div className="w-full h-full flex p-2 items-center space-x-3 border border-white">
+    <article
+      className="w-full h-full flex p-2 items-center space-x-3"
+      aria-label="current track playing"
+    >
       <img src={currentTrack?.album?.images[0].url} className="w-14 h-14" />
       <div className="space-y-1 overflow-hidden">
         <div
-          className="overflow-hidden whitespace-nowrap border border-white"
+          className="overflow-hidden whitespace-nowrap"
           ref={songNameReference}
         >
           <span
@@ -34,7 +37,7 @@ export default function StaticDisplay({ currentTrack }) {
           {currentTrack?.artists[0].name}
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
