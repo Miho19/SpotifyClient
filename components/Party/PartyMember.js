@@ -32,7 +32,7 @@ const generateTime = (time) => {
 
 export default function PartyMember({ name, imgSource, time }) {
   return (
-    <div className="w-full h-10 flex space-x-2  bg-white/5 items-center group hover:bg-white/20">
+    <article className="w-full h-10 flex space-x-2  bg-white/5 items-center group hover:bg-white/20">
       {imgSource ? (
         <img
           src={imgSource}
@@ -50,6 +50,6 @@ export default function PartyMember({ name, imgSource, time }) {
           {generateTime(time)}
         </h3>
       </div>
-    </div>
+    </article>
   );
 }

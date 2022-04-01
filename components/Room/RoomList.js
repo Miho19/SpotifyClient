@@ -30,13 +30,13 @@ export default function RoomList() {
   ));
 
   return (
-    <div className="h-full w-full flex flex-col">
+    <article className="h-full w-full flex flex-col">
       <header className="flex w-full h-10 items-center justify-start pt-5 pb-5">
         <h2 className="text-lg text-white ml-5 font-medium">Room List</h2>
       </header>
-      <div className="w-full h-[100%-2.5rem] overflow-scroll scrollbar-hide space-y-1">
-        {partyRoomsList}
-      </div>
-    </div>
+      <main className="w-full h-[100%-2.5rem] overflow-scroll scrollbar-hide space-y-1">
+        <ul aria-label="list of rooms to join">{partyRoomsList}</ul>
+      </main>
+    </article>
   );
 }

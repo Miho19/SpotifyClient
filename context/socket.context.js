@@ -67,6 +67,7 @@ export default function SocketContextProvider({ children }) {
     roomPlaylistObject,
     roomPlaylistSnapshotID,
     removeSong,
+    joinRoom,
   } = useRoom({ socket, EVENTS });
 
   const messages = useMessages({ socket, EVENTS });
@@ -128,6 +129,7 @@ export default function SocketContextProvider({ children }) {
             roomPlaylistSnapshotID,
             removeSong,
             messages,
+            joinRoom,
           }}
         >
           <SpotifySDKContext.Provider value={{ playerObject, deviceID }}>

@@ -103,11 +103,16 @@ export default function useRoom({ socket, EVENTS }) {
     }
   };
 
+  const joinRoom = ({ roomJoinLink }) => {
+    socket.emit(EVENTS.CLIENT.JOIN_ROOM, { joinLink: roomJoinLink });
+  };
+
   return {
     room,
     roomPlaylistID,
     roomPlaylistObject,
     roomPlaylistSnapshotID,
     removeSong,
+    joinRoom,
   };
 }

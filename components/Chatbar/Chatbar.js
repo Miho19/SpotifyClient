@@ -19,7 +19,7 @@ export default function Chatbar() {
 
   if (isChatOpen)
     return (
-      <div className=" max-w-[calc(100vw-1rem)] min-w-[calc(100vw-1rem)] md:min-w-[18rem] md:max-w-[18rem] max-h-[calc(100vh-6rem)] flex flex-col justify-start items-start bg-black ">
+      <aside className=" max-w-[calc(100vw-1rem)] min-w-[calc(100vw-1rem)] md:min-w-[18rem] md:max-w-[18rem] max-h-[calc(100vh-6rem)] flex flex-col justify-start items-start bg-black ">
         <header
           className="flex w-full h-10 items-center justify-start pt-5 pb-5"
           aria-label="room name"
@@ -45,7 +45,7 @@ export default function Chatbar() {
             {room.roomID ? <PartyGroup /> : <RoomList />}
           </div>
         </div>
-      </div>
+      </aside>
     );
 
   return (
