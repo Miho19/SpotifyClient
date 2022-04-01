@@ -396,7 +396,9 @@ describe("Player suite", () => {
     const volumeInput = screen.getByLabelText("playback volume");
     expect(volumeInput).toBeInTheDocument();
 
-    fireEvent.click(muteButton);
+    await act(async () => {
+      fireEvent.click(muteButton);
+    });
 
     waitFor(() => {
       expect(volumeInput.value).toBe(0);
@@ -404,6 +406,7 @@ describe("Player suite", () => {
       const unmuteButton = screen.getByRole("button", {
         name: "unmute playback",
       });
+
       expect(unmuteButton).toBeInTheDocument();
 
       fireEvent.click(unmuteButton);
@@ -414,5 +417,59 @@ describe("Player suite", () => {
         screen.getByRole("button", { name: "mute playback" })
       ).toBeInTheDocument();
     });
+  });
+
+  test("Clicking the pause button should pause playback", async () => {
+    const togglePlaybackMock = jest.fn();
+
+    await act(async () => {
+      render(
+        <UserPlaylistContextProvider>
+          <PlayerContext.Provider
+            value={{
+              isActive: true,
+              isPaused: false,
+              togglePlayback: togglePlaybackMock,
+            }}
+          >
+            <Player />)
+          </PlayerContext.Provider>
+        </UserPlaylistContextProvider>
+      );
+    });
+
+    const pauseButton = screen.getByRole("button", { name: "pause playback" });
+    expect(pauseButton).toBeInTheDocument();
+
+    fireEvent.click(pauseButton);
+    expect(togglePlaybackMock).toHaveBeenCalled();
+  });
+
+  test("When player is paused, should display play button", async () => {
+    const togglePlaybackMock = jest.fn();
+
+    await act(async () => {
+      render(
+        <UserPlaylistContextProvider>
+          <PlayerContext.Provider
+            value={{
+              isActive: true,
+              isPaused: true,
+              togglePlayback: togglePlaybackMock,
+            }}
+          >
+            <Player />)
+          </PlayerContext.Provider>
+        </UserPlaylistContextProvider>
+      );
+    });
+
+    const resumeButton = screen.getByRole("button", {
+      name: "resume playback",
+    });
+    expect(resumeButton).toBeInTheDocument();
+
+    fireEvent.click(resumeButton);
+    expect(togglePlaybackMock).toHaveBeenCalled();
   });
 });

@@ -9,11 +9,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { PlayerContext } from "../../context/socket.context";
 
 export default function PlayerControls() {
-  const { isPaused, isHost } = useContext(PlayerContext);
-
-  const togglePlayback = () => {
-    console.log("playback toggled");
-  };
+  const { isPaused, isHost, togglePlayback } = useContext(PlayerContext);
 
   return (
     <article
@@ -21,7 +17,7 @@ export default function PlayerControls() {
       aria-label="playback controls"
     >
       {isHost && (
-        <button aria-label="previous song">
+        <button aria-label="skip to previous song">
           <RewindIcon className="button opacity-20 hover:opacity-10" />
         </button>
       )}
@@ -37,7 +33,7 @@ export default function PlayerControls() {
       )}
 
       {isHost && (
-        <button aria-label="next song">
+        <button aria-label="skip to next song">
           <FastForwardIcon className="button opacity-20 hover:opacity-10" />
         </button>
       )}

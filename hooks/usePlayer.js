@@ -106,5 +106,7 @@ export default function usePlayer({ socket, EVENTS }) {
     session.user.type !== "guest" && getActive();
   }, []);
 
-  return { isPaused, isActive, isHost };
+  const togglePlayback = () => {};
+
+  return { isPaused, isActive, isHost, togglePlayback };
 }
