@@ -74,25 +74,29 @@ export default function SocketContextProvider({ children }) {
 
   const { isActive, isHost } = usePlayer({ socket, EVENTS });
 
-  const { playerObject, deviceID, isPaused, togglePlayback } = useSpotifyWedSDK(
-    {
-      socket,
-      EVENTS,
-    }
-  );
-
-  const URL =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:4000"
-      : "https://spotifyserver1.herokuapp.com/";
+  const {
+    playerObject,
+    deviceID,
+    isPaused,
+    togglePlayback,
+    skipToNext,
+    skipToPrevious,
+  } = useSpotifyWedSDK({
+    socket,
+    EVENTS,
+  });
 
   useEffect(() => {
+    const URL =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:4000"
+        : "https://spotifyserver1.herokuapp.com/";
+
     if (typeof window.document !== "undefined" && session?.user) {
       const socketIO = io(URL);
       setSocket(socketIO);
     }
-    return () => socket?.close();
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     socket?.on("connect", () => {
@@ -115,8 +119,10 @@ export default function SocketContextProvider({ children }) {
       socket.close();
     });
 
-    return () => {};
-  }, [socket]);
+    return () => {
+      socket?.close();
+    };
+  }, [socket, session]);
 
   return (
     <SocketContext.Provider
@@ -138,7 +144,14 @@ export default function SocketContextProvider({ children }) {
           }}
         >
           <SpotifySDKContext.Provider
-            value={{ playerObject, deviceID, isPaused, togglePlayback }}
+            value={{
+              playerObject,
+              deviceID,
+              isPaused,
+              togglePlayback,
+              skipToNext,
+              skipToPrevious,
+            }}
           >
             {children}
           </SpotifySDKContext.Provider>

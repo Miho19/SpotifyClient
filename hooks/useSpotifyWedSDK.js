@@ -10,6 +10,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
   const [deviceID, setDeviceID] = useState("");
   const [playerObject, setPlayerObject] = useState(null);
   const [isPaused, setIsPaused] = useState(true);
+  const [repeatMode, setRepeatMode] = useState(true);
 
   const scriptReference = useRef(null);
   const iframeReference = useRef(null);
@@ -38,7 +39,6 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       });
 
       player.addListener("ready", ({ device_id }) => {
-        console.log(`${device_id} ready!`);
         setPlayerObject(player);
         setDeviceID(device_id);
 
@@ -96,7 +96,9 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
         ? callback("PLAYER_FAILED")
         : callback() && socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
 
-      transferResponse.statusCode === 204 && setIsPaused(false);
+      if (transferResponse.statusCode !== 204) return;
+
+      setIsPaused(false);
     };
 
     socket?.on(EVENTS.SERVER.HOST_START_PLAYER, setSDKActive);
@@ -125,5 +127,32 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
     setIsPaused(!isPaused);
   };
 
-  return { playerObject, deviceID, isPaused, togglePlayback };
+  /**
+   * Socket code needed to inform other room members that playlist has changed and song change.
+   *
+   */
+  const skipToPrevious = async () => {
+    if (repeatMode) {
+      const repeatModeResponse = await spotifyApi.setRepeat("off");
+      setRepeatMode(false);
+    }
+    playerObject.previousTrack();
+  };
+
+  const skipToNext = async () => {
+    if (repeatMode) {
+      const repeatModeResponse = await spotifyApi.setRepeat("off");
+      setRepeatMode(false);
+    }
+    playerObject.nextTrack();
+  };
+
+  return {
+    playerObject,
+    deviceID,
+    isPaused,
+    togglePlayback,
+    skipToPrevious,
+    skipToNext,
+  };
 }
