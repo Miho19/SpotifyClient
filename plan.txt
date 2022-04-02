@@ -2,9 +2,8 @@
     - vote system
     - 
 2) sdk hosting
-    - playing the playlist
     - skipping song should update playlist
-    - 
+     
 
 5) contextmenu for user profile bubble
 6) testing library added
