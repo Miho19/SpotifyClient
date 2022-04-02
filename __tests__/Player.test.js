@@ -5,7 +5,7 @@ import SpotifyWebApi from "spotify-web-api-node";
 import Player from "../components/Player/Player";
 import UserPlaylistContextProvider from "../context/userplaylist.context";
 import userEvent from "@testing-library/user-event";
-import { PlayerContext } from "../context/socket.context";
+import { PlayerContext, SpotifySDKContext } from "../context/socket.context";
 
 jest.mock("next-auth/react");
 
@@ -400,7 +400,7 @@ describe("Player suite", () => {
     ).toBeInTheDocument();
   });
 
-  test("Clicking the pause button should pause playback", async () => {
+  test("Clicking the resume button should call toggle playback", async () => {
     const togglePlaybackMock = jest.fn();
 
     render(
@@ -408,16 +408,19 @@ describe("Player suite", () => {
         <PlayerContext.Provider
           value={{
             isActive: true,
-            isPaused: false,
-            togglePlayback: togglePlaybackMock,
+            isHost: true,
           }}
         >
-          <Player />)
+          <SpotifySDKContext.Provider
+            value={{ isPaused: true, togglePlayback: togglePlaybackMock }}
+          >
+            <Player />)
+          </SpotifySDKContext.Provider>
         </PlayerContext.Provider>
       </UserPlaylistContextProvider>
     );
 
-    const pauseButton = screen.getByRole("button", { name: "pause playback" });
+    const pauseButton = screen.getByRole("button", { name: "resume playback" });
     expect(pauseButton).toBeInTheDocument();
 
     fireEvent.click(pauseButton);
@@ -432,11 +435,13 @@ describe("Player suite", () => {
         <PlayerContext.Provider
           value={{
             isActive: true,
-            isPaused: true,
-            togglePlayback: togglePlaybackMock,
           }}
         >
-          <Player />)
+          <SpotifySDKContext.Provider
+            value={{ isPaused: true, togglePlayback: togglePlaybackMock }}
+          >
+            <Player />)
+          </SpotifySDKContext.Provider>
         </PlayerContext.Provider>
       </UserPlaylistContextProvider>
     );

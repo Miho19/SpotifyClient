@@ -6,10 +6,11 @@ import {
 } from "@heroicons/react/solid";
 
 import React, { useContext, useEffect, useState } from "react";
-import { PlayerContext } from "../../context/socket.context";
+import { PlayerContext, SpotifySDKContext } from "../../context/socket.context";
 
 export default function PlayerControls() {
-  const { isPaused, isHost, togglePlayback } = useContext(PlayerContext);
+  const { isHost } = useContext(PlayerContext);
+  const { isPaused, togglePlayback } = useContext(SpotifySDKContext);
 
   return (
     <article

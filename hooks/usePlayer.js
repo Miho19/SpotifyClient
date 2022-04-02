@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import useSpotify from "./useSpotify";
 
 export default function usePlayer({ socket, EVENTS }) {
-  const [isPaused, setIsPaused] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isHost, setIsHost] = useState(false);
 
@@ -77,7 +76,6 @@ export default function usePlayer({ socket, EVENTS }) {
         socket.data.user.host = true;
         setIsHost(true);
         setIsActive(true);
-        setIsPaused(false);
         callback({ playlistID, snapshotID: snapshot_id });
       } catch (error) {
         console.error(error);
@@ -105,7 +103,5 @@ export default function usePlayer({ socket, EVENTS }) {
     session.user.type !== "guest" && getActive();
   }, [session, spotifyApi]);
 
-  const togglePlayback = () => {};
-
-  return { isPaused, isActive, isHost, togglePlayback };
+  return { isActive, isHost };
 }

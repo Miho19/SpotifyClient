@@ -47,7 +47,6 @@ export const RoomContext = createContext({
 });
 
 export const PlayerContext = createContext({
-  isPaused: false,
   isActive: false,
   isHost: false,
 });
@@ -55,6 +54,7 @@ export const PlayerContext = createContext({
 export const SpotifySDKContext = createContext({
   playerObject: false,
   deviceID: "",
+  isPaused: true,
 });
 
 export default function SocketContextProvider({ children }) {
@@ -72,9 +72,14 @@ export default function SocketContextProvider({ children }) {
 
   const messages = useMessages({ socket, EVENTS });
 
-  const { isPaused, isActive, isHost } = usePlayer({ socket, EVENTS });
+  const { isActive, isHost } = usePlayer({ socket, EVENTS });
 
-  const { playerObject, deviceID } = useSpotifyWedSDK({ socket, EVENTS });
+  const { playerObject, deviceID, isPaused, togglePlayback } = useSpotifyWedSDK(
+    {
+      socket,
+      EVENTS,
+    }
+  );
 
   const URL =
     process.env.NODE_ENV === "development"
@@ -120,7 +125,7 @@ export default function SocketContextProvider({ children }) {
         EVENTS,
       }}
     >
-      <PlayerContext.Provider value={{ isPaused, isActive, isHost }}>
+      <PlayerContext.Provider value={{ isActive, isHost }}>
         <RoomContext.Provider
           value={{
             room,
@@ -132,7 +137,9 @@ export default function SocketContextProvider({ children }) {
             joinRoom,
           }}
         >
-          <SpotifySDKContext.Provider value={{ playerObject, deviceID }}>
+          <SpotifySDKContext.Provider
+            value={{ playerObject, deviceID, isPaused, togglePlayback }}
+          >
             {children}
           </SpotifySDKContext.Provider>
         </RoomContext.Provider>

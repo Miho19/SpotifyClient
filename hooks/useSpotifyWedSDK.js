@@ -9,6 +9,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
 
   const [deviceID, setDeviceID] = useState("");
   const [playerObject, setPlayerObject] = useState(null);
+  const [isPaused, setIsPaused] = useState(true);
 
   const scriptReference = useRef(null);
   const iframeReference = useRef(null);
@@ -40,6 +41,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
         console.log(`${device_id} ready!`);
         setPlayerObject(player);
         setDeviceID(device_id);
+
         iframeReference.current = window.document.querySelector("iframe");
       });
 
@@ -93,6 +95,8 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       transferResponse.statusCode !== 204
         ? callback("PLAYER_FAILED")
         : callback() && socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
+
+      transferResponse.statusCode === 204 && setIsPaused(false);
     };
 
     socket?.on(EVENTS.SERVER.HOST_START_PLAYER, setSDKActive);
@@ -116,5 +120,10 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
     };
   }, [socket, playerObject, session, EVENTS]);
 
-  return { playerObject, deviceID };
+  const togglePlayback = () => {
+    playerObject.togglePlay();
+    setIsPaused(!isPaused);
+  };
+
+  return { playerObject, deviceID, isPaused, togglePlayback };
 }

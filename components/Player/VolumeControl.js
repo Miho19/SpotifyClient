@@ -30,8 +30,10 @@ export default function VolumeControl() {
     () =>
       debounce(async () => {
         const setPlayerVolume = async () => {
+          if (volume < 0 || volume > 100) return;
+          if (!playerObject) return;
+
           try {
-            if (volume < 0 || volume > 100) return;
             const playerVolumeAdjust = await playerObject.setVolume(
               Number(volume / 100)
             );
