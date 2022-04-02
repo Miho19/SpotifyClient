@@ -454,4 +454,32 @@ describe("Player suite", () => {
     fireEvent.click(resumeButton);
     expect(togglePlaybackMock).toHaveBeenCalled();
   });
+
+  test("When player is not paused, should display a clickable pause button", async () => {
+    const togglePlaybackMock = jest.fn();
+
+    render(
+      <UserPlaylistContextProvider>
+        <PlayerContext.Provider
+          value={{
+            isActive: true,
+          }}
+        >
+          <SpotifySDKContext.Provider
+            value={{ isPaused: false, togglePlayback: togglePlaybackMock }}
+          >
+            <Player />)
+          </SpotifySDKContext.Provider>
+        </PlayerContext.Provider>
+      </UserPlaylistContextProvider>
+    );
+
+    const resumeButton = screen.getByRole("button", {
+      name: "pause playback",
+    });
+    expect(resumeButton).toBeInTheDocument();
+
+    fireEvent.click(resumeButton);
+    expect(togglePlaybackMock).toHaveBeenCalled();
+  });
 });
