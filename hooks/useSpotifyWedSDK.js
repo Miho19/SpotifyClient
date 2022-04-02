@@ -127,23 +127,20 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
     setIsPaused(!isPaused);
   };
 
-  /**
-   * Socket code needed to inform other room members that playlist has changed and song change.
-   *
-   */
-  const skipToPrevious = async () => {
+  const checkRepeatStatus = async () => {
     if (repeatMode) {
       const repeatModeResponse = await spotifyApi.setRepeat("off");
       setRepeatMode(false);
     }
+  };
+
+  const skipToPrevious = async () => {
+    await checkRepeatStatus();
     playerObject.previousTrack();
   };
 
   const skipToNext = async () => {
-    if (repeatMode) {
-      const repeatModeResponse = await spotifyApi.setRepeat("off");
-      setRepeatMode(false);
-    }
+    await checkRepeatStatus();
     playerObject.nextTrack();
   };
 
