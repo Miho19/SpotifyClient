@@ -1,4 +1,7 @@
+import { debounce } from "lodash";
 import React, { createContext, useState, useEffect } from "react";
+
+import { isMobile } from "react-device-detect";
 
 export const DrawerContext = createContext({
   isChatOpen: false,
@@ -42,7 +45,9 @@ export default function DrawersContextProvider({ children }) {
   };
 
   useEffect(() => {
-    const handleResize = () => {
+    const debounceHandleResize = debounce(() => {
+      if (isMobile) return;
+
       const width = window.innerWidth;
 
       if (width < breakpoint) {
@@ -51,15 +56,18 @@ export default function DrawersContextProvider({ children }) {
         return;
       }
       setChatOpen(true);
-    };
-    window.addEventListener("resize", handleResize);
+    }, [300]);
+
+    window.addEventListener("resize", debounceHandleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", debounceHandleResize);
     };
   }, []);
 
   useEffect(() => {
-    const handleResize = () => {
+    const debounceHandleResize = debounce(() => {
+      if (isMobile) return;
+
       const width = window.innerWidth;
 
       if (width < breakpoint) {
@@ -68,10 +76,12 @@ export default function DrawersContextProvider({ children }) {
       }
 
       setSibebarOpen(true);
-    };
-    window.addEventListener("resize", handleResize);
+    }, [300]);
+
+    window.addEventListener("resize", debounceHandleResize);
+
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", debounceHandleResize);
     };
   }, []);
 

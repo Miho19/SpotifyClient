@@ -1,12 +1,5 @@
-import clsx from "clsx";
 import { debounce } from "lodash";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SocketContext } from "../../context/socket.context";
 import useCurrentTrack from "../../hooks/useCurrentTrack";
 import ScrollingDisplay from "./ScrollingDisplay";

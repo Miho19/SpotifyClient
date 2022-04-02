@@ -1,9 +1,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { act } from "@testing-library/react";
 import SpotifyWebApi from "spotify-web-api-node";
 import Player from "../components/Player/Player";
-import DrawersContextProvider from "../context/drawers.context";
 import UserPlaylistContextProvider from "../context/userplaylist.context";
 import userEvent from "@testing-library/user-event";
 import { PlayerContext } from "../context/socket.context";
@@ -28,13 +27,11 @@ describe("Player suite", () => {
     useSession.mockReturnValue({ data: session, status: false });
   });
   test("Player component should render", async () => {
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
     const playbackSection = screen.getByRole("article", {
       name: "playback controls",
@@ -60,13 +57,11 @@ describe("Player suite", () => {
       status: false,
     });
 
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
     const currentTrackArticle = screen.getByRole("article", {
       name: "display no track history",
@@ -125,23 +120,25 @@ describe("Player suite", () => {
       .spyOn(SpotifyWebApi.prototype, "getMyCurrentPlayingTrack")
       .mockReturnValue({ body: currentTrackResponse });
 
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
     expect(SpotifyWebApi.prototype.getMyCurrentPlayingTrack).toHaveBeenCalled();
 
-    const displayTrackArticle = screen.getByRole("article", {
-      name: "current track playing",
+    await waitFor(() => {
+      const displayTrackArticle = screen.getByRole("article", {
+        name: "current track playing",
+      });
+
+      expect(displayTrackArticle).toBeInTheDocument();
     });
 
-    expect(displayTrackArticle).toBeInTheDocument();
-
-    expect(screen.queryByRole("article", { name: "display no track history" }));
+    expect(
+      screen.queryByRole("article", { name: "display no track history" })
+    ).not.toBeInTheDocument();
   });
 
   test("Player should display authenticated last played song if no current track", async () => {
@@ -201,17 +198,17 @@ describe("Player suite", () => {
         body: { items: [{ track: { ...pastTrackResponse.item } }] },
       });
 
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
-    expect(
-      SpotifyWebApi.prototype.getMyRecentlyPlayedTracks
-    ).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(
+        SpotifyWebApi.prototype.getMyRecentlyPlayedTracks
+      ).toHaveBeenCalled();
+    });
 
     const displayTrackArticle = screen.getByRole("article", {
       name: "current track playing",
@@ -225,13 +222,11 @@ describe("Player suite", () => {
   });
 
   test("Should be able to change volume", async () => {
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
     const volumeControlSection = screen.getByRole("form", {
       name: "control playback volume",
@@ -305,17 +300,17 @@ describe("Player suite", () => {
         body: { items: [{ track: { ...pastTrackResponse.item } }] },
       });
 
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
-    expect(
-      SpotifyWebApi.prototype.getMyRecentlyPlayedTracks
-    ).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(
+        SpotifyWebApi.prototype.getMyRecentlyPlayedTracks
+      ).toHaveBeenCalled();
+    });
 
     const displayTrackArticle = screen.getByRole("article", {
       name: "current track playing",
@@ -329,13 +324,11 @@ describe("Player suite", () => {
   });
 
   test("Should be able to change volume", async () => {
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
     const volumeControlSection = screen.getByRole("form", {
       name: "control playback volume",
@@ -348,47 +341,37 @@ describe("Player suite", () => {
     expect(volumeInput).toBeInTheDocument();
   });
 
-  test("Clicking label should mute volume", async () => {
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
-
-    const volumeControlSection = screen.getByRole("form", {
-      name: "control playback volume",
-    });
-
-    expect(volumeControlSection).toBeInTheDocument();
+  test("Clicking speaker label should mute volume", async () => {
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
     const volumeButton = screen.getByRole("button", { name: "mute playback" });
     expect(volumeButton).toBeInTheDocument();
 
-    const volumeInput = screen.getByLabelText("playback volume");
-    expect(volumeInput).toBeInTheDocument();
+    fireEvent.click(volumeButton);
 
-    userEvent.click(volumeButton);
-    waitFor(() => expect(volumeInput.value).toBe("0"));
+    await waitFor(async () => {
+      expect(screen.getByLabelText("playback volume").value).toBe("0");
+    });
   });
 
-  test("Clicking label should mute and unmute volume", async () => {
+  test("Clicking speaker label should mute and unmute volume", async () => {
     jest
       .spyOn(SpotifyWebApi.prototype, "getAccessToken")
       .mockReturnValue("fakeAccessToken");
 
     jest.spyOn(SpotifyWebApi.prototype, "setVolume").mockReturnValue("true");
 
-    await act(async () => {
-      render(
-        <PlayerContext.Provider value={{ isActive: true }}>
-          <UserPlaylistContextProvider>
-            <Player />)
-          </UserPlaylistContextProvider>
-        </PlayerContext.Provider>
-      );
-    });
+    render(
+      <PlayerContext.Provider value={{ isActive: true }}>
+        <UserPlaylistContextProvider>
+          <Player />)
+        </UserPlaylistContextProvider>
+      </PlayerContext.Provider>
+    );
 
     const muteButton = screen.getByRole("button", { name: "mute playback" });
     expect(muteButton).toBeInTheDocument();
@@ -396,47 +379,43 @@ describe("Player suite", () => {
     const volumeInput = screen.getByLabelText("playback volume");
     expect(volumeInput).toBeInTheDocument();
 
-    await act(async () => {
-      fireEvent.click(muteButton);
+    fireEvent.click(muteButton);
+
+    await waitFor(() => {
+      expect(volumeInput.value).toBe("0");
     });
 
-    waitFor(() => {
-      expect(volumeInput.value).toBe(0);
-
-      const unmuteButton = screen.getByRole("button", {
-        name: "unmute playback",
-      });
-
-      expect(unmuteButton).toBeInTheDocument();
-
-      fireEvent.click(unmuteButton);
-
-      expect(volumeInput.value).toBe(50);
-
-      return expect(
-        screen.getByRole("button", { name: "mute playback" })
-      ).toBeInTheDocument();
+    const unmuteButton = screen.getByRole("button", {
+      name: "unmute playback",
     });
+
+    expect(unmuteButton).toBeInTheDocument();
+
+    fireEvent.click(unmuteButton);
+
+    expect(volumeInput.value).toBe("50");
+
+    expect(
+      screen.getByRole("button", { name: "mute playback" })
+    ).toBeInTheDocument();
   });
 
   test("Clicking the pause button should pause playback", async () => {
     const togglePlaybackMock = jest.fn();
 
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <PlayerContext.Provider
-            value={{
-              isActive: true,
-              isPaused: false,
-              togglePlayback: togglePlaybackMock,
-            }}
-          >
-            <Player />)
-          </PlayerContext.Provider>
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <PlayerContext.Provider
+          value={{
+            isActive: true,
+            isPaused: false,
+            togglePlayback: togglePlaybackMock,
+          }}
+        >
+          <Player />)
+        </PlayerContext.Provider>
+      </UserPlaylistContextProvider>
+    );
 
     const pauseButton = screen.getByRole("button", { name: "pause playback" });
     expect(pauseButton).toBeInTheDocument();
@@ -448,21 +427,19 @@ describe("Player suite", () => {
   test("When player is paused, should display play button", async () => {
     const togglePlaybackMock = jest.fn();
 
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <PlayerContext.Provider
-            value={{
-              isActive: true,
-              isPaused: true,
-              togglePlayback: togglePlaybackMock,
-            }}
-          >
-            <Player />)
-          </PlayerContext.Provider>
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <PlayerContext.Provider
+          value={{
+            isActive: true,
+            isPaused: true,
+            togglePlayback: togglePlaybackMock,
+          }}
+        >
+          <Player />)
+        </PlayerContext.Provider>
+      </UserPlaylistContextProvider>
+    );
 
     const resumeButton = screen.getByRole("button", {
       name: "resume playback",

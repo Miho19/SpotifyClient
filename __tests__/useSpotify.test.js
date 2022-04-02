@@ -29,13 +29,11 @@ describe("useSpotify suite", () => {
   test("if session is invalid, should call signOut", async () => {
     useSession.mockReturnValue({ data: {}, status: false });
 
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
     expect(signOut).toHaveBeenCalled();
   });
@@ -43,13 +41,11 @@ describe("useSpotify suite", () => {
   test("if session is valid, should call setAccessToken", async () => {
     jest.spyOn(SpotifyWebApi.prototype, "setAccessToken");
 
-    await act(async () => {
-      render(
-        <UserPlaylistContextProvider>
-          <Player />)
-        </UserPlaylistContextProvider>
-      );
-    });
+    render(
+      <UserPlaylistContextProvider>
+        <Player />)
+      </UserPlaylistContextProvider>
+    );
 
     expect(SpotifyWebApi.prototype.setAccessToken).toHaveBeenCalled();
   });

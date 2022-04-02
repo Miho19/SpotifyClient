@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
@@ -12,11 +12,7 @@ import DrawersContextProvider, {
   DrawerContext,
 } from "../context/drawers.context";
 
-import UserPlaylistContextProvider, {
-  UserPlaylistContext,
-} from "../context/userplaylist.context";
-
-import { act } from "react-dom/test-utils";
+import { UserPlaylistContext } from "../context/userplaylist.context";
 
 jest.mock("next-auth/react");
 jest.mock("next/dist/client/router", () => require("next-router-mock"));
@@ -90,13 +86,11 @@ describe("Sidebar suite", () => {
       .spyOn(spotifyWebApi.prototype, "getUserPlaylists")
       .mockReturnValue({ body: { items: [] } });
 
-    await act(async () => {
-      render(
-        <DrawersContextProvider>
-          <Sidebar />
-        </DrawersContextProvider>
-      );
-    });
+    render(
+      <DrawersContextProvider>
+        <Sidebar />
+      </DrawersContextProvider>
+    );
 
     expect(
       screen.getByRole("button", { name: "close sidebar" })
@@ -106,7 +100,7 @@ describe("Sidebar suite", () => {
       name: "name: Link to the playlist Today's Top Hits",
     });
 
-    expect(playlist).not.toBeInTheDocument();
+    await waitFor(() => expect(playlist).not.toBeInTheDocument());
   });
 
   test("Sidebar will display a playlist within its userplaylists", async () => {
@@ -137,19 +131,15 @@ describe("Sidebar suite", () => {
       .spyOn(spotifyWebApi.prototype, "getUserPlaylists")
       .mockReturnValue({ body: { items: fakePlaylists } });
 
-    await act(async () => {
-      render(
-        <DrawersContextProvider>
-          <Sidebar />
-        </DrawersContextProvider>
-      );
-    });
+    render(
+      <DrawersContextProvider>
+        <Sidebar />
+      </DrawersContextProvider>
+    );
 
-    expect(
-      screen.getByRole("listitem", {
-        name: "Link to the playlist Today's Top Hits",
-      })
-    ).toBeInTheDocument();
+    await screen.findByRole("listitem", {
+      name: "Link to the playlist Today's Top Hits",
+    });
   });
 
   test("Should be able to click on a playlist within the sidebar", async () => {
@@ -184,27 +174,28 @@ describe("Sidebar suite", () => {
 
     const setPlaylistMock = jest.fn();
 
-    await act(async () => {
-      render(
-        <DrawersContextProvider>
-          <UserPlaylistContext.Provider
-            value={{ setCurrentPlaylistId: setPlaylistMock }}
-          >
-            <Sidebar />
-          </UserPlaylistContext.Provider>
-        </DrawersContextProvider>
-      );
-    });
+    render(
+      <DrawersContextProvider>
+        <UserPlaylistContext.Provider
+          value={{ setCurrentPlaylistId: setPlaylistMock }}
+        >
+          <Sidebar />
+        </UserPlaylistContext.Provider>
+      </DrawersContextProvider>
+    );
 
-    const playlistItem = screen.getByRole("listitem", {
-      name: "Link to the playlist Today's Top Hits",
-    });
+    let playlistItem = null;
 
-    expect(playlistItem).toBeInTheDocument();
+    await waitFor(
+      () =>
+        (playlistItem = screen.getByRole("listitem", {
+          name: "Link to the playlist Today's Top Hits",
+        }))
+    );
 
-    await userEvent.click(playlistItem);
+    fireEvent.click(playlistItem);
 
-    expect(setPlaylistMock).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(setPlaylistMock).toHaveBeenCalledTimes(1));
   });
 
   test("Clicking the signout button triggers a signOut", async () => {
@@ -237,13 +228,11 @@ describe("Sidebar suite", () => {
 
     jest.spyOn(spotifyWebApi.prototype, "getPlaylist").mockReturnValue({});
 
-    await act(async () => {
-      render(
-        <DrawersContextProvider>
-          <Sidebar />
-        </DrawersContextProvider>
-      );
-    });
+    render(
+      <DrawersContextProvider>
+        <Sidebar />
+      </DrawersContextProvider>
+    );
 
     const signOutButton = screen.getByRole("button", { name: "sign out" });
 
@@ -286,15 +275,13 @@ describe("Sidebar suite", () => {
 
     const closeSidebar = jest.fn();
 
-    await act(async () => {
-      render(
-        <DrawerContext.Provider
-          value={{ setDrawerStatus: closeSidebar, isSidebarOpen: true }}
-        >
-          <Sidebar />
-        </DrawerContext.Provider>
-      );
-    });
+    render(
+      <DrawerContext.Provider
+        value={{ setDrawerStatus: closeSidebar, isSidebarOpen: true }}
+      >
+        <Sidebar />
+      </DrawerContext.Provider>
+    );
 
     const closeSiderbarButton = screen.getByRole("button", {
       name: "close sidebar",
@@ -336,13 +323,11 @@ describe("Sidebar suite", () => {
 
     jest.spyOn(spotifyWebApi.prototype, "getPlaylist").mockReturnValue({});
 
-    await act(async () => {
-      render(
-        <DrawersContextProvider>
-          <Sidebar />
-        </DrawersContextProvider>
-      );
-    });
+    render(
+      <DrawersContextProvider>
+        <Sidebar />
+      </DrawersContextProvider>
+    );
 
     const closeSiderbarButton = screen.getByRole("button", {
       name: "close sidebar",
@@ -388,13 +373,11 @@ describe("Sidebar suite", () => {
 
     jest.spyOn(spotifyWebApi.prototype, "getPlaylist").mockReturnValue({});
 
-    await act(async () => {
-      render(
-        <DrawersContextProvider>
-          <Sidebar />
-        </DrawersContextProvider>
-      );
-    });
+    render(
+      <DrawersContextProvider>
+        <Sidebar />
+      </DrawersContextProvider>
+    );
 
     const closeSiderbarButton = screen.getByRole("button", {
       name: "close sidebar",

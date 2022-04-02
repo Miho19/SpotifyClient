@@ -12,6 +12,7 @@ export default function ChatbarForm({ roomID }) {
       onSubmit={(e) => e.preventDefault()}
     >
       <input
+        autoFocus
         aria-label="message input"
         disabled={!roomID}
         value={value}

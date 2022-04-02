@@ -1,41 +1,28 @@
-Going to remove the ability to play alongside the host, instead the host is the sole player and other members within the party only have the ability to add songs, and vote to remove them.
-
-
-
-
-socket
-    -> connect, disconnect
-    -> clients
-        -> Join a room
-        -> leave a room
-        -> set their profile
-        -> send message
-        -> get room members
-        -> get available rooms
-        -> get room details
-        -> song changed
-    -> Server
-        -> request room join
-        -> request client room leave
-        -> emit message
-        -> room members changed
-        -> playist updated
-        -> current playing song changed
-        -> request song from host
-        -> request host to initilise
-
-    
-
-
-
-
+1) guest features
+    - vote system
+    - 
+2) sdk hosting
+    - playing the playlist
+    - skipping song should update playlist
+    - 
 
 5) contextmenu for user profile bubble
 6) testing library added
+    - party
+    - hooks?
+    - sockets
+        - chat messages
+        - song chang
+        - number of members changed
+    - login
+    - centreplaylist
+    
+7) add in travis 
+
+8) cypress testing 
 
 
 
-big update:
-    add in websdk
+
     
 

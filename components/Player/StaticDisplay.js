@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import React, { useState, useEffect, useRef } from "react";
-import { debounce } from "lodash";
 
 export default function StaticDisplay({ currentTrack }) {
   const [songOverflow, setSongOverflow] = useState(false);

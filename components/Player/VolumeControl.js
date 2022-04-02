@@ -23,7 +23,7 @@ export default function VolumeControl() {
         }
       };
       volumeAdjust();
-    }, 500),
+    }, 300),
     [volume]
   );
 
@@ -44,12 +44,12 @@ export default function VolumeControl() {
     >
       <label htmlFor="playback volume" className="block pt-1">
         {volume === 0 ? (
-          <button aria-label="unmute playback">
-            <VolumeOffIcon className="button" onClick={() => setVolume(50)} />
+          <button aria-label="unmute playback" onClick={() => setVolume(50)}>
+            <VolumeOffIcon className="button" />
           </button>
         ) : (
-          <button aria-label="mute playback">
-            <VolumeUpIcon className="button" onClick={() => setVolume(0)} />
+          <button aria-label="mute playback" onClick={() => setVolume(0)}>
+            <VolumeUpIcon className="button" />
           </button>
         )}
       </label>
