@@ -2,39 +2,61 @@ import { VolumeOffIcon, VolumeUpIcon } from "@heroicons/react/outline";
 
 import { debounce } from "lodash";
 
-import React, { useState, useEffect, useCallback, useContext } from "react";
-import { PlayerContext } from "../../context/socket.context";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+  useMemo,
+} from "react";
+import { PlayerContext, SpotifySDKContext } from "../../context/socket.context";
 
 import useSpotify from "../../hooks/useSpotify";
 
+/**
+ *
+ * Volume using the playerObject is based on range [0, 1].
+ * Volume using spotifyApi is based on percentage [0, 100%].
+ */
+
 export default function VolumeControl() {
-  const [volume, setVolume] = useState(50);
+  const [volume, setVolume] = useState(10);
   const spotifyApi = useSpotify();
 
   const { isActive: playerActive } = useContext(PlayerContext);
+  const { playerObject } = useContext(SpotifySDKContext);
 
-  const debouncedAdjustVolume = useCallback(
-    debounce((volume) => {
-      const volumeAdjust = async () => {
-        try {
-          const volumeAdjustResponse = await spotifyApi.setVolume(volume);
-        } catch (error) {
-          console.error("volume adjustment error: ", error);
-        }
-      };
-      volumeAdjust();
-    }, 300),
-    [volume]
+  const volumeAdjust = useMemo(
+    () =>
+      debounce(async () => {
+        const setPlayerVolume = async () => {
+          try {
+            if (volume < 0 || volume > 100) return;
+            const playerVolumeAdjust = await playerObject.setVolume(
+              Number(volume / 100)
+            );
+          } catch (error) {
+            console.error("volume adjustment error: ", error);
+          }
+        };
+
+        setPlayerVolume(volume);
+      }, [150]),
+    [playerObject, volume]
   );
+
+  const debouncedAdjustVolume = useCallback(() => {
+    volumeAdjust();
+  }, [volumeAdjust]);
 
   useEffect(() => {
     if (!spotifyApi || !spotifyApi.getAccessToken()) return;
     if (!playerActive) return;
 
     if (volume >= 0 && volume <= 100) {
-      return debouncedAdjustVolume(volume);
+      return debouncedAdjustVolume();
     }
-  }, [volume]);
+  }, [volume, spotifyApi, playerActive, debouncedAdjustVolume]);
 
   return (
     <form
@@ -67,3 +89,5 @@ export default function VolumeControl() {
     </form>
   );
 }
+
+// https://github.com/facebook/react/issues/19240#issuecomment-652945246

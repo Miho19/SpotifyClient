@@ -31,7 +31,7 @@ export default function usePlayer({ socket, EVENTS }) {
     return () => {
       socket?.off(EVENTS.SERVER.HOST_GET_SONG, handleGetSong);
     };
-  }, [socket]);
+  }, [socket, EVENTS, spotifyApi]);
 
   useEffect(() => {
     const setHostStatus = ({ status }) => {
@@ -43,7 +43,7 @@ export default function usePlayer({ socket, EVENTS }) {
     return () => {
       socket?.off(EVENTS.SERVER.CLIENT_SET_HOST, setHostStatus);
     };
-  }, [socket]);
+  }, [socket, EVENTS]);
 
   useEffect(() => {
     const handleHostInit = async ({ playlistID }, callback) => {
@@ -55,42 +55,41 @@ export default function usePlayer({ socket, EVENTS }) {
 
         if (!getCurrentStateResponse.body) {
           signOut();
-          alert("Must have an active spotify device."); // create a display
+          alert("Must have an active spotify device."); // instead of alert, want to display a message
           return;
         }
 
+        const getUserProfile = await spotifyApi.getMe();
+
+        if (getUserProfile.body.product !== "premium") {
+          return callback({}, "free");
+        }
+
+        const playResponse = await spotifyApi.play({
+          context_uri: `spotify:playlist:${playlistID}`,
+          offset: { position: 0 },
+          position_ms: 0,
+        });
+
+        const getPlaylistResponse = await spotifyApi.getPlaylist(playlistID);
+        const { snapshot_id } = getPlaylistResponse.body;
+
+        socket.data.user.host = true;
+        setIsHost(true);
         setIsActive(true);
         setIsPaused(false);
+        callback({ playlistID, snapshotID: snapshot_id });
       } catch (error) {
         console.error(error);
         console.log("host init: get current song");
       }
-
-      const getUserProfile = await spotifyApi.getMe();
-
-      if (getUserProfile.body.product !== "premium") {
-        return callback({}, "free");
-      }
-
-      // const playResponse = await spotifyApi.play({
-      //   context_uri: `spotify:playlist:${playlistID}`,
-      //   offset: { position: 0 },
-      //   position_ms: 0,
-      // });
-
-      const getPlaylistResponse = await spotifyApi.getPlaylist(playlistID);
-      const { snapshot_id } = getPlaylistResponse.body;
-
-      socket.data.user.host = true;
-      setIsHost(true);
-      callback({ playlistID, snapshotID: snapshot_id });
     };
 
     socket?.on(EVENTS.SERVER.HOST_INIT, handleHostInit);
     return () => {
       socket?.off(EVENTS.SERVER.HOST_INIT, handleHostInit);
     };
-  }, [socket]);
+  }, [socket, EVENTS, spotifyApi, session]);
 
   useEffect(() => {
     const getActive = async () => {
@@ -104,7 +103,7 @@ export default function usePlayer({ socket, EVENTS }) {
     if (!session) return;
 
     session.user.type !== "guest" && getActive();
-  }, []);
+  }, [session, spotifyApi]);
 
   const togglePlayback = () => {};
 

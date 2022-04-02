@@ -349,7 +349,7 @@ describe("Player suite", () => {
     );
 
     const volumeButton = screen.getByRole("button", { name: "mute playback" });
-    expect(volumeButton).toBeInTheDocument();
+    await waitFor(async () => expect(volumeButton).toBeInTheDocument());
 
     fireEvent.click(volumeButton);
 

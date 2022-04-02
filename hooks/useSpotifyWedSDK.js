@@ -78,7 +78,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       scriptReference.current &&
         scriptReference.current.parentNode.removeChild(scriptReference.current);
     };
-  }, [spotifyApi]);
+  }, [spotifyApi, session]);
 
   useEffect(() => {
     const setSDKActive = async (callback) => {
@@ -100,7 +100,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
     return () => {
       socket?.off(EVENTS.SERVER.HOST_START_PLAYER, setSDKActive);
     };
-  }, [socket, playerObject, deviceID]);
+  }, [socket, playerObject, deviceID, EVENTS, spotifyApi, session]);
 
   useEffect(() => {
     const disconnectPlayer = () => {
@@ -114,7 +114,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
     return () => {
       socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, disconnectPlayer);
     };
-  }, [socket, playerObject]);
+  }, [socket, playerObject, session, EVENTS]);
 
   return { playerObject, deviceID };
 }
