@@ -12,7 +12,7 @@ export default function UserDisplay() {
         <img
           className="rounded-full w-7 h-7 ml-1 sm:ml-0"
           src={session?.user.image}
-          alt=""
+          alt={`profile picture of ${session?.user.name}`}
         />
         <h2 className="hidden lg:block ">{session?.user.name}</h2>
         <ChevronDownIcon className="h-5 w-5 lg:block" />

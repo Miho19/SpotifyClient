@@ -14,6 +14,8 @@ export default function Party() {
 
   const [isClicked, setIsClicked] = useState({ index: -1 });
 
+  const durationShowBreakpoint = 870;
+
   const clickSong = (event, index) => {
     index === isClicked.index
       ? setIsClicked({ index: -1 })
@@ -26,7 +28,11 @@ export default function Party() {
 
   useEffect(() => {
     const handleResize = debounce(() => {
-      if (isChatOpen && isSidebarOpen && window.innerWidth < 870) {
+      if (
+        isChatOpen &&
+        isSidebarOpen &&
+        window.innerWidth < durationShowBreakpoint
+      ) {
         setDisplayMS(false);
       } else {
         setDisplayMS(true);
@@ -41,7 +47,11 @@ export default function Party() {
   }, [isChatOpen, isSidebarOpen, displayMS]);
 
   useEffect(() => {
-    if (isChatOpen && isSidebarOpen && window.innerWidth < 870) {
+    if (
+      isChatOpen &&
+      isSidebarOpen &&
+      window.innerWidth < durationShowBreakpoint
+    ) {
       setDisplayMS(false);
     } else {
       setDisplayMS(true);

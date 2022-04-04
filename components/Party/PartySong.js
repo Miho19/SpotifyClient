@@ -38,13 +38,14 @@ export default function PartySong({
           {index === 0 ? (
             <div className="w-5 h-5">
               {clicked && socket.data.user.host ? (
-                <XIcon
-                  className="button text-white"
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     removeSong(trackUri, index);
                   }}
-                />
+                >
+                  <XIcon className="button text-white" />
+                </button>
               ) : (
                 <PlayIcon className="w-5 h-5 text-green-500 animate-bounce" />
               )}
@@ -54,7 +55,7 @@ export default function PartySong({
           )}
           <img
             src={albumImgSource}
-            alt={`${albumName}`}
+            alt={`image of ${albumName}`}
             className="hidden xxs:block w-5 h-5 xs:w-10 xs:h-10"
           />
           <div

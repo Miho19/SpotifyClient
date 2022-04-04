@@ -8,7 +8,6 @@
 5) contextmenu for user profile bubble
 6) testing library added
     - party
-    - hooks?
     - sockets
         - chat messages
         - song chang

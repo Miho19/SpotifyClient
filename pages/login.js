@@ -39,6 +39,7 @@ export default function Login({ providers }) {
             e.preventDefault();
           }}
           className="flex flex-col items-center h-full space-y-4"
+          aria-label="choose your guest name"
         >
           <div className="flex items-center">
             <input
@@ -71,6 +72,7 @@ export default function Login({ providers }) {
               <button
                 className="font-bold text-black"
                 onClick={(e) => setValue("")}
+                arial-label="clear input"
               >
                 X
               </button>
@@ -90,7 +92,10 @@ export default function Login({ providers }) {
             </button>
             <button
               className="w-full border border-black h-full  px-5 rounded-3xl bg-red-500 text-[#161616] font-normal text-lg hover:scale-110 transition-all hover:text-black hover:text-xl hover:font-semibold"
-              onClick={(e) => setGuestLogin(false)}
+              onClick={(e) => {
+                setValue("");
+                setGuestLogin(false);
+              }}
             >
               Close
             </button>
@@ -101,9 +106,7 @@ export default function Login({ providers }) {
   );
 }
 
-//signIn(guest.id, { callbackUrl: "/" })
-
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   const providers = await getProviders();
 
   return {
