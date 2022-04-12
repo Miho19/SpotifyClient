@@ -41,14 +41,18 @@ export default function useCurrentTrack({ socket, EVENTS }) {
     if (!spotifyApi || !spotifyApi.getAccessToken()) return;
 
     getRecentTrack();
-  }, []);
+  }, [spotifyApi, session]);
 
   useEffect(() => {
     const songChanged = async ({ uri, progress }) => {
-      const getTrackresponse = await spotifyApi.getMyCurrentPlayingTrack();
+      try {
+        const getTrackresponse = await spotifyApi.getMyCurrentPlayingTrack();
 
-      if (getTrackresponse.body) {
-        setCurrentTrack(getTrackresponse.body.item);
+        if (getTrackresponse.body) {
+          setCurrentTrack(getTrackresponse.body.item);
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
 
@@ -57,7 +61,7 @@ export default function useCurrentTrack({ socket, EVENTS }) {
     return () => {
       socket?.off(EVENTS.SERVER.CURRENT_SONG_CHANGED, songChanged);
     };
-  }, [socket]);
+  }, [socket, EVENTS, spotifyApi]);
 
   return currentTrack;
 }

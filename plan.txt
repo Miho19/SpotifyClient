@@ -2,7 +2,9 @@
     - vote system
     
 2) sdk hosting
-    - skipping song should update playlist
+    - skipping song should update 
+            - playlist
+            
      
 
 5) contextmenu for user profile bubble

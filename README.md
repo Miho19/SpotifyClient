@@ -48,6 +48,10 @@ A Spotify clone which uses rooms to host a party playlist users can join and add
 - [Travis](https://travis-ci.org/) for CI/CD
 - [Cypress](https://www.cypress.io/) for integration tests with backend
 
+#### Bugs
+
+- iframe is added in multiple times and not removed
+
 ### Installation
 
 ```bash

@@ -13,7 +13,6 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
   const [repeatMode, setRepeatMode] = useState(true);
 
   const scriptReference = useRef(null);
-  const iframeReference = useRef(null);
 
   useEffect(() => {
     if (typeof window === "undefined" || !spotifyApi.getAccessToken()) return;
@@ -41,8 +40,6 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       player.addListener("ready", ({ device_id }) => {
         setPlayerObject(player);
         setDeviceID(device_id);
-
-        iframeReference.current = window.document.querySelector("iframe");
       });
 
       player.addListener("not_ready", ({ device_id }) => {
@@ -51,7 +48,6 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
 
       player.addListener("player_state_changed", (state) => {
         if (!state) return;
-        socket?.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       });
 
       player.addListener("autoplay_failed", () => {
@@ -74,14 +70,17 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       player.connect();
     };
 
-    return () => {
-      iframeReference.current &&
-        iframeReference.current.parentNode.removeChild(iframeReference.current);
+    return async () => {
+      const iframes = await window.document.getElementsByTagName("iframe");
 
-      scriptReference.current &&
-        scriptReference.current.parentNode.removeChild(scriptReference.current);
+      for (let i = 0; i < iframes.length; i++) {
+        const frame = iframes.item(i);
+        frame.parentNode.removeChild(frame);
+      }
+
+      scriptReference.current && scriptReference.current.remove();
     };
-  }, [spotifyApi, session, socket, EVENTS]);
+  }, []);
 
   useEffect(() => {
     const setSDKActive = async (playlistID, callback) => {
@@ -90,6 +89,14 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       if (session.user.type === "guest") return;
 
       try {
+        const playResponse = await spotifyApi.play({
+          context_uri: `spotify:playlist:${playlistID}`,
+          offset: { position: 0 },
+          position_ms: 0,
+        });
+
+        socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
+
         const transferResponse = await spotifyApi.transferMyPlayback(
           [deviceID],
           {
@@ -97,19 +104,11 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
           }
         );
 
-        const playResponse = await spotifyApi.play({
-          context_uri: `spotify:playlist:${playlistID}`,
-          offset: { position: 0 },
-          position_ms: 0,
-        });
-
         callback(transferResponse.statusCode !== 204 ? "PLAYER_FAILED" : "");
 
         if (transferResponse.statusCode !== 204) return;
 
         setIsPaused(false);
-
-        socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       } catch (error) {
         console.log(error);
       }
@@ -143,14 +142,19 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
 
   const checkRepeatStatus = async () => {
     if (repeatMode) {
-      const repeatModeResponse = await spotifyApi.setRepeat("off");
+      const repeatModeResponse = await spotifyApi.setRepeat("context");
       setRepeatMode(false);
     }
   };
 
   const skipToPrevious = async () => {
     await checkRepeatStatus();
-    playerObject.previousTrack();
+    try {
+      playerObject.previousTrack();
+    } catch (error) {
+      console.log("no previous?");
+    }
+
     socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
   };
 
