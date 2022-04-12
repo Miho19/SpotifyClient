@@ -51,6 +51,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
 
       player.addListener("player_state_changed", (state) => {
         if (!state) return;
+        socket?.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       });
 
       player.addListener("autoplay_failed", () => {
@@ -80,7 +81,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       scriptReference.current &&
         scriptReference.current.parentNode.removeChild(scriptReference.current);
     };
-  }, [spotifyApi, session]);
+  }, [spotifyApi, session, socket, EVENTS]);
 
   useEffect(() => {
     const setSDKActive = async (playlistID, callback) => {
@@ -150,11 +151,13 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
   const skipToPrevious = async () => {
     await checkRepeatStatus();
     playerObject.previousTrack();
+    socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
   };
 
   const skipToNext = async () => {
     await checkRepeatStatus();
     playerObject.nextTrack();
+    socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
   };
 
   return {
