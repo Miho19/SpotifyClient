@@ -1,6 +1,6 @@
 1) guest features
     - vote system
-    - 
+    
 2) sdk hosting
     - skipping song should update playlist
      

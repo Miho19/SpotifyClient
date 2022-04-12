@@ -83,22 +83,35 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
   }, [spotifyApi, session]);
 
   useEffect(() => {
-    const setSDKActive = async (callback) => {
+    const setSDKActive = async (playlistID, callback) => {
       if (!playerObject) return;
       if (spotifyApi && !spotifyApi.getAccessToken()) return;
       if (session.user.type === "guest") return;
 
-      const transferResponse = await spotifyApi.transferMyPlayback([deviceID], {
-        play: true,
-      });
+      try {
+        const transferResponse = await spotifyApi.transferMyPlayback(
+          [deviceID],
+          {
+            play: true,
+          }
+        );
 
-      transferResponse.statusCode !== 204
-        ? callback("PLAYER_FAILED")
-        : callback() && socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
+        const playResponse = await spotifyApi.play({
+          context_uri: `spotify:playlist:${playlistID}`,
+          offset: { position: 0 },
+          position_ms: 0,
+        });
 
-      if (transferResponse.statusCode !== 204) return;
+        callback(transferResponse.statusCode !== 204 ? "PLAYER_FAILED" : "");
 
-      setIsPaused(false);
+        if (transferResponse.statusCode !== 204) return;
+
+        setIsPaused(false);
+
+        socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     socket?.on(EVENTS.SERVER.HOST_START_PLAYER, setSDKActive);
