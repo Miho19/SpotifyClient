@@ -46,10 +46,6 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
         console.log(`Device ${device_id} has gone offline`);
       });
 
-      player.addListener("player_state_changed", (state) => {
-        if (!state) return;
-      });
-
       player.addListener("autoplay_failed", () => {
         console.log("Autoplay is not allowed by the browser autoplay rules");
       });
@@ -89,20 +85,19 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       if (session.user.type === "guest") return;
 
       try {
-        const playResponse = await spotifyApi.play({
-          context_uri: `spotify:playlist:${playlistID}`,
-          offset: { position: 0 },
-          position_ms: 0,
-        });
-
-        socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
-
         const transferResponse = await spotifyApi.transferMyPlayback(
           [deviceID],
           {
             play: true,
           }
         );
+
+        const playResponse = await spotifyApi.play({
+          context_uri: `spotify:playlist:${playlistID}`,
+          offset: { position: 0 },
+          position_ms: 0,
+          device_id: deviceID,
+        });
 
         callback(transferResponse.statusCode !== 204 ? "PLAYER_FAILED" : "");
 
@@ -112,6 +107,8 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
       } catch (error) {
         console.log(error);
       }
+
+      socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
     };
 
     socket?.on(EVENTS.SERVER.HOST_START_PLAYER, setSDKActive);

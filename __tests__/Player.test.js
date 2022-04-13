@@ -5,7 +5,11 @@ import SpotifyWebApi from "spotify-web-api-node";
 import Player from "../components/Player/Player";
 import UserPlaylistContextProvider from "../context/userplaylist.context";
 import userEvent from "@testing-library/user-event";
-import { PlayerContext, SpotifySDKContext } from "../context/socket.context";
+import SocketContextProvider, {
+  PlayerContext,
+  SocketContext,
+  SpotifySDKContext,
+} from "../context/socket.context";
 
 jest.mock("next-auth/react");
 
@@ -25,6 +29,10 @@ describe("Player suite", () => {
     };
 
     useSession.mockReturnValue({ data: session, status: false });
+
+    jest
+      .spyOn(SpotifyWebApi.prototype, "getMyCurrentPlaybackState")
+      .mockResolvedValue({ body: { isActive: true } });
   });
   test("Player component should render", async () => {
     render(
@@ -121,12 +129,14 @@ describe("Player suite", () => {
       .mockReturnValue({ body: currentTrackResponse });
 
     render(
-      <UserPlaylistContextProvider>
-        <Player />)
-      </UserPlaylistContextProvider>
+      <PlayerContext.Provider
+        value={{ currentTrack: currentTrackResponse.item }}
+      >
+        <UserPlaylistContextProvider>
+          <Player />)
+        </UserPlaylistContextProvider>
+      </PlayerContext.Provider>
     );
-
-    expect(SpotifyWebApi.prototype.getMyCurrentPlayingTrack).toHaveBeenCalled();
 
     await waitFor(() => {
       const displayTrackArticle = screen.getByRole("article", {
@@ -135,86 +145,6 @@ describe("Player suite", () => {
 
       expect(displayTrackArticle).toBeInTheDocument();
     });
-
-    expect(
-      screen.queryByRole("article", { name: "display no track history" })
-    ).not.toBeInTheDocument();
-  });
-
-  test("Player should display authenticated last played song if no current track", async () => {
-    useSession.mockReturnValue({
-      data: { user: { type: "" } },
-      status: false,
-    });
-
-    const pastTrackResponse = {
-      context: {
-        uri: "spotify:playlist:2RTDaqyIPN1OXbLzX0EdgE",
-        type: "playlist",
-        href: "https://api.spotify.com/v1/playlists/2RTDaqyIPN1OXbLzX0EdgE",
-      },
-
-      currently_playing_type: "track",
-      is_playing: true,
-      progress_ms: 0,
-      timestamp: Date.now(),
-      item: {
-        duration_ms: 251186,
-        href: "https://api.spotify.com/v1/tracks/7brQHA2CgQpcMBiOlfiXYb",
-        id: "7brQHA2CgQpcMBiOlfiXYb",
-        name: "Golden Light",
-        type: "track",
-        uri: "spotify:track:7brQHA2CgQpcMBiOlfiXYb",
-        artists: [
-          {
-            name: "STRFKR",
-            type: "artist",
-            uri: "spotify:artist:77SW9BnxLY8rJ0RciFqkHh",
-          },
-        ],
-        album: {
-          album_type: "album",
-          id: "4xkM0BwLM9H2IUcbYzpcBI",
-          images: [
-            {
-              url: "https://i.scdn.co/image/ab67616d0000b2738265a736a1eb838ad5a0b921",
-            },
-          ],
-        },
-      },
-    };
-
-    jest
-      .spyOn(SpotifyWebApi.prototype, "getAccessToken")
-      .mockReturnValue("fakeAccessToken");
-
-    jest
-      .spyOn(SpotifyWebApi.prototype, "getMyCurrentPlayingTrack")
-      .mockReturnValue({ body: {} });
-
-    jest
-      .spyOn(SpotifyWebApi.prototype, "getMyRecentlyPlayedTracks")
-      .mockReturnValue({
-        body: { items: [{ track: { ...pastTrackResponse.item } }] },
-      });
-
-    render(
-      <UserPlaylistContextProvider>
-        <Player />)
-      </UserPlaylistContextProvider>
-    );
-
-    await waitFor(() => {
-      expect(
-        SpotifyWebApi.prototype.getMyRecentlyPlayedTracks
-      ).toHaveBeenCalled();
-    });
-
-    const displayTrackArticle = screen.getByRole("article", {
-      name: "current track playing",
-    });
-
-    expect(displayTrackArticle).toBeInTheDocument();
 
     expect(
       screen.queryByRole("article", { name: "display no track history" })
@@ -241,86 +171,6 @@ describe("Player suite", () => {
     fireEvent.change(volumeInput, { target: { value: "20" } });
 
     expect(volumeInput.value).toBe("20");
-  });
-
-  test("Player should display authenticated last played song if no current track", async () => {
-    useSession.mockReturnValue({
-      data: { user: { type: "" } },
-      status: false,
-    });
-
-    const pastTrackResponse = {
-      context: {
-        uri: "spotify:playlist:2RTDaqyIPN1OXbLzX0EdgE",
-        type: "playlist",
-        href: "https://api.spotify.com/v1/playlists/2RTDaqyIPN1OXbLzX0EdgE",
-      },
-
-      currently_playing_type: "track",
-      is_playing: true,
-      progress_ms: 0,
-      timestamp: Date.now(),
-      item: {
-        duration_ms: 251186,
-        href: "https://api.spotify.com/v1/tracks/7brQHA2CgQpcMBiOlfiXYb",
-        id: "7brQHA2CgQpcMBiOlfiXYb",
-        name: "Golden Light",
-        type: "track",
-        uri: "spotify:track:7brQHA2CgQpcMBiOlfiXYb",
-        artists: [
-          {
-            name: "STRFKR",
-            type: "artist",
-            uri: "spotify:artist:77SW9BnxLY8rJ0RciFqkHh",
-          },
-        ],
-        album: {
-          album_type: "album",
-          id: "4xkM0BwLM9H2IUcbYzpcBI",
-          images: [
-            {
-              url: "https://i.scdn.co/image/ab67616d0000b2738265a736a1eb838ad5a0b921",
-            },
-          ],
-        },
-      },
-    };
-
-    jest
-      .spyOn(SpotifyWebApi.prototype, "getAccessToken")
-      .mockReturnValue("fakeAccessToken");
-
-    jest
-      .spyOn(SpotifyWebApi.prototype, "getMyCurrentPlayingTrack")
-      .mockReturnValue({ body: {} });
-
-    jest
-      .spyOn(SpotifyWebApi.prototype, "getMyRecentlyPlayedTracks")
-      .mockReturnValue({
-        body: { items: [{ track: { ...pastTrackResponse.item } }] },
-      });
-
-    render(
-      <UserPlaylistContextProvider>
-        <Player />)
-      </UserPlaylistContextProvider>
-    );
-
-    await waitFor(() => {
-      expect(
-        SpotifyWebApi.prototype.getMyRecentlyPlayedTracks
-      ).toHaveBeenCalled();
-    });
-
-    const displayTrackArticle = screen.getByRole("article", {
-      name: "current track playing",
-    });
-
-    expect(displayTrackArticle).toBeInTheDocument();
-
-    expect(
-      screen.queryByRole("article", { name: "display no track history" })
-    ).not.toBeInTheDocument();
   });
 
   test("Should be able to change volume", async () => {

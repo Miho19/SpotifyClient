@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import React, { createContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import useCurrentTrack from "../hooks/useCurrentTrack";
 import useMessages from "../hooks/useMessages";
 import usePlayer from "../hooks/usePlayer";
 import useRoom from "../hooks/useRoom";
@@ -86,6 +87,8 @@ export default function SocketContextProvider({ children }) {
     EVENTS,
   });
 
+  const currentTrack = useCurrentTrack({ socket, EVENTS });
+
   useEffect(() => {
     const URL =
       process.env.NODE_ENV === "development"
@@ -124,6 +127,25 @@ export default function SocketContextProvider({ children }) {
     };
   }, [socket, session]);
 
+  useEffect(() => {
+    const stateChanged = (state) => {
+      if (!state) return;
+      const {
+        track_window: { current_track: playerTrack },
+      } = state;
+
+      if (currentTrack.uri !== playerTrack.uri) {
+        socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
+      }
+    };
+
+    playerObject?.addListener("player_state_changed", stateChanged);
+
+    return () => {
+      playerObject?.removeListener("player_state_changed", stateChanged);
+    };
+  }, [playerObject, currentTrack, socket]);
+
   return (
     <SocketContext.Provider
       value={{
@@ -131,7 +153,7 @@ export default function SocketContextProvider({ children }) {
         EVENTS,
       }}
     >
-      <PlayerContext.Provider value={{ isActive, isHost }}>
+      <PlayerContext.Provider value={{ isActive, isHost, currentTrack }}>
         <RoomContext.Provider
           value={{
             room,

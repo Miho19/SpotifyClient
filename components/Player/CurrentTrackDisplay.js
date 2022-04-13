@@ -1,13 +1,11 @@
 import { debounce } from "lodash";
 import React, { useContext, useEffect, useState } from "react";
-import { SocketContext } from "../../context/socket.context";
-import useCurrentTrack from "../../hooks/useCurrentTrack";
+import { PlayerContext } from "../../context/socket.context";
 import ScrollingDisplay from "./ScrollingDisplay";
 import StaticDisplay from "./StaticDisplay";
 
 export default function CurrentTrackDisplay() {
-  const { socket, EVENTS } = useContext(SocketContext);
-  const currentTrack = useCurrentTrack({ socket, EVENTS });
+  const { currentTrack } = useContext(PlayerContext);
   const [windowWidth, setWindowWidth] = useState(0);
   const smBreakpoint = 640;
 

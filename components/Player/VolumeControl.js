@@ -1,6 +1,7 @@
 import { VolumeOffIcon, VolumeUpIcon } from "@heroicons/react/outline";
 
 import { debounce } from "lodash";
+import { useSession } from "next-auth/react";
 
 import React, {
   useState,
@@ -21,10 +22,30 @@ import useSpotify from "../../hooks/useSpotify";
 
 export default function VolumeControl() {
   const [volume, setVolume] = useState(10);
-  const spotifyApi = useSpotify();
+  const [isActive, setIsActive] = useState(false);
 
-  const { isActive: playerActive } = useContext(PlayerContext);
+  const spotifyApi = useSpotify();
   const { playerObject } = useContext(SpotifySDKContext);
+
+  const { data: session, loading } = useSession();
+
+  useEffect(() => {
+    const getActive = async () => {
+      if (!spotifyApi || !spotifyApi.getAccessToken()) return;
+
+      try {
+        const getCurrentStateResponse =
+          await spotifyApi.getMyCurrentPlaybackState();
+        getCurrentStateResponse.body ? setIsActive(true) : setIsActive(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (!session) return;
+
+    session?.user?.type !== "guest" && getActive();
+  }, [session, spotifyApi]);
 
   const volumeAdjust = useMemo(
     () =>
@@ -53,12 +74,12 @@ export default function VolumeControl() {
 
   useEffect(() => {
     if (!spotifyApi || !spotifyApi.getAccessToken()) return;
-    if (!playerActive) return;
+    if (!isActive) return;
 
     if (volume >= 0 && volume <= 100) {
       return debouncedAdjustVolume();
     }
-  }, [volume, spotifyApi, playerActive, debouncedAdjustVolume]);
+  }, [volume, spotifyApi, isActive, debouncedAdjustVolume]);
 
   return (
     <form

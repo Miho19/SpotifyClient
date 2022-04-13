@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import useSpotify from "./useSpotify";
 
 export default function usePlayer({ socket, EVENTS }) {
-  const [isActive, setIsActive] = useState(false);
   const [isHost, setIsHost] = useState(false);
 
   const spotifyApi = useSpotify();
@@ -14,15 +13,19 @@ export default function usePlayer({ socket, EVENTS }) {
     const handleGetSong = async (callback) => {
       if (!spotifyApi.getAccessToken()) return;
 
-      let { body: playbackState } =
-        await spotifyApi.getMyCurrentPlaybackState();
+      try {
+        let { body: playbackState } =
+          await spotifyApi.getMyCurrentPlaybackState();
 
-      if (playbackState) {
-        callback({
-          uri: playbackState.item.uri,
-          progress: playbackState.progress_ms,
-          timestamp: playbackState.timestamp,
-        });
+        if (playbackState) {
+          callback({
+            uri: playbackState.item.uri,
+            progress: playbackState.progress_ms,
+            timestamp: playbackState.timestamp,
+          });
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
 
@@ -83,19 +86,5 @@ export default function usePlayer({ socket, EVENTS }) {
     };
   }, [socket, EVENTS, spotifyApi, session]);
 
-  useEffect(() => {
-    const getActive = async () => {
-      if (!spotifyApi || !spotifyApi.getAccessToken()) return;
-
-      const getCurrentStateResponse =
-        await spotifyApi.getMyCurrentPlaybackState();
-      getCurrentStateResponse.body ? setIsActive(true) : setIsActive(false);
-    };
-
-    if (!session) return;
-
-    session.user.type !== "guest" && getActive();
-  }, [session, spotifyApi]);
-
-  return { isActive, isHost };
+  return { isHost };
 }

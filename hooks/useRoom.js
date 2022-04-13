@@ -40,7 +40,7 @@ export default function useRoom({ socket, EVENTS }) {
 
       socket?.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, leaveRoom);
     };
-  }, [socket]);
+  }, [socket, EVENTS]);
 
   useEffect(() => {
     const playlistChanged = async () => {
@@ -60,7 +60,7 @@ export default function useRoom({ socket, EVENTS }) {
     return () => {
       socket?.off(EVENTS.SERVER.PLAYLIST_UPDATED, playlistChanged);
     };
-  }, [socket, roomPlaylistID, roomPlaylistObject]);
+  }, [socket, EVENTS, roomPlaylistID, roomPlaylistObject, spotifyApi]);
 
   const removeSong = async (songUri, index) => {
     try {
