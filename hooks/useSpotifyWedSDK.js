@@ -11,6 +11,7 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
   const [playerObject, setPlayerObject] = useState(null);
   const [isPaused, setIsPaused] = useState(true);
   const [repeatMode, setRepeatMode] = useState(true);
+  const [playbackState, setPlaybackState] = useState({});
 
   const scriptReference = useRef(null);
 
@@ -48,6 +49,11 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
 
       player.addListener("autoplay_failed", () => {
         console.log("Autoplay is not allowed by the browser autoplay rules");
+      });
+
+      player.addListener("player_state_changed", (state) => {
+        if (!state) return;
+        setPlaybackState(state);
       });
 
       player.on("playback_error", ({ message }) => {
@@ -151,14 +157,16 @@ export default function useSpotifyWedSDK({ socket, EVENTS }) {
     } catch (error) {
       console.log("no previous?");
     }
-
-    socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
   };
 
   const skipToNext = async () => {
     await checkRepeatStatus();
-    playerObject.nextTrack();
-    socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
+
+    try {
+      playerObject.nextTrack();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return {

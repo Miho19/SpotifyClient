@@ -10,7 +10,7 @@ import { PlayerContext, SpotifySDKContext } from "../../context/socket.context";
 
 export default function PlayerControls() {
   const { isHost } = useContext(PlayerContext);
-  const { isPaused, togglePlayback, skipToNext, skipToPrevious } =
+  const { isPaused, togglePlayback, removeAndSkipNext, addAndSkipPrevious } =
     useContext(SpotifySDKContext);
 
   return (
@@ -19,7 +19,7 @@ export default function PlayerControls() {
       aria-label="playback controls"
     >
       {isHost && (
-        <button aria-label="skip to previous song" onClick={skipToPrevious}>
+        <button aria-label="skip to previous song" onClick={addAndSkipPrevious}>
           <RewindIcon className={`button`} />
         </button>
       )}
@@ -35,7 +35,7 @@ export default function PlayerControls() {
       )}
 
       {isHost && (
-        <button aria-label="skip to next song" onClick={skipToNext}>
+        <button aria-label="skip to next song" onClick={removeAndSkipNext}>
           <FastForwardIcon className={`button`} />
         </button>
       )}

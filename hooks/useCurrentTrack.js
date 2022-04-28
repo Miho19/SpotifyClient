@@ -4,7 +4,10 @@ import React, { useEffect, useState } from "react";
 import useSpotify from "./useSpotify";
 
 export default function useCurrentTrack({ socket, EVENTS }) {
-  const [currentTrack, setCurrentTrack] = useState(null);
+  const [currentTrack, setCurrentTrack] = useState({
+    current: {},
+    previous: {},
+  });
 
   const { data: session, loading } = useSession();
 
@@ -14,14 +17,17 @@ export default function useCurrentTrack({ socket, EVENTS }) {
     const getRecentTrack = async () => {
       try {
         if (session.user.type === "guest") {
-          return setCurrentTrack(null);
+          return setCurrentTrack({ current: {}, previous: {} });
         }
 
         const getCurrentTrackResponse =
           await spotifyApi.getMyCurrentPlayingTrack();
 
         if (getCurrentTrackResponse?.body?.item) {
-          return setCurrentTrack(getCurrentTrackResponse.body.item);
+          return setCurrentTrack({
+            previous: {},
+            current: getCurrentTrackResponse.body.item,
+          });
         }
 
         const pastTrackResponse = await spotifyApi.getMyRecentlyPlayedTracks({
@@ -29,10 +35,13 @@ export default function useCurrentTrack({ socket, EVENTS }) {
         });
 
         if (pastTrackResponse.body.items.length) {
-          return setCurrentTrack(pastTrackResponse.body.items[0].track);
+          return setCurrentTrack({
+            ...currentTrack,
+            current: pastTrackResponse.body.items[0].track,
+          });
         }
 
-        setCurrentTrack(null);
+        return setCurrentTrack({ current: {}, previous: {} });
       } catch (error) {
         console.error("get Recent Tracks: ", error);
       }
@@ -49,7 +58,15 @@ export default function useCurrentTrack({ socket, EVENTS }) {
         const getTrackresponse = await spotifyApi.getMyCurrentPlayingTrack();
 
         if (getTrackresponse.body) {
-          setCurrentTrack(getTrackresponse.body.item);
+          setCurrentTrack((prev) => {
+            if (prev.current.uri === getTrackresponse.body.item.uri)
+              return { ...prev };
+
+            return {
+              current: getTrackresponse.body.item,
+              previous: prev.current,
+            };
+          });
         }
       } catch (error) {
         console.error(error);

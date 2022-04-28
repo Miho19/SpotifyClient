@@ -26,7 +26,7 @@ export default function CurrentTrackDisplay() {
     setWindowWidth(window.innerWidth);
   }, [windowWidth]);
 
-  if (!currentTrack)
+  if (!currentTrack?.id)
     return (
       <article
         className="flex items-center space-x-4 w-full justify-center xs:justify-start xs:px-4"

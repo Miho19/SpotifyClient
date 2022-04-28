@@ -1,5 +1,5 @@
-import { SessionProvider, signOut, useSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import { signOut, useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 
 import useSpotify from "./useSpotify";
 
@@ -72,7 +72,7 @@ export default function usePlayer({ socket, EVENTS }) {
 
         socket.data.user.host = true;
         setIsHost(true);
-        setIsActive(true);
+
         callback({ playlistID, snapshotID: snapshot_id });
       } catch (error) {
         console.error(error);

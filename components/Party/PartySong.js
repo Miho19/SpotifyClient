@@ -14,7 +14,7 @@ export default function PartySong({
   trackUri,
   index,
   voteNumber,
-  removeSong,
+  removeAndSkipNext,
   voteSong,
   clicked,
   setClicked,
@@ -23,16 +23,18 @@ export default function PartySong({
   const { socket, EVENTS } = useContext(SocketContext);
 
   return (
-    <li className="w-full h-16">
-      <button
+    <li
+      className="w-full h-16"
+      onClick={(event) => {
+        setClicked(event, index);
+      }}
+    >
+      <div
         className={clsx(
           "grid grid-cols-2 grid-rows-1 gap-1 w-full h-full group cursor-pointer px-1",
           clicked && "bg-white/30",
           !clicked && "hover:bg-white/20"
         )}
-        onClick={(event) => {
-          setClicked(event, index);
-        }}
       >
         <div className="col-span-1 flex items-center h-full w-full space-x-2">
           {index === 0 ? (
@@ -41,7 +43,7 @@ export default function PartySong({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    removeSong(trackUri, index);
+                    removeAndSkipNext({ trackUri: trackUri });
                   }}
                 >
                   <XIcon className="button text-white" />
@@ -91,7 +93,7 @@ export default function PartySong({
             {msToMinutesAndSeconds(duration_ms)}
           </div>
         </div>
-      </button>
+      </div>
     </li>
   );
 }

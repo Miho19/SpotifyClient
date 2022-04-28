@@ -62,9 +62,9 @@ export default function useRoom({ socket, EVENTS }) {
     };
   }, [socket, EVENTS, roomPlaylistID, roomPlaylistObject, spotifyApi]);
 
-  const removeSong = async (songUri, index) => {
+  const removeSong = async (songUri) => {
     try {
-      if (index !== 0 || !socket.data?.user?.host) return;
+      if (!socket.data?.user?.host) return;
 
       let snapshotID = roomPlaylistSnapshotID || "";
 
@@ -88,16 +88,8 @@ export default function useRoom({ socket, EVENTS }) {
         return;
       }
 
-      setRoomPlaylistSnapshotID(deleteResponse.body.snapshot_id);
-
-      if (roomPlaylistObject.tracks.items.length > 1) {
-        const skiptoNextResponse = await spotifyApi.skipToNext();
-      } else {
-        const pauseResponse = await spotifyApi.pause();
-      }
-
-      socket?.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       socket?.emit(EVENTS.CLIENT.UPDATE_PLAYLIST);
+      setRoomPlaylistSnapshotID(deleteResponse.body.snapshot_id);
     } catch (error) {
       console.error("remove song: ", error);
     }

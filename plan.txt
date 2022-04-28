@@ -26,3 +26,11 @@
 
     
 
+
+    skip to next track
+        -> call playerObject.next()
+        -> update playlist to remove first index
+        -> tell everyone in room to update their index + refresh playlist
+
+
+sizing at 845px is incorrect, song name is not truncated when both drawers are open.

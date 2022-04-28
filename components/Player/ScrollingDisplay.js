@@ -8,7 +8,7 @@ export default function ScrollingDisplay({ currentTrack }) {
     >
       <img
         src={currentTrack?.album?.images[0].url}
-        alt={`album cover of ${currentTrack?.album?.name} by ${currentTrack?.artists[0].name}`}
+        alt={`album cover of ${currentTrack?.album?.name} by ${currentTrack?.artists[0]?.name}`}
         className="h-10 w-10 shadow-lg self-center xxs:self-start xxs:ml-2"
       />
       <div className="w-full whitespace-nowrap overflow-hidden text-sm xxs:text-base">

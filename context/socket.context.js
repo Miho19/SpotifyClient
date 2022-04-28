@@ -5,6 +5,7 @@ import useCurrentTrack from "../hooks/useCurrentTrack";
 import useMessages from "../hooks/useMessages";
 import usePlayer from "../hooks/usePlayer";
 import useRoom from "../hooks/useRoom";
+import useSpotify from "../hooks/useSpotify";
 import useSpotifyWedSDK from "../hooks/useSpotifyWedSDK";
 
 const EVENTS = {
@@ -62,6 +63,8 @@ export default function SocketContextProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const { data: session, loading } = useSession();
 
+  const [playbackState, setPlaybackState] = useState({});
+
   const {
     room,
     roomPlaylistID,
@@ -87,7 +90,10 @@ export default function SocketContextProvider({ children }) {
     EVENTS,
   });
 
-  const currentTrack = useCurrentTrack({ socket, EVENTS });
+  const { current: currentTrack, previous: previousTrack } = useCurrentTrack({
+    socket,
+    EVENTS,
+  });
 
   useEffect(() => {
     const URL =
@@ -130,6 +136,7 @@ export default function SocketContextProvider({ children }) {
   useEffect(() => {
     const stateChanged = (state) => {
       if (!state) return;
+
       const {
         track_window: { current_track: playerTrack },
       } = state;
@@ -137,6 +144,8 @@ export default function SocketContextProvider({ children }) {
       if (currentTrack.uri !== playerTrack.uri) {
         socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
       }
+
+      setPlaybackState(state);
     };
 
     playerObject?.addListener("player_state_changed", stateChanged);
@@ -145,6 +154,40 @@ export default function SocketContextProvider({ children }) {
       playerObject?.removeListener("player_state_changed", stateChanged);
     };
   }, [playerObject, currentTrack, socket]);
+
+  const removeAndSkipNext = async ({ trackUri }) => {
+    if (!trackUri) {
+      trackUri = roomPlaylistObject.tracks.items[0].track.uri;
+    }
+
+    await removeSong(trackUri);
+
+    if (roomPlaylistObject.tracks.items.length <= 1) {
+      togglePlayback();
+    } else {
+      skipToNext();
+      socket.emit(EVENTS.CLIENT.HOST_CHANGE_SONG);
+    }
+  };
+
+  const addAndSkipPrevious = async () => {
+    try {
+      const {
+        track_window: { previous_tracks: previousTracks },
+      } = playbackState;
+
+      console.log(playbackState);
+
+      if (!previousTracks.length) return;
+
+      const previous = previousTracks[previousTracks.length - 1];
+
+      console.log(previousTracks);
+      console.log("last played: ", previous);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SocketContext.Provider
@@ -160,7 +203,7 @@ export default function SocketContextProvider({ children }) {
             roomPlaylistID,
             roomPlaylistObject,
             roomPlaylistSnapshotID,
-            removeSong,
+            removeAndSkipNext,
             messages,
             joinRoom,
           }}
@@ -171,8 +214,8 @@ export default function SocketContextProvider({ children }) {
               deviceID,
               isPaused,
               togglePlayback,
-              skipToNext,
-              skipToPrevious,
+              removeAndSkipNext,
+              addAndSkipPrevious,
             }}
           >
             {children}

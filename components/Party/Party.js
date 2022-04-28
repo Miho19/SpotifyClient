@@ -8,7 +8,8 @@ import Home from "./Home";
 import PartySong from "./PartySong";
 
 export default function Party() {
-  const { room, roomPlaylistObject, removeSong } = useContext(RoomContext);
+  const { room, roomPlaylistObject, removeAndSkipNext } =
+    useContext(RoomContext);
   const { isChatOpen, isSidebarOpen } = useContext(DrawerContext);
   const [displayMS, setDisplayMS] = useState(true);
 
@@ -69,7 +70,7 @@ export default function Party() {
         albumName={trackObject.track.album?.name}
         duration_ms={trackObject.track.duration_ms}
         trackUri={trackObject.track.uri}
-        removeSong={removeSong}
+        removeAndSkipNext={removeAndSkipNext}
         voteSong={voteSong}
         voteNumber={0}
         clicked={isClicked.index === index}
