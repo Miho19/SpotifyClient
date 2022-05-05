@@ -1,9 +1,6 @@
 import React, { useContext } from "react";
-
 import { useRouter } from "next/router";
-
 import Link from "next/link";
-
 import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
 import UserPlayLists from "./UserPlayLists";
@@ -41,7 +38,7 @@ export default function Sidebar() {
             </header>
             <hr className="border-t-[0.1px] border-gray-900" />
 
-            <Link href="/">
+            <Link href="/" passHref>
               <button
                 className={`cursor-pointer flex items-center space-x-2 hover:text-white ${
                   router.pathname === "/" && `text-white font-bold`

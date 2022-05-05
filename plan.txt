@@ -34,3 +34,22 @@
 
 
 sizing at 845px is incorrect, song name is not truncated when both drawers are open.
+
+
+
+
+redux
+
+middleware
+    - socket
+         
+
+slices
+  
+context: 
+    - playerSDK
+        - currentTrack
+        - skip/previous
+    - drawer
+        - setdraw status
+     

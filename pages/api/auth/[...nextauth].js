@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import CredentialsProvider from "next-auth/providers/credentials";
-import spotifyApi, { LOGIN_URL } from "../../../util/spotify";
+import spotifyApi, { getLoginUrl } from "../../../util/spotify";
 import axios from "axios";
 
 async function refreshAccessToken(token) {
@@ -52,7 +52,7 @@ export default NextAuth({
     SpotifyProvider({
       clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
       clientSecret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
-      authorization: LOGIN_URL,
+      authorization: getLoginUrl(),
     }),
   ],
   secret: process.env.JWT_SECRET,
@@ -77,6 +77,7 @@ export default NextAuth({
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
           expires_at: account.expires_at * 1000,
+          type: "user",
         };
       }
 

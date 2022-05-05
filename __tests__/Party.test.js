@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import Party from "../components/Party/Party";
 import { useSession } from "next-auth/react";
 import React from "react";
-import { RoomContext } from "../context/socket.context";
 import { DrawerContext } from "../context/drawers.context";
 import msToMinutesAndSeconds from "../util/time";
 

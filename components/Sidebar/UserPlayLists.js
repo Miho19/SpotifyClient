@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import useSpotify from "../../hooks/useSpotify";
 import Link from "next/link";
-
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { UserPlaylistContext } from "../../context/userplaylist.context";
+import { useSelector } from "react-redux";
 
 export default function UserPlayLists() {
   const [allUserPlaylists, setallUserPlaylists] = useState([]);
 
-  const { currentPlaylistId, setCurrentPlaylistId } =
-    useContext(UserPlaylistContext);
+  const currentPlaylistID = useSelector(
+    (state) => state.userPlaylist.data.currentPlaylistObject.id
+  );
 
   const spotifyApi = useSpotify();
 
@@ -46,7 +46,7 @@ export default function UserPlayLists() {
     if (!spotifyApi || !spotifyApi.getAccessToken()) return router.push("/");
 
     session.user.type === "guest" ? guestPlaylists() : getPlaylists();
-  }, []);
+  }, [router, session, spotifyApi]);
 
   return (
     <ul
@@ -54,17 +54,14 @@ export default function UserPlayLists() {
       aria-label="List of playlists available to the user to click on"
     >
       {allUserPlaylists.map((playlist) => (
-        <Link href="/playlist" passHref key={playlist.id}>
+        <Link href={`/playlist/${playlist.id}`} passHref key={playlist.id}>
           <li
             aria-label={`Link to the playlist ${playlist.name}`}
             className={`cursor-pointer hover:text-white ${
-              currentPlaylistId === playlist.id &&
+              currentPlaylistID === playlist.id &&
               router.pathname !== "/" &&
               `text-white font-bold`
             }`}
-            onClick={() => {
-              setCurrentPlaylistId(playlist.id);
-            }}
           >
             {playlist.name}
           </li>

@@ -50,7 +50,7 @@ A Spotify clone which uses rooms to host a party playlist users can join and add
 
 #### Bugs
 
-- iframe is added in multiple times and not removed
+- Refreshing on a user playlist will show a blank playlist.
 
 ### Installation
 

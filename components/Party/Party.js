@@ -1,19 +1,20 @@
 import { debounce } from "lodash";
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { DrawerContext } from "../../context/drawers.context";
-import { RoomContext } from "../../context/socket.context";
 import UserDisplay from "../Common/UserDisplay";
 import Home from "./Home";
-
 import PartySong from "./PartySong";
 
+import { useSelector } from "react-redux";
+
 export default function Party() {
-  const { room, roomPlaylistObject, removeAndSkipNext } =
-    useContext(RoomContext);
   const { isChatOpen, isSidebarOpen } = useContext(DrawerContext);
   const [displayMS, setDisplayMS] = useState(true);
-
   const [isClicked, setIsClicked] = useState({ index: -1 });
+
+  const { playlistObject: roomPlaylistObject, id: roomID } = useSelector(
+    (state) => state.room.data
+  );
 
   const durationShowBreakpoint = 870;
 
@@ -70,7 +71,7 @@ export default function Party() {
         albumName={trackObject.track.album?.name}
         duration_ms={trackObject.track.duration_ms}
         trackUri={trackObject.track.uri}
-        removeAndSkipNext={removeAndSkipNext}
+        removeAndSkipNext={false}
         voteSong={voteSong}
         voteNumber={0}
         clicked={isClicked.index === index}
@@ -84,7 +85,7 @@ export default function Party() {
     <section className="h-[calc(100vh-6rem)] overflow-y-scroll scrollbar-hide w-full">
       <main className="h-full w-full pt-2 overflow-scroll scrollbar-hide space-y-3 lg:px-3">
         <UserDisplay />
-        {!roomPlaylistObject || !room.roomID ? (
+        {!roomPlaylistObject || !roomID ? (
           <Home />
         ) : (
           <ul className="w-full h-full text-white space-y-4">{songs}</ul>

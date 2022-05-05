@@ -1,7 +1,7 @@
 import React from "react";
 
 import { ChevronDownIcon } from "@heroicons/react/solid";
-import { useSession, getSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 export default function UserDisplay() {
   const { data: session, loading } = useSession();

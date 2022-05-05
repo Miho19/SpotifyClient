@@ -1,20 +1,20 @@
 import "../styles/globals.css";
 import { SessionProvider } from "next-auth/react";
-
-import SocketContextProvider from "../context/socket.context";
-
 import Player from "../components/Player/Player";
-import UserPlaylistContextProvider from "../context/userplaylist.context";
+
+import { Provider } from "react-redux";
+import { store } from "../app/store";
+import SpotifySDKProvider from "../context/spotifyWebSDK.context";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session}>
-      <SocketContextProvider>
-        <UserPlaylistContextProvider>
+      <Provider store={store}>
+        <SpotifySDKProvider>
           <Component {...pageProps} />
           {session && <Player />}
-        </UserPlaylistContextProvider>
-      </SocketContextProvider>
+        </SpotifySDKProvider>
+      </Provider>
     </SessionProvider>
   );
 }

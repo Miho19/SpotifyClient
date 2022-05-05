@@ -1,12 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserAddIcon } from "@heroicons/react/solid";
-import { SocketContext } from "../../context/socket.context";
 import PartyMember from "./PartyMember";
-
 import PartyGroupUserControls from "./PartyGroupUserControls";
 
+import { getSocket } from "../../util/socket";
+import EVENTS from "../../util/events";
+
+const socket = getSocket();
+
 export default function PartyGroup() {
-  const { socket, EVENTS } = useContext(SocketContext);
   const [roomMembers, setRoomMembers] = useState([]);
 
   useEffect(() => {
@@ -15,7 +17,7 @@ export default function PartyGroup() {
     };
 
     socket?.emit(EVENTS.CLIENT.GET_ROOM_MEMBERS, updateRoomMembers);
-  }, [socket, EVENTS]);
+  }, []);
 
   useEffect(() => {
     const updateRoomMembers = ({ roomMembers }) => {
@@ -27,7 +29,7 @@ export default function PartyGroup() {
     return () => {
       socket.off(EVENTS.SERVER.ROOM_MEMBERS_CHANGED, updateRoomMembers);
     };
-  }, [socket, EVENTS]);
+  }, []);
 
   const memberList = roomMembers.map((user) => (
     <PartyMember

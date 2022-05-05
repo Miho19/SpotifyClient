@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useState } from "react";
+import React from "react";
 
 import msToMinutesAndSeconds from "../../util/time";
 

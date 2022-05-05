@@ -1,11 +1,11 @@
 import { debounce } from "lodash";
-import React, { useContext, useEffect, useState } from "react";
-import { PlayerContext } from "../../context/socket.context";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import ScrollingDisplay from "./ScrollingDisplay";
 import StaticDisplay from "./StaticDisplay";
 
 export default function CurrentTrackDisplay() {
-  const { currentTrack } = useContext(PlayerContext);
+  const currentTrack = useSelector((state) => state.track.data.track);
   const [windowWidth, setWindowWidth] = useState(0);
   const smBreakpoint = 640;
 

@@ -1,9 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
-import { SocketContext } from "../../context/socket.context";
+
+import { sendMessage } from "../../features/socketSlice";
+import { useDispatch } from "react-redux";
 
 export default function ChatbarForm({ roomID }) {
   const [value, setValue] = useState("");
-  const { socket, EVENTS } = useContext(SocketContext);
+  const dispatch = useDispatch();
+
   const maxValueLength = 255;
 
   return (
@@ -28,9 +31,7 @@ export default function ChatbarForm({ roomID }) {
           if (e.key !== "Enter") return;
           if (value.length === 0) return;
 
-          socket.emit(EVENTS.CLIENT.SEND_MESSAGE, {
-            message: value,
-          });
+          dispatch(sendMessage(value));
 
           setValue("");
         }}

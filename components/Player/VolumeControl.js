@@ -10,7 +10,7 @@ import React, {
   useContext,
   useMemo,
 } from "react";
-import { PlayerContext, SpotifySDKContext } from "../../context/socket.context";
+import { SpotifySDKContext } from "../../context/spotifyWebSDK.context";
 
 import useSpotify from "../../hooks/useSpotify";
 
@@ -25,7 +25,8 @@ export default function VolumeControl() {
   const [isActive, setIsActive] = useState(false);
 
   const spotifyApi = useSpotify();
-  const { playerObject } = useContext(SpotifySDKContext);
+
+  const { player } = useContext(SpotifySDKContext);
 
   const { data: session, loading } = useSession();
 
@@ -52,10 +53,10 @@ export default function VolumeControl() {
       debounce(async () => {
         const setPlayerVolume = async () => {
           if (volume < 0 || volume > 100) return;
-          if (!playerObject) return;
+          if (!player) return;
 
           try {
-            const playerVolumeAdjust = await playerObject.setVolume(
+            const playerVolumeAdjust = await player.setVolume(
               Number(volume / 100)
             );
           } catch (error) {
@@ -65,7 +66,7 @@ export default function VolumeControl() {
 
         setPlayerVolume(volume);
       }, [150]),
-    [playerObject, volume]
+    [player, volume]
   );
 
   const debouncedAdjustVolume = useCallback(() => {

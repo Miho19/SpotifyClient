@@ -6,12 +6,39 @@ import {
 } from "@heroicons/react/solid";
 
 import React, { useContext, useEffect, useState } from "react";
-import { PlayerContext, SpotifySDKContext } from "../../context/socket.context";
+
+import EVENTS from "../../util/events";
+
+import { getSocket } from "../../util/socket";
 
 export default function PlayerControls() {
-  const { isHost } = useContext(PlayerContext);
-  const { isPaused, togglePlayback, removeAndSkipNext, addAndSkipPrevious } =
-    useContext(SpotifySDKContext);
+  const [isHost, setIsHost] = useState(false);
+  const socket = getSocket();
+
+  const isPaused = false;
+
+  const togglePlayback = () => {};
+
+  useEffect(() => {
+    const handleStartPlayer = () => {
+      setIsHost(true);
+    };
+    socket.on(EVENTS.SERVER.HOST_START_PLAYER, handleStartPlayer);
+
+    return () => {
+      socket.off(EVENTS.SERVER.HOST_START_PLAYER, handleStartPlayer);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const handleLeaveRoom = () => {
+      setIsHost(false);
+    };
+
+    socket.on(EVENTS.SERVER.CLIENT_LEFT_ROOM, handleLeaveRoom);
+
+    return () => socket.off(EVENTS.SERVER.CLIENT_LEFT_ROOM, handleLeaveRoom);
+  }, [socket]);
 
   return (
     <article

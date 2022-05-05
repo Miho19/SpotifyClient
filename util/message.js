@@ -1,7 +1,5 @@
-import { useSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import { UserIcon } from "@heroicons/react/solid";
 import Dayjs from "dayjs";
-import UserIcon from "@heroicons/react/solid/UserIcon";
 
 const generateTime = (time) => {
   const timeDayjs = Dayjs(time);
@@ -18,7 +16,7 @@ const generateTime = (time) => {
   return timeDayjs.format("ddd HH:mm A ");
 };
 
-const generateChat = (
+const userChat = (
   { message, senderID, senderName, senderImgSource, messageID, time },
   userID
 ) => (
@@ -35,6 +33,7 @@ const generateChat = (
     </span>
     <div className="flex w-full h-5 mt-1 items-center">
       {senderImgSource ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={senderImgSource}
           alt="user profile picture"
@@ -53,48 +52,28 @@ const generateChat = (
   </div>
 );
 
-const generateAdminChat = ({ message, messageID, time }) => (
+const adminChat = ({ message, messageID, time }) => (
   <div key={messageID} className="flex justify-center text-gray-400 text-xs">
     <span>{message}</span>
   </div>
 );
 
-export default function useMessages({ socket, EVENTS }) {
-  const [messages, setMessages] = useState([]);
-
-  useEffect(() => {
-    const receiveMessage = ({
-      message,
-      senderID,
-      senderName,
-      senderImgSource,
-      messageID,
-      time,
-    }) => {
-      const newMessage =
-        senderID === "__ADMIN__"
-          ? generateAdminChat({ message, messageID, time })
-          : generateChat(
-              {
-                message,
-                senderID,
-                senderName,
-                senderImgSource,
-                messageID,
-                time,
-              },
-              socket.id
-            );
-
-      setMessages((messages) => [...messages, newMessage]);
-    };
-
-    socket?.on(EVENTS.SERVER.EMIT_MESSAGE, receiveMessage);
-
-    return () => {
-      socket?.off(EVENTS.SERVER.EMIT_MESSAGE, receiveMessage);
-    };
-  }, [socket]);
-
-  return messages;
-}
+export const generateChat = ({
+  message,
+  senderID,
+  senderName,
+  senderImgSource,
+  messageID,
+  time,
+}) => {
+  return senderID === "__ADMIN__"
+    ? adminChat({ message, messageID, time })
+    : userChat({
+        message,
+        senderID,
+        senderName,
+        senderImgSource,
+        messageID,
+        time,
+      });
+};

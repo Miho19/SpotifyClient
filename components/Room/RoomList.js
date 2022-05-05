@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
-
-import { SocketContext } from "../../context/socket.context";
-
+import React, { useEffect, useState } from "react";
 import RoomItem from "./RoomItem";
 
-export default function RoomList() {
-  const { socket, EVENTS } = useContext(SocketContext);
+import { getSocket } from "../../util/socket";
+import EVENTS from "../../util/events";
 
+export default function RoomList() {
+  const socket = getSocket();
   const [roomList, setRoomList] = useState([]);
 
   useEffect(() => {

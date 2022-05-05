@@ -1,9 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext } from "react";
 import msToMinutesAndSeconds from "../../util/time";
 import { PlayIcon, XIcon } from "@heroicons/react/solid";
 
 import clsx from "clsx";
-import { SocketContext } from "../../context/socket.context";
+
+import { getSocket } from "../../util/socket";
+
+const socket = getSocket();
 
 export default function PartySong({
   songName,
@@ -20,8 +23,6 @@ export default function PartySong({
   setClicked,
   displayMS,
 }) {
-  const { socket, EVENTS } = useContext(SocketContext);
-
   return (
     <li
       className="w-full h-16"
