@@ -23,7 +23,6 @@ export const socketDisconnect = () => {
 
 export const setUser = ({ name, imgSource, email, type }) => {
   if (!socket) return;
-
   const host = socket?.data?.user?.host ?? false;
 
   socket.data = {

@@ -50,8 +50,6 @@ A Spotify clone which uses rooms to host a party playlist users can join and add
 
 #### Bugs
 
-- Refreshing on a user playlist will show a blank playlist.
-
 ### Installation
 
 ```bash

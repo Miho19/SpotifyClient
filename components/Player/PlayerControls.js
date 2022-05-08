@@ -1,7 +1,7 @@
 import {
   RewindIcon,
-  PauseIcon,
-  PlayIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
   FastForwardIcon,
 } from "@heroicons/react/solid";
 
@@ -15,9 +15,9 @@ export default function PlayerControls() {
   const [isHost, setIsHost] = useState(false);
   const socket = getSocket();
 
-  const isPaused = false;
+  const addAndSkipPrevious = () => {};
 
-  const togglePlayback = () => {};
+  const removeAndSkipNext = () => {};
 
   useEffect(() => {
     const handleStartPlayer = () => {
@@ -51,15 +51,11 @@ export default function PlayerControls() {
         </button>
       )}
 
-      {!isPaused ? (
-        <button aria-label="pause playback" onClick={togglePlayback}>
-          <PauseIcon className="button w-10 h-10" />
-        </button>
-      ) : (
-        <button aria-label="resume playback" onClick={togglePlayback}>
-          <PlayIcon className="button w-10 h-10" />
-        </button>
-      )}
+      <div className="h-full  flex flex-col text-center justify-center">
+        <ChevronUpIcon className="button w-7 h-7 text-green-500" />
+        <p className="text-white text-lg font-medium">-0</p>
+        <ChevronDownIcon className="button w-7 h-7 text-red-600" />
+      </div>
 
       {isHost && (
         <button aria-label="skip to next song" onClick={removeAndSkipNext}>

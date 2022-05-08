@@ -1,6 +1,7 @@
-import { debounce } from "lodash";
 import { useSession } from "next-auth/react";
 import React, { createContext, useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { getTrack } from "../features/trackSlice";
 import useSpotify from "../hooks/useSpotify";
 import EVENTS from "../util/events";
 import { getSocket } from "../util/socket";
@@ -16,6 +17,10 @@ export default function SpotifySDKProvider({ children }) {
   const { data: session, loading } = useSession();
 
   const spotifyApi = useSpotify();
+
+  const songReference = useRef(null);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -56,6 +61,11 @@ export default function SpotifySDKProvider({ children }) {
 
       player.addListener("player_state_changed", (state) => {
         if (!state) return;
+        if (!songReference.current) songReference.current = state.playback_id;
+        if (state.playback_id !== songReference.current) {
+          songReference.current = state.playback_id;
+          dispatch(getTrack({ id: state.track_window.current_track.id }));
+        }
       });
 
       player.on("playback_error", ({ message }) => {

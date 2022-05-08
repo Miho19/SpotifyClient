@@ -12,9 +12,10 @@ export default function Party() {
   const [displayMS, setDisplayMS] = useState(true);
   const [isClicked, setIsClicked] = useState({ index: -1 });
 
-  const { playlistObject: roomPlaylistObject, id: roomID } = useSelector(
-    (state) => state.room.data
-  );
+  const {
+    playlistObject: { tracks },
+    id: roomID,
+  } = useSelector((state) => state.room.data);
 
   const durationShowBreakpoint = 870;
 
@@ -60,7 +61,7 @@ export default function Party() {
     }
   }, [isChatOpen, isSidebarOpen, displayMS]);
 
-  const songs = roomPlaylistObject.tracks?.items?.map((trackObject, index) => {
+  const songs = tracks.map((trackObject, index) => {
     return (
       <PartySong
         index={index}
@@ -85,7 +86,7 @@ export default function Party() {
     <section className="h-[calc(100vh-6rem)] overflow-y-scroll scrollbar-hide w-full">
       <main className="h-full w-full pt-2 overflow-scroll scrollbar-hide space-y-3 lg:px-3">
         <UserDisplay />
-        {!roomPlaylistObject || !roomID ? (
+        {!tracks || !roomID ? (
           <Home />
         ) : (
           <ul className="w-full h-full text-white space-y-4">{songs}</ul>

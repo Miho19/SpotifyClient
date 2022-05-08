@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Song from "./Song";
 import useSpotify from "../../hooks/useSpotify";
-import { SocketContext } from "../../context/socket.context";
+
 import SongContextMenu from "./SongContextMenu";
 import { useSession } from "next-auth/react";
 
@@ -23,7 +23,7 @@ export default function Songs({ adjustNameDisplay }) {
   });
   const { data: session, loading } = useSession();
 
-  const partyPlaylistObject = useSelector(
+  const { tracks, id: partyPlaylistID } = useSelector(
     (state) => state.room.data.playlistObject
   );
 
@@ -39,12 +39,10 @@ export default function Songs({ adjustNameDisplay }) {
 
   const addToPartyPlaylist = async (track) => {
     if (showMenu.show) setShowMenu(false);
-    if (!spotifyApi || !spotifyApi.getAccessToken() || !partyPlaylistObject)
-      return;
+    if (!spotifyApi || !spotifyApi.getAccessToken() || !tracks) return;
 
     try {
       const trackToAddID = track.track.id;
-      const tracks = partyPlaylistObject.tracks.items;
 
       const isUnqiue = tracks.every((track) => track.track.id !== trackToAddID);
 
@@ -55,13 +53,13 @@ export default function Songs({ adjustNameDisplay }) {
             EVENTS.CLIENT.ADD_SONG_TO_CURRENT_ROOM,
             {
               track,
-              partyPlaylistID: partyPlaylistObject.id,
+              partyPlaylistID,
             },
             () => {
               socket?.emit(EVENTS.CLIENT.UPDATE_PLAYLIST);
             }
           )
-        : await spotifyApi.addTracksToPlaylist(partyPlaylistObject.id, [
+        : await spotifyApi.addTracksToPlaylist(partyPlaylistID, [
             track.track.uri,
           ]);
 

@@ -11,7 +11,10 @@ const initialState = {
   data: {
     id: "",
     name: "",
-    playlistObject: {},
+    playlistObject: {
+      id: "",
+      tracks: [],
+    },
     snapshotID: "",
   },
 };
@@ -40,7 +43,12 @@ const roomSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getRoomPlaylistObject.fulfilled, (state, action) => {
-      state.data.playlistObject = action.payload;
+      state.data.playlistObject.id = action.payload.id;
+      state.data.playlistObject.tracks = action.payload.tracks.items.map(
+        (track) => {
+          return { ...track, votes: 0 };
+        }
+      );
       state.status = "success";
     });
 

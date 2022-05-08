@@ -10,7 +10,7 @@ import { getTrack, setProgress } from "../features/trackSlice";
 const spotifyapi = getSpotify();
 
 const handleHostInit = async ({ playlistID }, callback) => {
-  const { type } = getType();
+  const type = getType();
 
   if (type === "guest") return callback({}, "free");
 
